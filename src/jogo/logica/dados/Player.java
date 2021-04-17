@@ -2,8 +2,8 @@ package jogo.logica.dados;
 
 public class Player {
 	
-	private String name;
-	private PlayerType type;
+	private final String name;
+	private final PlayerType type;
 	private int specialPieces = 0;
 	private int specialPiecesCounter = 0;
 	private int rollbacks = 5;
@@ -13,6 +13,10 @@ public class Player {
 	public Player(String name, PlayerType type) {
 		this.name = name;
 		this.type = type;
+	}
+	
+	public PlayerType getType() {
+		return type;
 	}
 	
 	public String getName() {
@@ -58,11 +62,16 @@ public class Player {
 	
 	@Override
 	public String toString() {
-		return "Player{" +
-				"name='" + name + '\'' +
-				", specialPieces=" + specialPieces +
-				", specialPiecesCounter=" + specialPiecesCounter +
-				", rollbacks=" + rollbacks +
-				'}';
+		if (type == PlayerType.HUMAN) {
+			return "Player{" +
+					"name='" + name + '\'' +
+					", specialPieces=" + specialPieces +
+					", specialPiecesCounter=" + specialPiecesCounter +
+					", rollbacks=" + rollbacks +
+					'}';
+		} else {
+			return "AI{" +
+					"name='" + name + "'}";
+		}
 	}
 }

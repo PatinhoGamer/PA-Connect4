@@ -11,7 +11,7 @@ public class MathMiniGame extends TimedGame {
 		int number1 = (int) ((Math.random() * 98) + 1);
 		int number2 = (int) ((Math.random() * 98) + 1);
 		
-		int operation = (int) Math.ceil(Math.random() * 4);
+		int operation = (int) Math.floor(Math.random() * 4);
 		char operationChar;
 		
 		int result;

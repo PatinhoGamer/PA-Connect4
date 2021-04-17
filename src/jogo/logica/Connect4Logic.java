@@ -1,7 +1,7 @@
 package jogo.logica;
 
 import jogo.logica.dados.Player;
-import jogo.logica.dados.PlayerPiece;
+import jogo.logica.dados.Piece;
 
 import java.awt.*;
 
@@ -11,13 +11,13 @@ public class Connect4Logic {
 	public static final int WIDTH = 7;
 	public static final int AMOUNT_TO_WIN = 4;
 	
-	private final PlayerPiece[][] gameArea;
+	private final Piece[][] gameArea;
 	
 	private Player player1;
 	private Player player2;
 	
 	public Connect4Logic() {
-		gameArea = new PlayerPiece[HEIGHT][WIDTH];
+		gameArea = new Piece[HEIGHT][WIDTH];
 	}
 	
 	public void setPlayers(Player player1, Player player2) {
@@ -25,11 +25,11 @@ public class Connect4Logic {
 		this.player2 = player2;
 	}
 	
-	public PlayerPiece checkWinner() {
+	public Piece checkWinner() {
 		for (int line = 0; line < HEIGHT; line++) {
 			for (int column = 0; column < WIDTH; column++) {
 				
-				PlayerPiece currentPlacePiece = gameArea[line][column];
+				Piece currentPlacePiece = gameArea[line][column];
 				if (currentPlacePiece == null)
 					continue;
 				
@@ -40,7 +40,7 @@ public class Connect4Logic {
 		return null;
 	}
 	
-	private boolean checkIfPlayerWonAt(PlayerPiece player, int line, int column) {
+	private boolean checkIfPlayerWonAt(Piece player, int line, int column) {
 		Point[] directionsAround = new Point[]{
 				new Point(-1, -1), new Point(0, -1), new Point(1, -1),
 				new Point(-1, 0), new Point(1, 0),
@@ -62,13 +62,15 @@ public class Connect4Logic {
 					amount++;
 					if (amount == AMOUNT_TO_WIN)
 						return true;
-				}
+				} else
+					break;
 			}
 		}
 		return false;
 	}
 	
-	public boolean clearColumn(PlayerPiece playerPiece, int column) {
+	public boolean clearColumn(Piece playerPiece, int column) {
+		column = column - 1;
 		Player player = getPlayerFromEnum(playerPiece);
 		if (player.getSpecialPieces() > 0) {
 			player.setSpecialPieces(player.getSpecialPieces() - 1);
@@ -80,11 +82,11 @@ public class Connect4Logic {
 		return false;
 	}
 	
-	public Player getPlayerFromEnum(PlayerPiece playerPiece) {
-		return playerPiece == PlayerPiece.PLAYER1 ? player1 : player2;
+	public Player getPlayerFromEnum(Piece playerPiece) {
+		return playerPiece == Piece.PLAYER1 ? player1 : player2;
 	}
 	
-	public boolean playAt(PlayerPiece player, int column) {
+	public boolean playAt(Piece player, int column) {
 		column = column - 1;
 		for (int height = HEIGHT - 1; height >= 0; height--) {
 			if (gameArea[height][column] == null) {
@@ -95,7 +97,7 @@ public class Connect4Logic {
 		return false;
 	}
 	
-	public PlayerPiece[][] getGameArea() {
+	public Piece[][] getGameArea() {
 		return gameArea;
 	}
 	
@@ -113,5 +115,12 @@ public class Connect4Logic {
 			System.out.print("-");
 		}
 		System.out.println();
+	}
+	
+	public boolean isFull() {
+		for (int column = 0; column < WIDTH; column++)
+			if (gameArea[0][column] == null)
+				return false;
+		return true;
 	}
 }

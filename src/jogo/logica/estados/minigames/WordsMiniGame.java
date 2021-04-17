@@ -23,13 +23,15 @@ public class WordsMiniGame extends TimedGame {
 		StringBuilder builder = new StringBuilder();
 		
 		while (alreadyChosen.size() < 5) {
-			int chosenOne = (int) Math.ceil(Math.random() * words.length);
+			int chosenOne = (int) Math.floor(Math.random() * words.length);
 			
 			if (alreadyChosen.contains(chosenOne))
 				continue;
 			
 			alreadyChosen.add(chosenOne);
 			builder.append(words[chosenOne]);
+			if (alreadyChosen.size() < 5)
+				builder.append(" ");
 		}
 		return builder.toString();
 	}
@@ -52,15 +54,10 @@ public class WordsMiniGame extends TimedGame {
 	
 	@Override
 	public boolean checkAnswer(String answer) {
-		if(super.checkAnswer(answer)){
-			
+		if (super.checkAnswer(answer)) {
+			finished = true;
 			return true;
 		}
-		return false;
-	}
-	
-	@Override
-	public boolean isFinished() {
 		return false;
 	}
 }

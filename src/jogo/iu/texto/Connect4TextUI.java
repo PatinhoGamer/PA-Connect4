@@ -1,7 +1,7 @@
 package jogo.iu.texto;
 
 import jogo.logica.Connect4Logic;
-import jogo.logica.dados.PlayerPiece;
+import jogo.logica.dados.Piece;
 import jogo.logica.dados.PlayerType;
 import jogo.logica.estados.StateMachine;
 import jogo.logica.dados.Player;
@@ -27,41 +27,51 @@ public class Connect4TextUI {
 			System.out.println("Game State : " + stateMachine.getState());
 			
 			switch (stateMachine.getState()) {
-				case GameToStart -> {
-					gameToStart();
-				}
-				case PlayingMiniGame -> {
-					playingMiniGame();
-				}
-				case GameFinished -> {
-					gameFinished();
-				}
-				case WaitingPlayerMove -> {
-					waitingPlayerMove();
-				}
+				case GameToStart -> gameToStart();
+				case ComputerPlays -> computerPlays();
+				case CheckPlayerWantsMiniGame -> checkPlayerWantsMiniGame();
+				case PlayingMiniGame -> playingMiniGame();
+				case GameFinished -> gameFinished();
+				case WaitingPlayerMove -> waitingPlayerMove();
+				default -> throw new IllegalStateException("Unexpected value: " + stateMachine.getState());
 			}
 		}
 	}
 	
+	private void checkPlayerWantsMiniGame() {
+		System.out.println("Do you want to play the minigame? ");
+		switch (UIUtils.chooseOption("Exit", "Yes", "No")) {
+			case 0 -> exit = true;
+			case 1 -> stateMachine.startMiniGame();
+			case 2 -> stateMachine.ignoreAndEndMiniGame();
+		}
+	}
+	
+	private void computerPlays() {
+		stateMachine.executePlay();
+	}
+	
 	private void playingMiniGame() {
 		
-		PlayerPiece curPlayer = stateMachine.getCurrentPlayer();
-		
+		Piece curPlayer = stateMachine.getCurrentPlayer();
 		System.out.println("Current Player : " + getPlayerChar(curPlayer) + "\n\t" + stateMachine.getPlayer(curPlayer));
-		
 		TimedGame miniGame = stateMachine.getMiniGame();
 		
 		while (!miniGame.isFinished()) {
-			
+			//TODO fix this shit
 			System.out.println("Answer this question : " + miniGame.getQuestion());
-			
-			String answer = scanner.nextLine();
-			
-			while (!miniGame.checkAnswer(answer))
-				System.out.println("Wrong answer, try again");
-			
+			while (true) {
+				String answer = scanner.nextLine();
+				
+				if (!miniGame.checkAnswer(answer)) {
+					System.out.println("Wrong answer, try again");
+					continue;
+				}
+				break;
+			}
 			System.out.println("Well done, that is the right answer");
 		}
+		stateMachine.ignoreAndEndMiniGame();
 	}
 	
 	private void gameToStart() {
@@ -89,9 +99,11 @@ public class Connect4TextUI {
 	}
 	
 	private void gameFinished() {
-		PlayerPiece curPlayer = stateMachine.getWinner();
-		System.out.println("Winner : " + stateMachine.getPlayer(curPlayer));
-		
+		Piece winner = stateMachine.getWinner();
+		if (winner == null)
+			System.out.println("Draw! No one wins this time");
+		else
+			System.out.println("Winner : " + stateMachine.getPlayer(winner));
 		
 		switch (UIUtils.chooseOption("Exit", "Restart")) {
 			case 0 -> exit = true;
@@ -102,7 +114,7 @@ public class Connect4TextUI {
 	}
 	
 	private void waitingPlayerMove() {
-		PlayerPiece curPlayer = stateMachine.getCurrentPlayer();
+		Piece curPlayer = stateMachine.getCurrentPlayer();
 		System.out.println("Current Player : " + getPlayerChar(curPlayer) + "\n\t" + stateMachine.getPlayer(curPlayer));
 		
 		switch (UIUtils.chooseOption("Exit", "Insert Piece", "Clear Column")) {
@@ -123,13 +135,13 @@ public class Connect4TextUI {
 	}
 	
 	private void drawGameArea() {
-		PlayerPiece[][] gameArea = stateMachine.getGameArea();
+		Piece[][] gameArea = stateMachine.getGameArea();
 		
 		for (int line = 0; line < gameArea.length; line++) {
 			System.out.print("|");
 			for (int column = 0; column < gameArea[0].length; column++) {
 				if (gameArea[line][column] == null) System.out.print(" ");
-				else if (gameArea[line][column] == PlayerPiece.PLAYER1) System.out.print("X");
+				else if (gameArea[line][column] == Piece.PLAYER1) System.out.print("X");
 				else System.out.print("O");
 				System.out.print("|");
 			}
@@ -141,7 +153,7 @@ public class Connect4TextUI {
 		System.out.println();
 	}
 	
-	private char getPlayerChar(PlayerPiece playerType) {
-		return playerType == PlayerPiece.PLAYER1 ? 'X' : 'O';
+	private char getPlayerChar(Piece playerType) {
+		return playerType == Piece.PLAYER1 ? 'X' : 'O';
 	}
 }

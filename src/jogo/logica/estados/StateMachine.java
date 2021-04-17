@@ -2,7 +2,7 @@ package jogo.logica.estados;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Player;
-import jogo.logica.dados.PlayerPiece;
+import jogo.logica.dados.Piece;
 import jogo.logica.estados.connect4.Connect4States;
 import jogo.logica.estados.connect4.GameAbstractState;
 import jogo.logica.estados.minigames.TimedGame;
@@ -23,6 +23,18 @@ public class StateMachine {
 		currentState = currentState.clearColumn(column);
 	}
 	
+	public void executePlay() {
+		currentState = currentState.executePlay();
+	}
+	
+	public void startMiniGame() {
+		currentState = currentState.startMiniGame();
+	}
+	
+	public void ignoreAndEndMiniGame() {
+		currentState = currentState.ignoreAndEndMiniGame();
+	}
+	
 	public void setPlayers(Player player1, Player player2) {
 		currentState = currentState.setPlayers(player1, player2);
 	}
@@ -31,19 +43,19 @@ public class StateMachine {
 		return currentState.getMiniGame();
 	}
 	
-	public PlayerPiece getCurrentPlayer() {
+	public Piece getCurrentPlayer() {
 		return currentState.getCurrentPlayer();
 	}
 	
-	public Player getPlayer(PlayerPiece playerPiece) {
+	public Player getPlayer(Piece playerPiece) {
 		return currentState.getPlayer(playerPiece);
 	}
 	
-	public PlayerPiece getWinner() {
+	public Piece getWinner() {
 		return currentState.getWinner();
 	}
 	
-	public PlayerPiece[][] getGameArea() {
+	public Piece[][] getGameArea() {
 		return currentState.getGame().getGameArea();
 	}
 	

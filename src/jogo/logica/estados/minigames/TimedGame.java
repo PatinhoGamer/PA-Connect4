@@ -8,6 +8,12 @@ public abstract class TimedGame {
 	protected String question;
 	protected String answer;
 	
+	protected boolean finished = false;
+	
+	public TimedGame() {
+		initialize();
+	}
+	
 	public void start() {
 		startTime = System.currentTimeMillis();
 	}
@@ -16,7 +22,7 @@ public abstract class TimedGame {
 		endTime = System.currentTimeMillis() - startTime;
 	}
 	
-	public String getQuestion(){
+	public String getQuestion() {
 		return question;
 	}
 	
@@ -28,6 +34,11 @@ public abstract class TimedGame {
 	
 	public abstract long availableTime();
 	
-	public abstract boolean isFinished();
+	public boolean isFinished() {
+		return finished;
+	}
 	
+	public boolean playerManagedToDoIt() {
+		return endTime < availableTime();
+	}
 }

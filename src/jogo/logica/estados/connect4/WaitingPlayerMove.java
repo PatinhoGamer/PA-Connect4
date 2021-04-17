@@ -1,44 +1,41 @@
 package jogo.logica.estados.connect4;
 
 import jogo.logica.Connect4Logic;
-import jogo.logica.dados.PlayerPiece;
+import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
-import jogo.logica.estados.minigames.MathMiniGame;
-import jogo.logica.estados.minigames.TimedGame;
-import jogo.logica.estados.minigames.WordsMiniGame;
+import jogo.logica.dados.PlayerType;
 
 public class WaitingPlayerMove extends GameAbstractState {
 	
-	private final PlayerPiece playerPiece;
+	private final Piece playerPiece;
 	
-	public WaitingPlayerMove(Connect4Logic game, PlayerPiece player) {
+	public WaitingPlayerMove(Connect4Logic game, Piece player) {
 		super(game);
 		this.playerPiece = player;
 	}
 	
 	@Override
 	public GameAbstractState playAt(int column) {
-		boolean columnHasntFull = game.playAt(playerPiece, column);
-		if (!columnHasntFull)
+		boolean columnWasFull = !game.playAt(playerPiece, column);
+		if (columnWasFull)
 			return this;
 		
 		Player player = game.getPlayerFromEnum(playerPiece);
 		player.incrementSpecialCounter();
 		
-		PlayerPiece winner = game.checkWinner();
-		if (winner != null)
-			return new GameFinished(game, winner);
+		GameFinished finishedState = checkFinishedState();
+		if (finishedState != null) return finishedState;
 		
-		PlayerPiece nextPlayer = playerPiece.getOther();
-		Player trulyPlayer = getGame().getPlayerFromEnum(nextPlayer);
-		if (trulyPlayer.getSpecialPiecesCounter() == 4) {
-			trulyPlayer.resetSpecialCounter();
-			int nextActivity = trulyPlayer.getNextActivity();
-			TimedGame miniGame;
-			if (nextActivity == 0) miniGame = new MathMiniGame();
-			else miniGame = new WordsMiniGame();
-			return new PlayingMiniGame(game, nextPlayer, miniGame);
+		Piece nextPlayer = playerPiece.getOther();
+		Player trulyNextPlayer = getGame().getPlayerFromEnum(nextPlayer);
+		if (trulyNextPlayer.getType() == PlayerType.COMPUTER)
+			return new ComputerPlays(game, nextPlayer);
+		
+		if (trulyNextPlayer.getSpecialPiecesCounter() == 4) {
+			trulyNextPlayer.resetSpecialCounter();
+			return new CheckPlayerWantsMiniGame(game, nextPlayer);
 		}
+		
 		return new WaitingPlayerMove(game, nextPlayer);
 	}
 	
@@ -47,12 +44,11 @@ public class WaitingPlayerMove extends GameAbstractState {
 		boolean success = game.clearColumn(playerPiece, column);
 		if (success)
 			return new WaitingPlayerMove(game, playerPiece.getOther());
-		
 		return this;
 	}
 	
 	@Override
-	public PlayerPiece getCurrentPlayer() {
+	public Piece getCurrentPlayer() {
 		return playerPiece;
 	}
 	
