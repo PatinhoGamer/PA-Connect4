@@ -1,4 +1,4 @@
-package jogo.logica.estados;
+package jogo.logica.estados.connect4;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.PlayerPiece;

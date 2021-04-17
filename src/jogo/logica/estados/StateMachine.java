@@ -3,8 +3,9 @@ package jogo.logica.estados;
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Player;
 import jogo.logica.dados.PlayerPiece;
-import jogo.logica.estados.Connect4States;
-import jogo.logica.estados.GameAbstractState;
+import jogo.logica.estados.connect4.Connect4States;
+import jogo.logica.estados.connect4.GameAbstractState;
+import jogo.logica.estados.minigames.TimedGame;
 
 public class StateMachine {
 	
@@ -24,6 +25,10 @@ public class StateMachine {
 	
 	public void setPlayers(Player player1, Player player2) {
 		currentState = currentState.setPlayers(player1, player2);
+	}
+	
+	public TimedGame getMiniGame() {
+		return currentState.getMiniGame();
 	}
 	
 	public PlayerPiece getCurrentPlayer() {

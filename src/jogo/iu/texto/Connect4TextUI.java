@@ -2,10 +2,11 @@ package jogo.iu.texto;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.PlayerPiece;
-import jogo.logica.estados.PlayingMiniGame;
+import jogo.logica.dados.PlayerType;
 import jogo.logica.estados.StateMachine;
 import jogo.logica.dados.Player;
-import jogo.logica.estados.GameToStart;
+import jogo.logica.estados.connect4.GameToStart;
+import jogo.logica.estados.minigames.TimedGame;
 
 import java.util.Scanner;
 
@@ -43,14 +44,32 @@ public class Connect4TextUI {
 	}
 	
 	private void playingMiniGame() {
-	
+		
+		PlayerPiece curPlayer = stateMachine.getCurrentPlayer();
+		
+		System.out.println("Current Player : " + getPlayerChar(curPlayer) + "\n\t" + stateMachine.getPlayer(curPlayer));
+		
+		TimedGame miniGame = stateMachine.getMiniGame();
+		
+		while (!miniGame.isFinished()) {
+			
+			System.out.println("Answer this question : " + miniGame.getQuestion());
+			
+			String answer = scanner.nextLine();
+			
+			while (!miniGame.checkAnswer(answer))
+				System.out.println("Wrong answer, try again");
+			
+			System.out.println("Well done, that is the right answer");
+		}
 	}
 	
 	private void gameToStart() {
 		System.out.println("\tPlayer1:");
 		System.out.print("name -> ");
-		Player player1 = new Player(scanner.nextLine());
-		int option = UIUtils.chooseOption(null, "Human", "Computer");
+		String player1Name = scanner.nextLine();
+		int option1 = UIUtils.chooseOption(null, "Human", "Computer");
+		Player player1 = new Player(player1Name, option1 == 1 ? PlayerType.HUMAN : PlayerType.COMPUTER);
 		
 		System.out.println("\tPlayer2:");
 		System.out.print("name -> ");
@@ -63,8 +82,8 @@ public class Connect4TextUI {
 				break;
 		}
 		
-		Player player2 = new Player(player2Name);
 		int option2 = UIUtils.chooseOption(null, "Human", "Computer");
+		Player player2 = new Player(player1Name, option2 == 1 ? PlayerType.HUMAN : PlayerType.COMPUTER);
 		
 		stateMachine.setPlayers(player1, player2);
 	}
@@ -72,7 +91,7 @@ public class Connect4TextUI {
 	private void gameFinished() {
 		PlayerPiece curPlayer = stateMachine.getWinner();
 		System.out.println("Winner : " + stateMachine.getPlayer(curPlayer));
-		char playerType = curPlayer == PlayerPiece.PLAYER1 ? 'X' : 'O';
+		
 		
 		switch (UIUtils.chooseOption("Exit", "Restart")) {
 			case 0 -> exit = true;
@@ -84,8 +103,7 @@ public class Connect4TextUI {
 	
 	private void waitingPlayerMove() {
 		PlayerPiece curPlayer = stateMachine.getCurrentPlayer();
-		char playerType = curPlayer == PlayerPiece.PLAYER1 ? 'X' : 'O';
-		System.out.println("Current Player : " + playerType + "\n\t" + stateMachine.getPlayer(curPlayer));
+		System.out.println("Current Player : " + getPlayerChar(curPlayer) + "\n\t" + stateMachine.getPlayer(curPlayer));
 		
 		switch (UIUtils.chooseOption("Exit", "Insert Piece", "Clear Column")) {
 			case 0 -> exit = true;
@@ -123,4 +141,7 @@ public class Connect4TextUI {
 		System.out.println();
 	}
 	
+	private char getPlayerChar(PlayerPiece playerType) {
+		return playerType == PlayerPiece.PLAYER1 ? 'X' : 'O';
+	}
 }

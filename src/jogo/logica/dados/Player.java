@@ -3,12 +3,16 @@ package jogo.logica.dados;
 public class Player {
 	
 	private String name;
+	private PlayerType type;
 	private int specialPieces = 0;
 	private int specialPiecesCounter = 0;
 	private int rollbacks = 5;
 	
-	public Player(String name) {
+	private int activityChooser = -1;
+	
+	public Player(String name, PlayerType type) {
 		this.name = name;
+		this.type = type;
 	}
 	
 	public String getName() {
@@ -41,6 +45,15 @@ public class Player {
 	
 	public void setRollbacks(int rollbacks) {
 		this.rollbacks = rollbacks;
+	}
+	
+	public int getNextActivity() {
+		if (activityChooser == -1)
+			activityChooser = (int) Math.round(Math.random());
+		
+		int choice = activityChooser;
+		activityChooser = (activityChooser + 1) % 2;
+		return choice;
 	}
 	
 	@Override

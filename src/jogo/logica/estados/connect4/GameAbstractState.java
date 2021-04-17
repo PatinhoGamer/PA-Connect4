@@ -1,8 +1,9 @@
-package jogo.logica.estados;
+package jogo.logica.estados.connect4;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.PlayerPiece;
 import jogo.logica.dados.Player;
+import jogo.logica.estados.minigames.TimedGame;
 
 public abstract class GameAbstractState {
 	
@@ -37,6 +38,10 @@ public abstract class GameAbstractState {
 	}
 	
 	public PlayerPiece getCurrentPlayer() {
+		return null;
+	}
+	
+	public TimedGame getMiniGame() {
 		return null;
 	}
 	

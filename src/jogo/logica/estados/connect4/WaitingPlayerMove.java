@@ -1,8 +1,11 @@
-package jogo.logica.estados;
+package jogo.logica.estados.connect4;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.PlayerPiece;
 import jogo.logica.dados.Player;
+import jogo.logica.estados.minigames.MathMiniGame;
+import jogo.logica.estados.minigames.TimedGame;
+import jogo.logica.estados.minigames.WordsMiniGame;
 
 public class WaitingPlayerMove extends GameAbstractState {
 	
@@ -15,8 +18,8 @@ public class WaitingPlayerMove extends GameAbstractState {
 	
 	@Override
 	public GameAbstractState playAt(int column) {
-		boolean columnIsFull = game.playAt(playerPiece, column);
-		if (!columnIsFull) // If board is full at that column
+		boolean columnHasntFull = game.playAt(playerPiece, column);
+		if (!columnHasntFull)
 			return this;
 		
 		Player player = game.getPlayerFromEnum(playerPiece);
@@ -27,6 +30,15 @@ public class WaitingPlayerMove extends GameAbstractState {
 			return new GameFinished(game, winner);
 		
 		PlayerPiece nextPlayer = playerPiece.getOther();
+		Player trulyPlayer = getGame().getPlayerFromEnum(nextPlayer);
+		if (trulyPlayer.getSpecialPiecesCounter() == 4) {
+			trulyPlayer.resetSpecialCounter();
+			int nextActivity = trulyPlayer.getNextActivity();
+			TimedGame miniGame;
+			if (nextActivity == 0) miniGame = new MathMiniGame();
+			else miniGame = new WordsMiniGame();
+			return new PlayingMiniGame(game, nextPlayer, miniGame);
+		}
 		return new WaitingPlayerMove(game, nextPlayer);
 	}
 	
@@ -40,7 +52,7 @@ public class WaitingPlayerMove extends GameAbstractState {
 	}
 	
 	@Override
-	public PlayerPiece getCurrentPlayer(){
+	public PlayerPiece getCurrentPlayer() {
 		return playerPiece;
 	}
 	
