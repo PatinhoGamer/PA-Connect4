@@ -18,6 +18,12 @@ public class GameFinished extends GameAbstractState {
 	}
 	
 	@Override
+	public GameAbstractState restartGame() {
+		//TODO save the game starting the new one
+		return new GameToStart(new Connect4Logic());
+	}
+	
+	@Override
 	public Connect4States getState() {
 		return Connect4States.GameFinished;
 	}

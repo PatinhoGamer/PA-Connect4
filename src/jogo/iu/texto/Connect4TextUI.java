@@ -109,6 +109,7 @@ public class Connect4TextUI {
 			case 0 -> exit = true;
 			case 1 -> {
 				//TODO Make the restart thing
+				stateMachine.restartGame();
 			}
 		}
 	}
@@ -117,15 +118,26 @@ public class Connect4TextUI {
 		Piece curPlayer = stateMachine.getCurrentPlayer();
 		System.out.println("Current Player : " + getPlayerChar(curPlayer) + "\n\t" + stateMachine.getPlayer(curPlayer));
 		
-		switch (UIUtils.chooseOption("Exit", "Insert Piece", "Clear Column")) {
+		switch (UIUtils.chooseOption("Exit", "Insert Piece", "Clear Column", "Rollback")) {
 			case 0 -> exit = true;
 			case 1 -> {
 				System.out.print("Choose Column [1-7] : ");
 				stateMachine.playAt(chooseColumn());
 			}
 			case 2 -> {
+				if (stateMachine.getPlayerObj().getSpecialPieces() <= 0) {
+					System.out.println("You don't have any special pieces");
+					break;
+				}
 				System.out.print("Choose Column [1-7] : ");
 				stateMachine.clearColumn(chooseColumn());
+			}
+			case 3 -> {
+				if (stateMachine.getPlayerObj().getRollbacks() <= 0) {
+					System.out.println("You don't have any rollbacks left");
+					break;
+				}
+				stateMachine.rollback();
 			}
 		}
 	}

@@ -27,12 +27,16 @@ public class StateMachine {
 		currentState = currentState.executePlay();
 	}
 	
+	public void rollback() {
+		currentState = currentState.rollback();
+	}
+	
 	public void startMiniGame() {
 		currentState = currentState.startMiniGame();
 	}
 	
 	public void ignoreAndEndMiniGame() {
-		currentState = currentState.ignoreAndEndMiniGame();
+		currentState = currentState.ignoreOrEndMiniGame();
 	}
 	
 	public void setPlayers(Player player1, Player player2) {
@@ -45,6 +49,10 @@ public class StateMachine {
 	
 	public Piece getCurrentPlayer() {
 		return currentState.getCurrentPlayer();
+	}
+	
+	public Player getPlayerObj() {
+		return currentState.getPlayer(currentState.getCurrentPlayer());
 	}
 	
 	public Player getPlayer(Piece playerPiece) {
@@ -65,5 +73,9 @@ public class StateMachine {
 	
 	public Connect4States getState() {
 		return currentState.getState();
+	}
+	
+	public void restartGame() {
+		currentState = currentState.restartGame();
 	}
 }

@@ -17,7 +17,7 @@ public class PlayingMiniGame extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState ignoreAndEndMiniGame() {
+	public GameAbstractState ignoreOrEndMiniGame() {
 		if (miniGame.playerManagedToDoIt()) {
 			Player player = game.getPlayerFromEnum(playerPiece);
 			player.setSpecialPieces(player.getSpecialPieces() + 1);

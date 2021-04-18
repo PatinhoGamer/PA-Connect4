@@ -35,7 +35,6 @@ public class WaitingPlayerMove extends GameAbstractState {
 			trulyNextPlayer.resetSpecialCounter();
 			return new CheckPlayerWantsMiniGame(game, nextPlayer);
 		}
-		
 		return new WaitingPlayerMove(game, nextPlayer);
 	}
 	
@@ -45,6 +44,12 @@ public class WaitingPlayerMove extends GameAbstractState {
 		if (success)
 			return new WaitingPlayerMove(game, playerPiece.getOther());
 		return this;
+	}
+	
+	@Override
+	public GameAbstractState rollback() {
+		game.rollback(playerPiece);
+		return new WaitingPlayerMove(game,playerPiece);
 	}
 	
 	@Override

@@ -25,13 +25,23 @@ public abstract class GameAbstractState {
 		return this;
 	}
 	
-	public GameAbstractState ignoreAndEndMiniGame() {
+	public GameAbstractState ignoreOrEndMiniGame() {
 		return this;
 	}
 	
-	public GameAbstractState executePlay(){return this;}
+	public GameAbstractState executePlay() {
+		return this;
+	}
+	
+	public GameAbstractState rollback() {
+		return this;
+	}
 	
 	public GameAbstractState setPlayers(Player player1, Player player2) {
+		return this;
+	}
+	
+	public GameAbstractState restartGame() {
 		return this;
 	}
 	
