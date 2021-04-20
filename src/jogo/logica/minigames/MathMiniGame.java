@@ -1,15 +1,17 @@
-package jogo.logica.estados.minigames;
+package jogo.logica.minigames;
 
 public class MathMiniGame extends TimedGame {
 	
+	private static final String GAME_OBJECTIVE = "In this minigame you have to guess the mathematical answer to the presented question (ignore decimals)";
+	private static final int TO_ANSWER = 5;
+	private static final int MAX_NUMBER = 10;
+	
 	private int answeredQuestions = 0;
-	private final int TO_ANSWER = 5;
 	
 	@Override
-	public void initialize() {
-		
-		int number1 = (int) ((Math.random() * 98) + 1);
-		int number2 = (int) ((Math.random() * 98) + 1);
+	public void generateQuestion() {
+		int number1 = (int) ((Math.random() * (MAX_NUMBER - 1)) + 1);
+		int number2 = (int) ((Math.random() * (MAX_NUMBER - 1)) + 1);
 		
 		int operation = (int) Math.floor(Math.random() * 4);
 		char operationChar;
@@ -35,12 +37,18 @@ public class MathMiniGame extends TimedGame {
 			}
 			default -> throw new IllegalStateException("Unexpected value: " + operation);
 		}
+		question = String.valueOf(number1) + ' ' + operationChar + ' ' + number2;
 		answer = String.valueOf(result);
 	}
 	
 	@Override
 	public long availableTime() {
-		return 30 * 1000;
+		return 30L * 1000L;
+	}
+	
+	@Override
+	public String getGameObjective() {
+		return GAME_OBJECTIVE;
 	}
 	
 	@Override
@@ -53,7 +61,7 @@ public class MathMiniGame extends TimedGame {
 	}
 	
 	@Override
-	public boolean isFinished() {
+	public boolean finishedAnswering() {
 		return answeredQuestions >= TO_ANSWER;
 	}
 }

@@ -1,6 +1,8 @@
 package jogo.logica.dados;
 
-public class Player {
+import java.io.Serializable;
+
+public class Player implements Serializable {
 	
 	private final String name;
 	private final PlayerType type;
@@ -62,16 +64,10 @@ public class Player {
 	
 	@Override
 	public String toString() {
-		if (type == PlayerType.HUMAN) {
-			return "Player{" +
-					"name='" + name + '\'' +
-					", specialPieces=" + specialPieces +
-					", specialPiecesCounter=" + specialPiecesCounter +
-					", rollbacks=" + rollbacks +
-					'}';
-		} else {
-			return "AI{" +
-					"name='" + name + "'}";
-		}
+		if (type == PlayerType.HUMAN)
+			return "\tPlayer -> name : " + name +
+					"\n\tspecialPieces : " + specialPieces +
+					"\n\trollbacks : " + rollbacks;
+		else return "\tAI -> name : " + name;
 	}
 }

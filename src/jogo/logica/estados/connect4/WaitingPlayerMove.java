@@ -3,7 +3,6 @@ package jogo.logica.estados.connect4;
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
-import jogo.logica.dados.PlayerType;
 
 public class WaitingPlayerMove extends GameAbstractState {
 	
@@ -23,20 +22,9 @@ public class WaitingPlayerMove extends GameAbstractState {
 		Player player = game.getPlayerFromEnum(playerPiece);
 		player.incrementSpecialCounter();
 		
-		GameFinished finishedState = checkFinishedState();
-		if (finishedState != null) return finishedState;
-		
-		Piece nextPlayer = playerPiece.getOther();
-		Player trulyNextPlayer = getGame().getPlayerFromEnum(nextPlayer);
-		if (trulyNextPlayer.getType() == PlayerType.COMPUTER)
-			return new ComputerPlays(game, nextPlayer);
-		
-		if (trulyNextPlayer.getSpecialPiecesCounter() == 4) {
-			trulyNextPlayer.resetSpecialCounter();
-			return new CheckPlayerWantsMiniGame(game, nextPlayer);
-		}
-		return new WaitingPlayerMove(game, nextPlayer);
+		return stateAfterPlay(playerPiece);
 	}
+	
 	
 	@Override
 	public GameAbstractState clearColumn(int column) {
@@ -49,7 +37,7 @@ public class WaitingPlayerMove extends GameAbstractState {
 	@Override
 	public GameAbstractState rollback() {
 		game.rollback(playerPiece);
-		return new WaitingPlayerMove(game,playerPiece);
+		return new WaitingPlayerMove(game, playerPiece);
 	}
 	
 	@Override

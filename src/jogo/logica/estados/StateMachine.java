@@ -5,9 +5,11 @@ import jogo.logica.dados.Player;
 import jogo.logica.dados.Piece;
 import jogo.logica.estados.connect4.Connect4States;
 import jogo.logica.estados.connect4.GameAbstractState;
-import jogo.logica.estados.minigames.TimedGame;
+import jogo.logica.minigames.TimedGame;
 
-public class StateMachine {
+import java.io.Serializable;
+
+public class StateMachine implements Serializable {
 	
 	private GameAbstractState currentState;
 	
@@ -35,8 +37,12 @@ public class StateMachine {
 		currentState = currentState.startMiniGame();
 	}
 	
-	public void ignoreAndEndMiniGame() {
+	public void ignoreOrEndMiniGame() {
 		currentState = currentState.ignoreOrEndMiniGame();
+	}
+	
+	public void restartGame() {
+		currentState = currentState.restartGame();
 	}
 	
 	public void setPlayers(Player player1, Player player2) {
@@ -73,9 +79,5 @@ public class StateMachine {
 	
 	public Connect4States getState() {
 		return currentState.getState();
-	}
-	
-	public void restartGame() {
-		currentState = currentState.restartGame();
 	}
 }

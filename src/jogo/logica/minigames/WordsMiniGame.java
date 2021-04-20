@@ -1,4 +1,4 @@
-package jogo.logica.estados.minigames;
+package jogo.logica.minigames;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,6 +8,7 @@ import java.util.List;
 
 public class WordsMiniGame extends TimedGame {
 	
+	private static final String GAME_OBJECTIVE = "In this minigame you have to type out the showed words";
 	private static final String WORDS_PATH = "words.txt";
 	
 	private String[] getWordsFromFile(String file) throws IOException {
@@ -37,13 +38,20 @@ public class WordsMiniGame extends TimedGame {
 	}
 	
 	@Override
-	public void initialize() {
-		try {
-			String[] wordsFromFile = getWordsFromFile(WORDS_PATH);
-			answer = getLineToWrite(wordsFromFile);
-			question = answer;
-		} catch (IOException e) {
-			e.printStackTrace();
+	public String getGameObjective() {
+		return GAME_OBJECTIVE;
+	}
+	
+	@Override
+	public void generateQuestion() {
+		if (question == null) {
+			try {
+				String[] wordsFromFile = getWordsFromFile(WORDS_PATH);
+				answer = getLineToWrite(wordsFromFile);
+				question = answer;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

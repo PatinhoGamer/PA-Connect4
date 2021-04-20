@@ -3,9 +3,12 @@ package jogo.logica.estados.connect4;
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
-import jogo.logica.estados.minigames.TimedGame;
+import jogo.logica.dados.PlayerType;
+import jogo.logica.minigames.TimedGame;
 
-public abstract class GameAbstractState {
+import java.io.Serializable;
+
+public abstract class GameAbstractState implements Serializable {
 	
 	protected Connect4Logic game;
 	
@@ -74,5 +77,21 @@ public abstract class GameAbstractState {
 		if (game.isFull())
 			return new GameFinished(game, null);
 		return null;
+	}
+	
+	protected GameAbstractState stateAfterPlay(Piece playerPiece) {
+		GameFinished finishedState = checkFinishedState();
+		if (finishedState != null) return finishedState;
+		
+		Piece nextPlayer = playerPiece.getOther();
+		Player trulyNextPlayer = getGame().getPlayerFromEnum(nextPlayer);
+		if (trulyNextPlayer.getType() == PlayerType.COMPUTER)
+			return new ComputerPlays(game, nextPlayer);
+		
+		if (trulyNextPlayer.getSpecialPiecesCounter() == Connect4Logic.ROUNDS_TO_PLAY_MINIGAME) {
+			trulyNextPlayer.resetSpecialCounter();
+			return new CheckPlayerWantsMiniGame(game, nextPlayer);
+		}
+		return new WaitingPlayerMove(game, nextPlayer);
 	}
 }

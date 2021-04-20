@@ -1,6 +1,7 @@
 package jogo.logica.estados.connect4;
 
 import jogo.logica.Connect4Logic;
+import jogo.logica.dados.GameSaver;
 import jogo.logica.dados.Piece;
 
 public class GameFinished extends GameAbstractState {
@@ -19,7 +20,8 @@ public class GameFinished extends GameAbstractState {
 	
 	@Override
 	public GameAbstractState restartGame() {
-		//TODO save the game starting the new one
+		GameSaver.saveReplay(game);
+		
 		return new GameToStart(new Connect4Logic());
 	}
 	

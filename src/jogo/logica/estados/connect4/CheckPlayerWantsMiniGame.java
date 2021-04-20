@@ -2,9 +2,9 @@ package jogo.logica.estados.connect4;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
-import jogo.logica.estados.minigames.MathMiniGame;
-import jogo.logica.estados.minigames.TimedGame;
-import jogo.logica.estados.minigames.WordsMiniGame;
+import jogo.logica.minigames.MathMiniGame;
+import jogo.logica.minigames.TimedGame;
+import jogo.logica.minigames.WordsMiniGame;
 
 public class CheckPlayerWantsMiniGame extends GameAbstractState {
 	
@@ -26,6 +26,7 @@ public class CheckPlayerWantsMiniGame extends GameAbstractState {
 	
 	@Override
 	public GameAbstractState ignoreOrEndMiniGame() {
+		game.getGameActions().add("ignoredMiniGame:" + player);
 		return new WaitingPlayerMove(game, player);
 	}
 	

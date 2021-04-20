@@ -1,4 +1,4 @@
-package jogo;
+package jogo.logica;
 
 import java.util.Stack;
 

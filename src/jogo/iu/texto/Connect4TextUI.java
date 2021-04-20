@@ -1,18 +1,20 @@
 package jogo.iu.texto;
 
 import jogo.logica.Connect4Logic;
+import jogo.logica.dados.GameSaver;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.PlayerType;
 import jogo.logica.estados.StateMachine;
 import jogo.logica.dados.Player;
 import jogo.logica.estados.connect4.GameToStart;
-import jogo.logica.estados.minigames.TimedGame;
+import jogo.logica.minigames.TimedGame;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Connect4TextUI {
 	
-	private final StateMachine stateMachine;
+	private StateMachine stateMachine;
 	private final Scanner scanner = new Scanner(System.in);
 	private boolean exit = false;
 	
@@ -23,8 +25,8 @@ public class Connect4TextUI {
 	
 	public void start() {
 		while (!exit) {
-			drawGameArea();
 			System.out.println("Game State : " + stateMachine.getState());
+			drawGameArea();
 			
 			switch (stateMachine.getState()) {
 				case GameToStart -> gameToStart();
@@ -43,7 +45,7 @@ public class Connect4TextUI {
 		switch (UIUtils.chooseOption("Exit", "Yes", "No")) {
 			case 0 -> exit = true;
 			case 1 -> stateMachine.startMiniGame();
-			case 2 -> stateMachine.ignoreAndEndMiniGame();
+			case 2 -> stateMachine.ignoreOrEndMiniGame();
 		}
 	}
 	
@@ -52,26 +54,40 @@ public class Connect4TextUI {
 	}
 	
 	private void playingMiniGame() {
-		
 		Piece curPlayer = stateMachine.getCurrentPlayer();
-		System.out.println("Current Player : " + getPlayerChar(curPlayer) + "\n\t" + stateMachine.getPlayer(curPlayer));
-		TimedGame miniGame = stateMachine.getMiniGame();
+		System.out.println("Current Player : " + getPlayerChar(curPlayer) + '\n' + stateMachine.getPlayerObj() + '\n');
 		
-		while (!miniGame.isFinished()) {
-			//TODO fix this shit
-			System.out.println("Answer this question : " + miniGame.getQuestion());
-			while (true) {
-				String answer = scanner.nextLine();
-				
-				if (!miniGame.checkAnswer(answer)) {
-					System.out.println("Wrong answer, try again");
-					continue;
-				}
+		TimedGame miniGame = stateMachine.getMiniGame();
+		System.out.println(miniGame.getGameObjective());
+		
+		miniGame.start();
+		miniGame.generateQuestion();
+		System.out.println("Available time : " + miniGame.availableTime() / 1000);
+		while (true) {
+			
+			System.out.println("Question : " + miniGame.getQuestion());
+			String answer = scanner.nextLine();
+			
+			if (miniGame.checkAnswer(answer))
+				System.out.println("Well done, that is the right answer");
+			else
+				System.out.println("Wrong answer, try again");
+			
+			if (!miniGame.finishedAnswering())
+				miniGame.generateQuestion();
+			else
 				break;
-			}
-			System.out.println("Well done, that is the right answer");
+			if (miniGame.ranOutOfTime())
+				break;
 		}
-		stateMachine.ignoreAndEndMiniGame();
+		miniGame.stop();
+		
+		if (miniGame.playerManagedToDoIt())
+			System.out.println("You finished it on time");
+		else
+			System.out.println("Took too long, better luck next time");
+		
+		stateMachine.ignoreOrEndMiniGame();
 	}
 	
 	private void gameToStart() {
@@ -83,7 +99,7 @@ public class Connect4TextUI {
 		
 		System.out.println("\tPlayer2:");
 		System.out.print("name -> ");
-		String player2Name = null;
+		String player2Name;
 		while (true) {
 			player2Name = scanner.nextLine();
 			if (player1.getName().equals(player2Name))
@@ -103,22 +119,19 @@ public class Connect4TextUI {
 		if (winner == null)
 			System.out.println("Draw! No one wins this time");
 		else
-			System.out.println("Winner : " + stateMachine.getPlayer(winner));
+			System.out.println("Winner : " + getPlayerChar(winner) + '\n' + stateMachine.getPlayer(winner));
 		
 		switch (UIUtils.chooseOption("Exit", "Restart")) {
 			case 0 -> exit = true;
-			case 1 -> {
-				//TODO Make the restart thing
-				stateMachine.restartGame();
-			}
+			case 1 -> stateMachine.restartGame();
 		}
 	}
 	
 	private void waitingPlayerMove() {
 		Piece curPlayer = stateMachine.getCurrentPlayer();
-		System.out.println("Current Player : " + getPlayerChar(curPlayer) + "\n\t" + stateMachine.getPlayer(curPlayer));
+		System.out.println("Current Player : " + getPlayerChar(curPlayer) + "\n" + stateMachine.getPlayerObj());
 		
-		switch (UIUtils.chooseOption("Exit", "Insert Piece", "Clear Column", "Rollback")) {
+		switch (UIUtils.chooseOption("Exit", "Insert Piece", "Clear Column", "Rollback", "Save Current Game", "Load Saved Game")) {
 			case 0 -> exit = true;
 			case 1 -> {
 				System.out.print("Choose Column [1-7] : ");
@@ -138,6 +151,24 @@ public class Connect4TextUI {
 					break;
 				}
 				stateMachine.rollback();
+			}
+			case 4 -> {
+				System.out.println("Filename : ");
+				String filePath = scanner.nextLine();
+				try {
+					GameSaver.saveGameToFile(stateMachine, filePath);
+				} catch (IOException e) {
+					System.out.println(e.getMessage());
+				}
+			}
+			case 5 -> {
+				System.out.println("Filename : ");
+				String filePath = scanner.nextLine();
+				try {
+					stateMachine = GameSaver.loadGameFromFile(filePath);
+				} catch (IOException | ClassNotFoundException e) {
+					System.out.println(e.getMessage());
+				}
 			}
 		}
 	}

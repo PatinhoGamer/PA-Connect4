@@ -3,7 +3,8 @@ package jogo.logica.estados.connect4;
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
-import jogo.logica.estados.minigames.TimedGame;
+import jogo.logica.dados.PlayerType;
+import jogo.logica.minigames.TimedGame;
 
 public class PlayingMiniGame extends GameAbstractState {
 	
@@ -20,11 +21,20 @@ public class PlayingMiniGame extends GameAbstractState {
 	public GameAbstractState ignoreOrEndMiniGame() {
 		if (miniGame.playerManagedToDoIt()) {
 			Player player = game.getPlayerFromEnum(playerPiece);
+			player.resetSpecialCounter();
 			player.setSpecialPieces(player.getSpecialPieces() + 1);
+			game.getGameActions().add("wonMinigame:" + playerPiece);
 			return new WaitingPlayerMove(game, playerPiece);
 		}
 		
-		return new WaitingPlayerMove(game, playerPiece.getOther());
+		game.getGameActions().add("lostdMiniGame:" + playerPiece);
+		
+		Piece other = playerPiece.getOther();
+		Player nextPlayer = getGame().getPlayerFromEnum(other);
+		if (nextPlayer.getType() == PlayerType.COMPUTER)
+			return new ComputerPlays(game, other);
+		
+		return new WaitingPlayerMove(game, other);
 	}
 	
 	@Override

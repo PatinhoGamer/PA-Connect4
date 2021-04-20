@@ -1,4 +1,4 @@
-package jogo.logica.estados.minigames;
+package jogo.logica.minigames;
 
 public abstract class TimedGame {
 	
@@ -9,10 +9,6 @@ public abstract class TimedGame {
 	protected String answer;
 	
 	protected boolean finished = false;
-	
-	public TimedGame() {
-		initialize();
-	}
 	
 	public void start() {
 		startTime = System.currentTimeMillis();
@@ -26,19 +22,26 @@ public abstract class TimedGame {
 		return question;
 	}
 	
+	public abstract String getGameObjective();
+	
 	public boolean checkAnswer(String answer) {
 		return this.answer.equals(answer);
 	}
 	
-	public abstract void initialize();
+	public abstract void generateQuestion();
 	
 	public abstract long availableTime();
 	
-	public boolean isFinished() {
+	public boolean finishedAnswering() {
 		return finished;
 	}
 	
 	public boolean playerManagedToDoIt() {
 		return endTime < availableTime();
+	}
+	
+	public boolean ranOutOfTime() {
+		long currentTime = System.currentTimeMillis() - startTime;
+		return currentTime > availableTime();
 	}
 }

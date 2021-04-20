@@ -1,24 +1,29 @@
 package jogo.logica;
 
-import jogo.FixedSizeStack;
 import jogo.logica.dados.Player;
 import jogo.logica.dados.Piece;
 
 import java.awt.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 
-public class Connect4Logic {
+public class Connect4Logic implements Serializable {
 	
 	public static final int HEIGHT = 6;
 	public static final int WIDTH = 7;
 	public static final int AMOUNT_TO_WIN = 4;
 	public static final int MAX_ROLLBACK = 5;
+	public static final int ROUNDS_TO_PLAY_MINIGAME = 1;
 	
 	private Piece[][] gameArea;
 	private final FixedSizeStack<Piece[][]> lastPlays;
 	
 	private Player player1;
 	private Player player2;
+	
+	private final List<String> gameActions = new ArrayList<>();
 	
 	public Connect4Logic() {
 		gameArea = new Piece[HEIGHT][WIDTH];
@@ -28,6 +33,8 @@ public class Connect4Logic {
 	public void setPlayers(Player player1, Player player2) {
 		this.player1 = player1;
 		this.player2 = player2;
+		gameActions.add("Player1:" + player1.getType() + ' ' + player1.getName());
+		gameActions.add("Player2:" + player2.getType() + ' ' + player2.getName());
 	}
 	
 	public Piece checkWinner() {
@@ -56,6 +63,8 @@ public class Connect4Logic {
 		player.resetSpecialCounter();
 		//TODO Quando volta atrás, o jogador não recupera as peças especiais ganhas e a contagem de
 		//     grupos de 4 jogadas para acesso aos mini-jogos é colocada a zero.
+		
+		gameActions.add("Rollback:" + playerPiece);
 		return true;
 	}
 	
@@ -97,6 +106,8 @@ public class Connect4Logic {
 			
 			for (int i = 0; i < HEIGHT; i++)
 				gameArea[i][column] = null;
+			
+			gameActions.add("clearColumn:" + playerPiece + ' ' + (column + 1));
 			return true;
 		}
 		return false;
@@ -106,16 +117,18 @@ public class Connect4Logic {
 		return playerPiece == Piece.PLAYER1 ? player1 : player2;
 	}
 	
-	public boolean playAt(Piece player, int column) {
+	public boolean playAt(Piece playerPiece, int column) {
 		column = column - 1;
 		if (gameArea[0][column] != null)
 			return false;
 		
 		lastPlays.push(createGameAreaCopy());
 		
-		for (int height = HEIGHT - 1; height >= 0; height--) {
-			if (gameArea[height][column] == null) {
-				gameArea[height][column] = player;
+		for (int line = HEIGHT - 1; line >= 0; line--) {
+			if (gameArea[line][column] == null) {
+				gameArea[line][column] = playerPiece;
+				
+				gameActions.add("playAt:" + playerPiece + ' ' + (column + 1));
 				return true;
 			}
 		}
@@ -127,6 +140,10 @@ public class Connect4Logic {
 		for (int i = 0; i < copy.length; i++)
 			copy[i] = Arrays.copyOf(gameArea[i], gameArea[i].length);
 		return copy;
+	}
+	
+	public List<String> getGameActions() {
+		return gameActions;
 	}
 	
 	public Piece[][] getGameArea() {
