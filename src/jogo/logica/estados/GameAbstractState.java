@@ -1,4 +1,4 @@
-package jogo.logica.estados.connect4;
+package jogo.logica.estados;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
@@ -40,7 +40,7 @@ public abstract class GameAbstractState implements Serializable {
 		return this;
 	}
 	
-	public GameAbstractState setPlayers(Player player1, Player player2) {
+	public GameAbstractState startGameWithPlayers(Player player1, Player player2) {
 		return this;
 	}
 	

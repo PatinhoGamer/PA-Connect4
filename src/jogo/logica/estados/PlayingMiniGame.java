@@ -1,4 +1,4 @@
-package jogo.logica.estados.connect4;
+package jogo.logica.estados;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
@@ -22,7 +22,8 @@ public class PlayingMiniGame extends GameAbstractState {
 		if (miniGame.playerManagedToDoIt()) {
 			Player player = game.getPlayerFromEnum(playerPiece);
 			player.resetSpecialCounter();
-			player.setSpecialPieces(player.getSpecialPieces() + 1);
+			player.addSpecialPiece();
+			
 			game.getGameActions().add("wonMinigame:" + playerPiece);
 			return new WaitingPlayerMove(game, playerPiece);
 		}

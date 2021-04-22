@@ -1,8 +1,9 @@
-package jogo.logica.estados.connect4;
+package jogo.logica.estados;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
+import jogo.logica.dados.PlayerType;
 
 public class WaitingPlayerMove extends GameAbstractState {
 	
@@ -25,12 +26,15 @@ public class WaitingPlayerMove extends GameAbstractState {
 		return stateAfterPlay(playerPiece);
 	}
 	
-	
 	@Override
 	public GameAbstractState clearColumn(int column) {
 		boolean success = game.clearColumn(playerPiece, column);
-		if (success)
-			return new WaitingPlayerMove(game, playerPiece.getOther());
+		if (success) {
+			Piece nextPlayer = playerPiece.getOther();
+			if (game.getPlayerFromEnum(nextPlayer).getType() == PlayerType.COMPUTER)
+				return new ComputerPlays(game, nextPlayer);
+			return new WaitingPlayerMove(game, nextPlayer);
+		}
 		return this;
 	}
 	

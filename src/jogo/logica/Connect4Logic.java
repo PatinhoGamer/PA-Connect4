@@ -15,26 +15,24 @@ public class Connect4Logic implements Serializable {
 	public static final int WIDTH = 7;
 	public static final int AMOUNT_TO_WIN = 4;
 	public static final int MAX_ROLLBACK = 5;
-	public static final int ROUNDS_TO_PLAY_MINIGAME = 1;
+	public static final int ROUNDS_TO_PLAY_MINIGAME = 100;
 	
-	private Piece[][] gameArea;
-	private final FixedSizeStack<Piece[][]> lastPlays;
+	private Piece[][] gameArea = new Piece[HEIGHT][WIDTH];
+	private final FixedSizeStack<Piece[][]> lastPlays = new FixedSizeStack<>(MAX_ROLLBACK * 2);
+	private int round = 1;
 	
 	private Player player1;
 	private Player player2;
 	
 	private final List<String> gameActions = new ArrayList<>();
 	
-	public Connect4Logic() {
-		gameArea = new Piece[HEIGHT][WIDTH];
-		lastPlays = new FixedSizeStack<>(MAX_ROLLBACK * 2);
-	}
-	
-	public void setPlayers(Player player1, Player player2) {
+	public boolean setPlayers(Player player1, Player player2) {
+		if (player1.getName().equals(player2.getName())) return false;
 		this.player1 = player1;
 		this.player2 = player2;
 		gameActions.add("Player1:" + player1.getType() + ' ' + player1.getName());
 		gameActions.add("Player2:" + player2.getType() + ' ' + player2.getName());
+		return true;
 	}
 	
 	public Piece checkWinner() {
@@ -57,12 +55,11 @@ public class Connect4Logic implements Serializable {
 		if (player.getRollbacks() <= 0 || lastPlays.size() == 0)
 			return false;
 		
+		round--;
 		gameArea = lastPlays.pop();
 		
 		player.setRollbacks(player.getRollbacks() - 1);
 		player.resetSpecialCounter();
-		//TODO Quando volta atrás, o jogador não recupera as peças especiais ganhas e a contagem de
-		//     grupos de 4 jogadas para acesso aos mini-jogos é colocada a zero.
 		
 		gameActions.add("Rollback:" + playerPiece);
 		return true;
@@ -100,12 +97,13 @@ public class Connect4Logic implements Serializable {
 		column = column - 1;
 		Player player = getPlayerFromEnum(playerPiece);
 		if (player.getSpecialPieces() > 0) {
-			player.setSpecialPieces(player.getSpecialPieces() - 1);
+			player.useSpecialPiece();
 			
 			lastPlays.push(createGameAreaCopy());
 			
 			for (int i = 0; i < HEIGHT; i++)
 				gameArea[i][column] = null;
+			round++;
 			
 			gameActions.add("clearColumn:" + playerPiece + ' ' + (column + 1));
 			return true;
@@ -127,6 +125,7 @@ public class Connect4Logic implements Serializable {
 		for (int line = HEIGHT - 1; line >= 0; line--) {
 			if (gameArea[line][column] == null) {
 				gameArea[line][column] = playerPiece;
+				round++;
 				
 				gameActions.add("playAt:" + playerPiece + ' ' + (column + 1));
 				return true;
@@ -171,5 +170,13 @@ public class Connect4Logic implements Serializable {
 			if (gameArea[0][column] == null)
 				return false;
 		return true;
+	}
+	
+	public int getRound() {
+		return round;
+	}
+	
+	public int getAvailableRollbacks() {
+		return lastPlays.size();
 	}
 }

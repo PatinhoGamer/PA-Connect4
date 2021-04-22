@@ -1,4 +1,4 @@
-package jogo.logica.estados.connect4;
+package jogo.logica.estados;
 
 public enum Connect4States {
 	GameToStart,

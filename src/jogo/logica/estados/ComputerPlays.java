@@ -1,11 +1,11 @@
-package jogo.logica.estados.connect4;
+package jogo.logica.estados;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
 
 public class ComputerPlays extends GameAbstractState {
 	
-	private Piece computerPlayer;
+	private final Piece computerPlayer;
 	
 	public ComputerPlays(Connect4Logic game, Piece nextPlayer) {
 		super(game);

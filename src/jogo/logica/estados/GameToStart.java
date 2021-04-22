@@ -1,4 +1,4 @@
-package jogo.logica.estados.connect4;
+package jogo.logica.estados;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
@@ -12,8 +12,10 @@ public class GameToStart extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState setPlayers(Player player1, Player player2) {
-		game.setPlayers(player1, player2);
+	public GameAbstractState startGameWithPlayers(Player player1, Player player2) {
+		if (!game.setPlayers(player1, player2))
+			return this;
+		
 		Piece startingPlayer = Piece.PLAYER1;
 		if (Math.random() > 0.5f)
 			startingPlayer = Piece.PLAYER2;

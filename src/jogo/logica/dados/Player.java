@@ -1,6 +1,9 @@
 package jogo.logica.dados;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class Player implements Serializable {
 	
@@ -29,8 +32,13 @@ public class Player implements Serializable {
 		return specialPieces;
 	}
 	
-	public void setSpecialPieces(int specialPieces) {
-		this.specialPieces = specialPieces;
+	public void useSpecialPiece() {
+		if (specialPieces == 0) throw new IllegalStateException("Cant use special pieces without having them");
+		specialPieces--;
+	}
+	
+	public void addSpecialPiece() {
+		specialPieces++;
 	}
 	
 	public int getSpecialPiecesCounter() {

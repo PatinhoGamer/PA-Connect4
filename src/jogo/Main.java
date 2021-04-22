@@ -6,8 +6,7 @@ import jogo.iu.texto.Connect4TextUI;
 public class Main {
 
     public static void main(String[] args) {
-        Connect4Logic gameLogic = new Connect4Logic();
-        Connect4TextUI ui = new Connect4TextUI(gameLogic);
+        Connect4TextUI ui = new Connect4TextUI();
         ui.start();
     }
 }

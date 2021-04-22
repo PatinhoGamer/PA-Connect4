@@ -1,4 +1,4 @@
-package jogo.logica.estados.connect4;
+package jogo.logica.estados;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
@@ -8,7 +8,7 @@ import jogo.logica.minigames.WordsMiniGame;
 
 public class CheckPlayerWantsMiniGame extends GameAbstractState {
 	
-	private Piece player;
+	private final Piece player;
 	
 	public CheckPlayerWantsMiniGame(Connect4Logic game, Piece nextPlayer) {
 		super(game);

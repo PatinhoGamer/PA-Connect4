@@ -3,8 +3,6 @@ package jogo.logica.estados;
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Player;
 import jogo.logica.dados.Piece;
-import jogo.logica.estados.connect4.Connect4States;
-import jogo.logica.estados.connect4.GameAbstractState;
 import jogo.logica.minigames.TimedGame;
 
 import java.io.Serializable;
@@ -45,8 +43,8 @@ public class StateMachine implements Serializable {
 		currentState = currentState.restartGame();
 	}
 	
-	public void setPlayers(Player player1, Player player2) {
-		currentState = currentState.setPlayers(player1, player2);
+	public void startGameWithPlayers(Player player1, Player player2) {
+		currentState = currentState.startGameWithPlayers(player1, player2);
 	}
 	
 	public TimedGame getMiniGame() {

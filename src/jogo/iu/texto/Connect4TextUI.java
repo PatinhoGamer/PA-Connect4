@@ -6,7 +6,7 @@ import jogo.logica.dados.Piece;
 import jogo.logica.dados.PlayerType;
 import jogo.logica.estados.StateMachine;
 import jogo.logica.dados.Player;
-import jogo.logica.estados.connect4.GameToStart;
+import jogo.logica.estados.GameToStart;
 import jogo.logica.minigames.TimedGame;
 
 import java.io.IOException;
@@ -18,14 +18,14 @@ public class Connect4TextUI {
 	private final Scanner scanner = new Scanner(System.in);
 	private boolean exit = false;
 	
-	public Connect4TextUI(Connect4Logic gameLogic) {
+	public Connect4TextUI() {
 		this.stateMachine = new StateMachine(
-				new GameToStart(gameLogic));
+				new GameToStart(new Connect4Logic()));
 	}
 	
 	public void start() {
 		while (!exit) {
-			System.out.println("Game State : " + stateMachine.getState());
+			System.out.println("\nGame State : " + stateMachine.getState());
 			drawGameArea();
 			
 			switch (stateMachine.getState()) {
@@ -36,6 +36,26 @@ public class Connect4TextUI {
 				case GameFinished -> gameFinished();
 				case WaitingPlayerMove -> waitingPlayerMove();
 				default -> throw new IllegalStateException("Unexpected value: " + stateMachine.getState());
+			}
+		}
+	}
+	
+	
+	// States ----------------------------------------------------------------------------------------------------------
+	private void menuState() {
+		Piece curPlayer = stateMachine.getCurrentPlayer();
+		System.out.println("Current Player : " + getPlayerChar(curPlayer) + "\n" + stateMachine.getPlayerObj());
+		
+		switch (UIUtils.chooseOption("Exit", "Start Game", "Watch Replay", "Load Saved Game")) {
+			case 0 -> exit = true;
+			case 1 -> {
+				stateMachine = new StateMachine(new GameToStart(new Connect4Logic()));
+			}
+			case 2 -> {
+				//TODO this heckin part
+			}
+			case 3 -> {
+				loadStateMachineFromFile();
 			}
 		}
 	}
@@ -109,9 +129,9 @@ public class Connect4TextUI {
 		}
 		
 		int option2 = UIUtils.chooseOption(null, "Human", "Computer");
-		Player player2 = new Player(player1Name, option2 == 1 ? PlayerType.HUMAN : PlayerType.COMPUTER);
+		Player player2 = new Player(player2Name, option2 == 1 ? PlayerType.HUMAN : PlayerType.COMPUTER);
 		
-		stateMachine.setPlayers(player1, player2);
+		stateMachine.startGameWithPlayers(player1, player2);
 	}
 	
 	private void gameFinished() {
@@ -150,26 +170,35 @@ public class Connect4TextUI {
 					System.out.println("You don't have any rollbacks left");
 					break;
 				}
+				if(stateMachine.getGame().getAvailableRollbacks() <= 0){
+					System.out.println("There are no available rollbacks");
+					break;
+				}
 				stateMachine.rollback();
 			}
-			case 4 -> {
-				System.out.println("Filename : ");
-				String filePath = scanner.nextLine();
-				try {
-					GameSaver.saveGameToFile(stateMachine, filePath);
-				} catch (IOException e) {
-					System.out.println(e.getMessage());
-				}
-			}
-			case 5 -> {
-				System.out.println("Filename : ");
-				String filePath = scanner.nextLine();
-				try {
-					stateMachine = GameSaver.loadGameFromFile(filePath);
-				} catch (IOException | ClassNotFoundException e) {
-					System.out.println(e.getMessage());
-				}
-			}
+			case 4 -> saveStateMachineToFile();
+			case 5 -> loadStateMachineFromFile();
+		}
+	}
+	// -----------------------------------------------------------------------------------------------------------------
+	
+	private void saveStateMachineToFile() {
+		System.out.println("Filename : ");
+		String filePath = scanner.nextLine();
+		try {
+			GameSaver.saveGameToFile(stateMachine, filePath);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void loadStateMachineFromFile() {
+		System.out.println("Filename : ");
+		String filePath = scanner.nextLine();
+		try {
+			stateMachine = GameSaver.loadGameFromFile(filePath);
+		} catch (IOException | ClassNotFoundException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 	
