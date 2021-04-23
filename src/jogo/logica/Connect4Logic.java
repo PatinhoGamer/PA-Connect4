@@ -15,11 +15,21 @@ public class Connect4Logic implements Serializable {
 	public static final int WIDTH = 7;
 	public static final int AMOUNT_TO_WIN = 4;
 	public static final int MAX_ROLLBACK = 5;
-	public static final int ROUNDS_TO_PLAY_MINIGAME = 100;
+	public static final int ROUNDS_TO_PLAY_MINIGAME = 4;
+	
+	public static final char ACTION_DELIMITER = ':';
+	public static final String ACTION_ROLLBACK = "Rollback";
+	public static final String ACTION_CLEAR_COLUMN = "ClearColumn";
+	public static final String ACTION_PLAY_AT = "PlayAt";
+	public static final String ACTION_SET_PLAYERS = "SetPlayers";
+	public static final String ACTION_MINIGAME_INGORED = "MiniGameIgnored";
+	public static final String ACTION_MINIGAME_WON = "MiniGameWon";
+	public static final String ACTION_MINIGAME_LOST = "MiniGameLost";
+	public static final String ACTION_FINISHED = "Finished";
 	
 	private Piece[][] gameArea = new Piece[HEIGHT][WIDTH];
 	private final FixedSizeStack<Piece[][]> lastPlays = new FixedSizeStack<>(MAX_ROLLBACK * 2);
-	private int round = 1;
+	private int round = 1; // Not used for anything
 	
 	private Player player1;
 	private Player player2;
@@ -30,8 +40,8 @@ public class Connect4Logic implements Serializable {
 		if (player1.getName().equals(player2.getName())) return false;
 		this.player1 = player1;
 		this.player2 = player2;
-		gameActions.add("Player1:" + player1.getType() + ' ' + player1.getName());
-		gameActions.add("Player2:" + player2.getType() + ' ' + player2.getName());
+		gameActions.add(ACTION_SET_PLAYERS + ACTION_DELIMITER +
+				player1.getType() + ' ' + player1.getName() + ',' + player2.getType() + ' ' + player2.getName());
 		return true;
 	}
 	
@@ -43,8 +53,10 @@ public class Connect4Logic implements Serializable {
 				if (currentPlacePiece == null)
 					continue;
 				
-				if (checkIfPlayerWonAt(currentPlacePiece, line, column))
+				if (checkIfPlayerWonAt(currentPlacePiece, line, column)) {
+					gameActions.add(ACTION_FINISHED + ':' + currentPlacePiece);
 					return currentPlacePiece;
+				}
 			}
 		}
 		return null;
@@ -61,7 +73,7 @@ public class Connect4Logic implements Serializable {
 		player.setRollbacks(player.getRollbacks() - 1);
 		player.resetSpecialCounter();
 		
-		gameActions.add("Rollback:" + playerPiece);
+		gameActions.add(ACTION_ROLLBACK + ACTION_DELIMITER + playerPiece);
 		return true;
 	}
 	
@@ -105,7 +117,7 @@ public class Connect4Logic implements Serializable {
 				gameArea[i][column] = null;
 			round++;
 			
-			gameActions.add("clearColumn:" + playerPiece + ' ' + (column + 1));
+			gameActions.add(ACTION_CLEAR_COLUMN + ACTION_DELIMITER + playerPiece + ' ' + (column + 1));
 			return true;
 		}
 		return false;
@@ -127,7 +139,7 @@ public class Connect4Logic implements Serializable {
 				gameArea[line][column] = playerPiece;
 				round++;
 				
-				gameActions.add("playAt:" + playerPiece + ' ' + (column + 1));
+				gameActions.add(ACTION_PLAY_AT + ACTION_DELIMITER + playerPiece + ' ' + (column + 1));
 				return true;
 			}
 		}
@@ -178,5 +190,21 @@ public class Connect4Logic implements Serializable {
 	
 	public int getAvailableRollbacks() {
 		return lastPlays.size();
+	}
+	
+	public void playerWonMiniGame(Piece playerPiece) {
+		Player player = getPlayerFromEnum(playerPiece);
+		player.resetSpecialCounter();
+		player.addSpecialPiece();
+		
+		gameActions.add(Connect4Logic.ACTION_MINIGAME_WON + ':' + playerPiece);
+	}
+	
+	public void playerLostMiniGame(Piece playerPiece) {
+		gameActions.add(Connect4Logic.ACTION_MINIGAME_LOST + ':' + playerPiece);
+	}
+	
+	public void playerIgnoredMiniGame(Piece playerPiece) {
+		gameActions.add(Connect4Logic.ACTION_MINIGAME_INGORED + ':' + playerPiece);
 	}
 }

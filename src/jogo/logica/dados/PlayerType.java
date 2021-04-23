@@ -1,7 +1,5 @@
 package jogo.logica.dados;
 
-import java.io.Serializable;
-
-public enum PlayerType implements Serializable {
+public enum PlayerType {
 	HUMAN, COMPUTER
 }

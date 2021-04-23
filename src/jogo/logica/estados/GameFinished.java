@@ -11,6 +11,7 @@ public class GameFinished extends GameAbstractState {
 	public GameFinished(Connect4Logic game, Piece winner) {
 		super(game);
 		this.winner = winner;
+		GameSaver.saveReplay(game);
 	}
 	
 	@Override
@@ -20,8 +21,6 @@ public class GameFinished extends GameAbstractState {
 	
 	@Override
 	public GameAbstractState restartGame() {
-		GameSaver.saveReplay(game);
-		
 		return new GameToStart(new Connect4Logic());
 	}
 	

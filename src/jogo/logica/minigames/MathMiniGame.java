@@ -4,14 +4,14 @@ public class MathMiniGame extends TimedGame {
 	
 	private static final String GAME_OBJECTIVE = "In this minigame you have to guess the mathematical answer to the presented question (ignore decimals)";
 	private static final int TO_ANSWER = 5;
-	private static final int MAX_NUMBER = 10;
+	private static final int MAX_NUMBER = 99;
 	
 	private int answeredQuestions = 0;
 	
 	@Override
 	public void generateQuestion() {
-		int number1 = (int) ((Math.random() * (MAX_NUMBER - 1)) + 1);
-		int number2 = (int) ((Math.random() * (MAX_NUMBER - 1)) + 1);
+		int number1 = (int) (Math.random() * MAX_NUMBER + 1);
+		int number2 = (int) (Math.random() * MAX_NUMBER + 1);
 		
 		int operation = (int) Math.floor(Math.random() * 4);
 		char operationChar;

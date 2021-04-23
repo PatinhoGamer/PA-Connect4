@@ -20,15 +20,11 @@ public class PlayingMiniGame extends GameAbstractState {
 	@Override
 	public GameAbstractState ignoreOrEndMiniGame() {
 		if (miniGame.playerManagedToDoIt()) {
-			Player player = game.getPlayerFromEnum(playerPiece);
-			player.resetSpecialCounter();
-			player.addSpecialPiece();
-			
-			game.getGameActions().add("wonMinigame:" + playerPiece);
+			game.playerWonMiniGame(playerPiece);
 			return new WaitingPlayerMove(game, playerPiece);
 		}
 		
-		game.getGameActions().add("lostdMiniGame:" + playerPiece);
+		game.playerLostMiniGame(playerPiece);
 		
 		Piece other = playerPiece.getOther();
 		Player nextPlayer = getGame().getPlayerFromEnum(other);

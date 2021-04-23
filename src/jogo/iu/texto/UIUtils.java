@@ -6,7 +6,7 @@ public class UIUtils {
 	
 	private static final Scanner scanner = new Scanner(System.in);
 	
-	public static int chooseOption(String zero, String... options) {
+	public static int chooseOption(String zero, Object... options) {
 		int lower = 1, higher = options.length;
 		
 		if (zero != null) {
@@ -22,7 +22,7 @@ public class UIUtils {
 	
 	public static int getChoice(int lower, int higher) {
 		while (true) {
-			int choice = -1;
+			int choice;
 			try {
 				choice = scanner.nextInt();
 			} catch (Exception ex) {
@@ -36,5 +36,13 @@ public class UIUtils {
 			}
 			return choice;
 		}
+	}
+	
+	public static String getStringFromUser() {
+		String str;
+		do {
+			str = scanner.nextLine();
+		} while (str.isBlank());
+		return str;
 	}
 }
