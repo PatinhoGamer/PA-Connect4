@@ -28,7 +28,11 @@ public abstract class GameAbstractState implements Serializable {
 		return this;
 	}
 	
-	public GameAbstractState ignoreOrEndMiniGame() {
+	public GameAbstractState ignoreMiniGame() {
+		return this;
+	}
+	
+	public GameAbstractState endMiniGame() {
 		return this;
 	}
 	
@@ -36,7 +40,7 @@ public abstract class GameAbstractState implements Serializable {
 		return this;
 	}
 	
-	public GameAbstractState rollback() {
+	public GameAbstractState rollback(int amount) {
 		return this;
 	}
 	

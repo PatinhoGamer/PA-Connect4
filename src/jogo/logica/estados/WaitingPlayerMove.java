@@ -35,13 +35,21 @@ public class WaitingPlayerMove extends GameAbstractState {
 				return new ComputerPlays(game, nextPlayer);
 			return new WaitingPlayerMove(game, nextPlayer);
 		}
-		return this;
+		return new WaitingPlayerMove(game, playerPiece); // return this;
 	}
 	
 	@Override
-	public GameAbstractState rollback() {
-		game.rollback(playerPiece);
-		return new WaitingPlayerMove(game, playerPiece);
+	public GameAbstractState rollback(int amount) {
+		if (!game.rollback(playerPiece, amount))
+			return new WaitingPlayerMove(game, playerPiece); // return this;
+		
+		Piece nextPlayer = playerPiece;
+		if (amount % 2 == 1)
+			nextPlayer = nextPlayer.getOther();
+		
+		if (game.getPlayerFromEnum(nextPlayer).getType() == PlayerType.COMPUTER)
+			return new ComputerPlays(game, nextPlayer);
+		return new WaitingPlayerMove(game, nextPlayer);
 	}
 	
 	@Override

@@ -16,17 +16,14 @@ public class Connect4TextUI {
 	private StateMachine stateMachine;
 	private final Scanner scanner = new Scanner(System.in);
 	private boolean exit = false;
-	private boolean inGame = false;
 	
 	public Connect4TextUI() {
-		this.stateMachine = new StateMachine(
-				new GameToStart(new Connect4Logic()));
 	}
 	
 	public void start() {
 		while (!exit) {
 			
-			if (!inGame)
+			if (!inGame())
 				menuState();
 			
 			else {
@@ -45,33 +42,25 @@ public class Connect4TextUI {
 		}
 	}
 	
-	
-	// States ----------------------------------------------------------------------------------------------------------
 	private void menuState() {
 		System.out.println("Choose What you want to do");
 		
 		switch (UIUtils.chooseOption("Exit", "Start Game", "Watch Replay", "Load Saved Game")) {
 			case 0 -> exit = true;
-			case 1 -> {
-				stateMachine = new StateMachine(new GameToStart(new Connect4Logic()));
-				inGame = true;
-			}
+			case 1 -> initializeGame();
 			case 2 -> {
 				System.out.println("Choose Replay to Watch:");
 				
 				List<Replay> replays = GameSaver.getReplays();
 				int index = UIUtils.chooseOption("Go Back", replays.toArray()) - 1;
 				
-				if (index == 0) break;
+				if (index == -1) break;
 				
 				Replayer replayerForGame = GameSaver.getReplayerForGame(index);
 				if (replayerForGame == null) throw new IllegalStateException("replayerForGame == null");
 				playReplay(replayerForGame);
 			}
-			case 3 -> {
-				loadStateMachineFromFile();
-				inGame = true;
-			}
+			case 3 -> loadStateMachineFromFile();
 		}
 	}
 	
@@ -85,17 +74,22 @@ public class Connect4TextUI {
 				System.out.println(replayer.getLastMessage());
 			else
 				drawGameArea(replayer.getGameArea());
-			scanner.nextLine();
-			//TODO maybe player should change after rolling back and for that I need to choose how many rollbacks to happen at once
+			
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
+	// Game States -----------------------------------------------------------------------------------------------------
 	private void checkPlayerWantsMiniGame() {
 		System.out.println("Do you want to play the minigame? ");
 		switch (UIUtils.chooseOption("Go Back To Main Menu", "Yes", "No")) {
-			case 0 -> inGame = false;
+			case 0 -> stateMachine = null;
 			case 1 -> stateMachine.startMiniGame();
-			case 2 -> stateMachine.ignoreOrEndMiniGame();
+			case 2 -> stateMachine.ignoreMiniGame();
 		}
 	}
 	
@@ -119,9 +113,9 @@ public class Connect4TextUI {
 			String answer = scanner.nextLine();
 			
 			if (miniGame.checkAnswer(answer))
-				System.out.println("Well done, that is the right answer");
+				System.out.println("That is the right answer");
 			else
-				System.out.println("Wrong answer, try again");
+				System.out.println("Wrong answer");
 			
 			if (!miniGame.finishedAnswering())
 				miniGame.generateQuestion();
@@ -137,7 +131,7 @@ public class Connect4TextUI {
 		else
 			System.out.println("Took too long, better luck next time");
 		
-		stateMachine.ignoreOrEndMiniGame();
+		stateMachine.endMiniGame();
 	}
 	
 	private void gameToStart() {
@@ -174,10 +168,7 @@ public class Connect4TextUI {
 		
 		switch (UIUtils.chooseOption("Exit", "Go Back to Menu")) {
 			case 0 -> exit = true;
-			case 1 -> {
-				stateMachine = null;
-				inGame = false;
-			}
+			case 1 -> stateMachine = null;
 		}
 	}
 	
@@ -186,7 +177,7 @@ public class Connect4TextUI {
 		System.out.println("Current Player : " + getPlayerChar(curPlayer) + "\n" + stateMachine.getPlayerObj());
 		
 		switch (UIUtils.chooseOption("Go Back To Main Menu", "Insert Piece", "Clear Column", "Rollback", "Save Current Game", "Load Saved Game")) {
-			case 0 -> inGame = false;
+			case 0 -> stateMachine = null;
 			case 1 -> {
 				System.out.print("Choose Column [1-7] : ");
 				stateMachine.playAt(chooseColumn());
@@ -208,7 +199,18 @@ public class Connect4TextUI {
 					System.out.println("There are no available rollbacks");
 					break;
 				}
-				stateMachine.rollback();
+				
+				System.out.println("How many times to rollback");
+				int amount = UIUtils.getChoice(0, 5);
+				if (amount == 0) {
+					System.out.println("Rollback aborted");
+					break;
+				}
+				if (stateMachine.getPlayerObj().getRollbacks() < amount || stateMachine.getGame().getAvailableRollbacks() < amount) {
+					System.out.println("Not enough rollback credits or previous states");
+					break;
+				}
+				stateMachine.rollback(amount);
 			}
 			case 4 -> saveStateMachineToFile();
 			case 5 -> loadStateMachineFromFile();
@@ -260,5 +262,13 @@ public class Connect4TextUI {
 	
 	private char getPlayerChar(Piece playerType) {
 		return playerType == Piece.PLAYER1 ? 'X' : 'O';
+	}
+	
+	private boolean inGame() {
+		return stateMachine != null;
+	}
+	
+	private void initializeGame() {
+		this.stateMachine = new StateMachine(new GameToStart(new Connect4Logic()));
 	}
 }

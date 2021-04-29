@@ -18,7 +18,7 @@ public class PlayingMiniGame extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState ignoreOrEndMiniGame() {
+	public GameAbstractState endMiniGame() {
 		if (miniGame.playerManagedToDoIt()) {
 			game.playerWonMiniGame(playerPiece);
 			return new WaitingPlayerMove(game, playerPiece);

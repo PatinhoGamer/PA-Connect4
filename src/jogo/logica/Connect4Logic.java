@@ -45,61 +45,20 @@ public class Connect4Logic implements Serializable {
 		return true;
 	}
 	
-	public Piece checkWinner() {
-		for (int line = 0; line < HEIGHT; line++) {
-			for (int column = 0; column < WIDTH; column++) {
-				
-				Piece currentPlacePiece = gameArea[line][column];
-				if (currentPlacePiece == null)
-					continue;
-				
-				if (checkIfPlayerWonAt(currentPlacePiece, line, column)) {
-					gameActions.add(ACTION_FINISHED + ':' + currentPlacePiece);
-					return currentPlacePiece;
-				}
-			}
-		}
-		return null;
-	}
-	
-	public boolean rollback(Piece playerPiece) {
-		Player player = getPlayerFromEnum(playerPiece);
-		if (player.getRollbacks() <= 0 || lastPlays.size() == 0)
+	public boolean playAt(Piece playerPiece, int column) {
+		column = column - 1;
+		if (gameArea[0][column] != null)
 			return false;
 		
-		round--;
-		gameArea = lastPlays.pop();
+		lastPlays.push(createGameAreaCopy());
 		
-		player.setRollbacks(player.getRollbacks() - 1);
-		player.resetSpecialCounter();
-		
-		gameActions.add(ACTION_ROLLBACK + ACTION_DELIMITER + playerPiece);
-		return true;
-	}
-	
-	private boolean checkIfPlayerWonAt(Piece player, int line, int column) {
-		Point[] directionsAround = new Point[]{
-				new Point(-1, -1), new Point(0, -1), new Point(1, -1),
-				new Point(-1, 0),/*       Center      */  new Point(1, 0),
-				new Point(-1, 1), new Point(0, 1), new Point(1, 1)};
-		
-		for (Point offset : directionsAround) {
-			int amount = 1;
-			
-			for (int i = 1; i <= AMOUNT_TO_WIN; i++) {
+		for (int line = HEIGHT - 1; line >= 0; line--) {
+			if (gameArea[line][column] == null) {
+				gameArea[line][column] = playerPiece;
+				round++;
 				
-				int offX = column + offset.x * i;
-				int offY = line + offset.y * i;
-				
-				if (offX < 0 || offX >= WIDTH || offY < 0 || offY >= HEIGHT)
-					break;
-				
-				if (gameArea[offY][offX] == player) {
-					amount++;
-					if (amount == AMOUNT_TO_WIN)
-						return true;
-				} else
-					break;
+				gameActions.add(ACTION_PLAY_AT + ACTION_DELIMITER + playerPiece + ' ' + (column + 1));
+				return true;
 			}
 		}
 		return false;
@@ -123,27 +82,69 @@ public class Connect4Logic implements Serializable {
 		return false;
 	}
 	
-	public Player getPlayerFromEnum(Piece playerPiece) {
-		return playerPiece == Piece.PLAYER1 ? player1 : player2;
-	}
-	
-	public boolean playAt(Piece playerPiece, int column) {
-		column = column - 1;
-		if (gameArea[0][column] != null)
+	public boolean rollback(Piece playerPiece, int amount) {
+		Player player = getPlayerFromEnum(playerPiece);
+		if (amount <= 0 || player.getRollbacks() < amount || lastPlays.size() == 0)
 			return false;
 		
-		lastPlays.push(createGameAreaCopy());
+		for (int i = 0; i < amount; i++) {
+			round--;
+			gameArea = lastPlays.pop();
+		}
 		
-		for (int line = HEIGHT - 1; line >= 0; line--) {
-			if (gameArea[line][column] == null) {
-				gameArea[line][column] = playerPiece;
-				round++;
+		player.setRollbacks(player.getRollbacks() - amount);
+		player.resetSpecialCounter();
+		
+		gameActions.add(ACTION_ROLLBACK + ACTION_DELIMITER + playerPiece + ' ' + amount);
+		return true;
+	}
+	
+	public Piece checkWinner() {
+		for (int line = 0; line < HEIGHT; line++) {
+			for (int column = 0; column < WIDTH; column++) {
 				
-				gameActions.add(ACTION_PLAY_AT + ACTION_DELIMITER + playerPiece + ' ' + (column + 1));
-				return true;
+				Piece currentPlacePiece = gameArea[line][column];
+				if (currentPlacePiece == null)
+					continue;
+				
+				if (checkIfPlayerWonAt(currentPlacePiece, line, column)) {
+					gameActions.add(ACTION_FINISHED + ':' + currentPlacePiece);
+					return currentPlacePiece;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private boolean checkIfPlayerWonAt(Piece player, int line, int column) {
+		Point[] directionsAround = new Point[]{
+				new Point(-1, -1), new Point(0, -1), new Point(1, -1),
+				new Point(-1, 0),/*       Center      */  new Point(1, 0),
+				new Point(-1, 1), new Point(0, 1), new Point(1, 1)};
+		
+		for (Point offset : directionsAround) {
+			int amount = 1;
+			int offX = column;
+			int offY = line;
+			
+			for (int i = 1; i <= AMOUNT_TO_WIN; i++) {
+				offX += offset.x;
+				offY += offset.y;
+				
+				if (offX < 0 || offX >= WIDTH || offY < 0 || offY >= HEIGHT)
+					break;
+				if (gameArea[offY][offX] == player) {
+					if (++amount == AMOUNT_TO_WIN)
+						return true;
+				} else
+					break;
 			}
 		}
 		return false;
+	}
+	
+	public Player getPlayerFromEnum(Piece playerPiece) {
+		return playerPiece == Piece.PLAYER1 ? player1 : player2;
 	}
 	
 	private Piece[][] createGameAreaCopy() {

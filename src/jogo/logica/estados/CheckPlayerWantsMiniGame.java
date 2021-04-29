@@ -25,7 +25,7 @@ public class CheckPlayerWantsMiniGame extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState ignoreOrEndMiniGame() {
+	public GameAbstractState ignoreMiniGame() {
 		game.playerIgnoredMiniGame(player);
 		return new WaitingPlayerMove(game, player);
 	}

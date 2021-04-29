@@ -14,29 +14,17 @@ public class MathMiniGame extends TimedGame {
 		int number2 = (int) (Math.random() * MAX_NUMBER + 1);
 		
 		int operation = (int) Math.floor(Math.random() * 4);
-		char operationChar;
-		
+		char operationChar = new char[]{'+', '-', '*', '/'}[operation];
 		int result;
 		
 		switch (operation) {
-			case 0 -> {
-				operationChar = '+';
-				result = number1 + number2;
-			}
-			case 1 -> {
-				operationChar = '-';
-				result = number1 - number2;
-			}
-			case 2 -> {
-				operationChar = '*';
-				result = number1 * number2;
-			}
-			case 3 -> {
-				operationChar = '/';
-				result = number1 / number2;
-			}
+			case 0 -> result = number1 + number2;
+			case 1 -> result = number1 - number2;
+			case 2 -> result = number1 * number2;
+			case 3 -> result = number1 / number2;
 			default -> throw new IllegalStateException("Unexpected value: " + operation);
 		}
+		
 		question = String.valueOf(number1) + ' ' + operationChar + ' ' + number2;
 		answer = String.valueOf(result);
 	}

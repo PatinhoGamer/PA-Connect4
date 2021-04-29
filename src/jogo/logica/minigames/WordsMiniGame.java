@@ -5,23 +5,31 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class WordsMiniGame extends TimedGame {
 	
 	private static final String GAME_OBJECTIVE = "In this minigame you have to type out the showed words";
 	private static final String WORDS_PATH = "words.txt";
 	
-	private String[] getWordsFromFile(String file) throws IOException {
-		List<String> lines = Files.readAllLines(Path.of(file));
+	private static String[] cachedWords = null;
+	
+	private String[] getWords() throws IOException {
+		if (cachedWords != null)
+			return cachedWords;
+		
+		List<String> lines = Files.readAllLines(Path.of(WordsMiniGame.WORDS_PATH));
 		String[] words = new String[lines.size()];
 		for (int i = 0; i < lines.size(); i++)
 			words[i] = lines.get(i).trim();
+		
+		cachedWords = words;
 		return words;
 	}
 	
 	private String getLineToWrite(String[] words) {
 		List<Integer> alreadyChosen = new ArrayList<>(5);
-		StringBuilder builder = new StringBuilder();
+		StringJoiner builder = new StringJoiner(" ");
 		
 		while (alreadyChosen.size() < 5) {
 			int chosenOne = (int) Math.floor(Math.random() * words.length);
@@ -30,9 +38,7 @@ public class WordsMiniGame extends TimedGame {
 				continue;
 			
 			alreadyChosen.add(chosenOne);
-			builder.append(words[chosenOne]);
-			if (alreadyChosen.size() < 5)
-				builder.append(" ");
+			builder.add(words[chosenOne]);
 		}
 		return builder.toString();
 	}
@@ -46,7 +52,7 @@ public class WordsMiniGame extends TimedGame {
 	public void generateQuestion() {
 		if (question == null) {
 			try {
-				String[] wordsFromFile = getWordsFromFile(WORDS_PATH);
+				String[] wordsFromFile = getWords();
 				answer = getLineToWrite(wordsFromFile);
 				question = answer;
 			} catch (IOException e) {

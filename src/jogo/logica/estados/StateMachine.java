@@ -27,16 +27,20 @@ public class StateMachine implements Serializable {
 		currentState = currentState.executePlay();
 	}
 	
-	public void rollback() {
-		currentState = currentState.rollback();
+	public void rollback(int amount) {
+		currentState = currentState.rollback(amount);
 	}
 	
 	public void startMiniGame() {
 		currentState = currentState.startMiniGame();
 	}
 	
-	public void ignoreOrEndMiniGame() {
-		currentState = currentState.ignoreOrEndMiniGame();
+	public void ignoreMiniGame() {
+		currentState = currentState.ignoreMiniGame();
+	}
+	
+	public void endMiniGame() {
+		currentState = currentState.endMiniGame();
 	}
 	
 	public void restartGame() {

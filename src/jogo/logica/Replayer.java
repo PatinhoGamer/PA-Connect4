@@ -4,8 +4,6 @@ import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
 import jogo.logica.dados.PlayerType;
 import jogo.logica.dados.Replay;
-import jogo.logica.estados.GameToStart;
-import jogo.logica.estados.StateMachine;
 
 import java.util.List;
 
@@ -67,8 +65,10 @@ public class Replayer {
 				game.clearColumn(piece, column);
 			}
 			case Connect4Logic.ACTION_ROLLBACK -> {
-				Piece piece = stringToPiece(secondPart);
-				game.rollback(piece);
+				String[] s = secondPart.split(" ");
+				Piece piece = stringToPiece(s[0]);
+				int amount = Integer.parseInt(s[1]);
+				game.rollback(piece, amount);
 				lastMessage = "Rollback from " + piece;
 			}
 			case Connect4Logic.ACTION_MINIGAME_INGORED -> {
