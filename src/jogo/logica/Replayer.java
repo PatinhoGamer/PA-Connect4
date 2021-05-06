@@ -71,7 +71,7 @@ public class Replayer {
 				game.rollback(piece, amount);
 				lastMessage = "Rollback from " + piece;
 			}
-			case Connect4Logic.ACTION_MINIGAME_INGORED -> {
+			case Connect4Logic.ACTION_MINIGAME_IGNORED -> {
 				Piece piece = stringToPiece(secondPart);
 				game.playerIgnoredMiniGame(piece);
 				lastMessage = piece + " ignored minigame";

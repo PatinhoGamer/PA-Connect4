@@ -1,13 +1,18 @@
 package jogo.iu.texto;
 
 import jogo.logica.Connect4Logic;
+import jogo.logica.GameSaver;
 import jogo.logica.Replayer;
-import jogo.logica.dados.*;
-import jogo.logica.estados.StateMachine;
+import jogo.logica.dados.Piece;
+import jogo.logica.dados.Player;
+import jogo.logica.dados.PlayerType;
+import jogo.logica.dados.Replay;
 import jogo.logica.estados.GameToStart;
-import jogo.logica.minigames.TimedGame;
+import jogo.logica.estados.StateMachine;
+import jogo.logica.minigames.TimedMiniGame;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -22,13 +27,14 @@ public class Connect4TextUI {
 	
 	public void start() {
 		while (!exit) {
-			
 			if (!inGame())
 				menuState();
 			
 			else {
-				System.out.println("\nGame State : " + stateMachine.getState());
+				System.out.println();
 				drawGameArea(stateMachine.getGameArea());
+				System.out.println("Game State : " + stateMachine.getState());
+				
 				switch (stateMachine.getState()) {
 					case GameToStart -> gameToStart();
 					case ComputerPlays -> computerPlays();
@@ -52,7 +58,11 @@ public class Connect4TextUI {
 				System.out.println("Choose Replay to Watch:");
 				
 				List<Replay> replays = GameSaver.getReplays();
-				int index = UIUtils.chooseOption("Go Back", replays.toArray()) - 1;
+				List<String> replayString = new ArrayList<>(replays.size());
+				for (Replay replay : replays)
+					replayString.add(replay.getDate() + " -> W: " + replay.getWinner() + " vs L: " + replay.getLoser());
+				
+				int index = UIUtils.chooseOption("Go Back", replayString.toArray()) - 1;
 				
 				if (index == -1) break;
 				
@@ -85,6 +95,7 @@ public class Connect4TextUI {
 	
 	// Game States -----------------------------------------------------------------------------------------------------
 	private void checkPlayerWantsMiniGame() {
+		printCurrentPlayer();
 		System.out.println("Do you want to play the minigame? ");
 		switch (UIUtils.chooseOption("Go Back To Main Menu", "Yes", "No")) {
 			case 0 -> stateMachine = null;
@@ -94,21 +105,19 @@ public class Connect4TextUI {
 	}
 	
 	private void computerPlays() {
+		printCurrentPlayer();
 		stateMachine.executePlay();
 	}
 	
 	private void playingMiniGame() {
-		Piece curPlayer = stateMachine.getCurrentPlayer();
-		System.out.println("Current Player : " + getPlayerChar(curPlayer) + '\n' + stateMachine.getPlayerObj() + '\n');
+		printCurrentPlayer();
 		
-		TimedGame miniGame = stateMachine.getMiniGame();
-		System.out.println(miniGame.getGameObjective());
+		TimedMiniGame miniGame = stateMachine.getMiniGame();
+		System.out.println("Objective : " + miniGame.getGameObjective());
 		
 		miniGame.start();
-		miniGame.generateQuestion();
-		System.out.println("Available time : " + miniGame.availableTime() / 1000);
-		while (true) {
-			
+		System.out.println("Available time : " + miniGame.availableTime());
+		do {
 			System.out.println("Question : " + miniGame.getQuestion());
 			String answer = scanner.nextLine();
 			
@@ -117,14 +126,10 @@ public class Connect4TextUI {
 			else
 				System.out.println("Wrong answer");
 			
-			if (!miniGame.finishedAnswering())
-				miniGame.generateQuestion();
-			else
-				break;
-			if (miniGame.ranOutOfTime())
-				break;
-		}
+		} while (!miniGame.finishedAnswering() && !miniGame.ranOutOfTime());
+		
 		miniGame.stop();
+		
 		
 		if (miniGame.playerManagedToDoIt())
 			System.out.println("You finished it on time");
@@ -173,8 +178,7 @@ public class Connect4TextUI {
 	}
 	
 	private void waitingPlayerMove() {
-		Piece curPlayer = stateMachine.getCurrentPlayer();
-		System.out.println("Current Player : " + getPlayerChar(curPlayer) + "\n" + stateMachine.getPlayerObj());
+		printCurrentPlayer();
 		
 		switch (UIUtils.chooseOption("Go Back To Main Menu", "Insert Piece", "Clear Column", "Rollback", "Save Current Game", "Load Saved Game")) {
 			case 0 -> stateMachine = null;
@@ -183,7 +187,7 @@ public class Connect4TextUI {
 				stateMachine.playAt(chooseColumn());
 			}
 			case 2 -> {
-				if (stateMachine.getPlayerObj().getSpecialPieces() <= 0) {
+				if (stateMachine.getCurrentPlayerObj().getSpecialPieces() <= 0) {
 					System.out.println("You don't have any special pieces");
 					break;
 				}
@@ -191,7 +195,7 @@ public class Connect4TextUI {
 				stateMachine.clearColumn(chooseColumn());
 			}
 			case 3 -> {
-				if (stateMachine.getPlayerObj().getRollbacks() <= 0) {
+				if (stateMachine.getCurrentPlayerObj().getRollbacks() <= 0) {
 					System.out.println("You don't have any rollbacks left");
 					break;
 				}
@@ -206,7 +210,7 @@ public class Connect4TextUI {
 					System.out.println("Rollback aborted");
 					break;
 				}
-				if (stateMachine.getPlayerObj().getRollbacks() < amount || stateMachine.getGame().getAvailableRollbacks() < amount) {
+				if (stateMachine.getCurrentPlayerObj().getRollbacks() < amount || stateMachine.getGame().getAvailableRollbacks() < amount) {
 					System.out.println("Not enough rollback credits or previous states");
 					break;
 				}
@@ -271,4 +275,15 @@ public class Connect4TextUI {
 	private void initializeGame() {
 		this.stateMachine = new StateMachine(new GameToStart(new Connect4Logic()));
 	}
+	
+	private void printCurrentPlayer() {
+		Player player = stateMachine.getCurrentPlayerObj();
+		System.out.println("Current Player : " + player.getName());
+		if (player.getType() == PlayerType.HUMAN) {
+			System.out.println("\t Rollbacks : " + player.getRollbacks());
+			System.out.println("\t Special Pieces : " + player.getSpecialPieces());
+			System.out.println("\t Minigame Counter : " + (Connect4Logic.ROUNDS_TO_PLAY_MINIGAME - player.getMiniGameCounter()));
+		}
+	}
+	
 }

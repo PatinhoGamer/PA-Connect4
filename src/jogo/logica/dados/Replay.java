@@ -6,14 +6,14 @@ import java.util.List;
 
 public class Replay {
 	private final List<String> gameActions;
-	private final String player1Name;
-	private final String player2Name;
+	private final String winner;
+	private final String loser;
 	private final String date;
 	
-	public Replay(List<String> gameActions, String player1Name, String player2Name, Date moment) {
+	public Replay(List<String> gameActions, String winner, String loser, Date moment) {
 		this.gameActions = gameActions;
-		this.player1Name = player1Name;
-		this.player2Name = player2Name;
+		this.winner = winner;
+		this.loser = loser;
 		date = new SimpleDateFormat("HH:mm:ss").format(moment);
 	}
 	
@@ -21,12 +21,12 @@ public class Replay {
 		return gameActions;
 	}
 	
-	public String getPlayer1Name() {
-		return player1Name;
+	public String getWinner() {
+		return winner;
 	}
 	
-	public String getPlayer2Name() {
-		return player2Name;
+	public String getLoser() {
+		return loser;
 	}
 	
 	public String getDate() {
@@ -35,6 +35,6 @@ public class Replay {
 	
 	@Override
 	public String toString() {
-		return date + " -> " + player1Name + " vs " + player2Name;
+		return date + " -> " + winner + " vs " + loser;
 	}
 }

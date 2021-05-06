@@ -7,12 +7,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-public class WordsMiniGame extends TimedGame {
+public class WordsMiniGame extends TimedGameAbstract {
 	
 	private static final String GAME_OBJECTIVE = "In this minigame you have to type out the showed words";
 	private static final String WORDS_PATH = "words.txt";
 	
 	private static String[] cachedWords = null;
+	
+	@Override
+	public void generateQuestion() {
+		if (question == null) {
+			try {
+				String[] wordsFromFile = getWords();
+				answer = getLineToWrite(wordsFromFile);
+				question = answer;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	private String[] getWords() throws IOException {
 		if (cachedWords != null)
@@ -49,21 +62,8 @@ public class WordsMiniGame extends TimedGame {
 	}
 	
 	@Override
-	public void generateQuestion() {
-		if (question == null) {
-			try {
-				String[] wordsFromFile = getWords();
-				answer = getLineToWrite(wordsFromFile);
-				question = answer;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	@Override
-	public long availableTime() {
-		return answer.length() / 2 * 1000L;
+	public int availableTime() {
+		return (int) Math.ceil(answer.length() / 2.0);
 	}
 	
 	@Override

@@ -2,7 +2,6 @@ package jogo.logica.estados;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
-import jogo.logica.dados.Player;
 import jogo.logica.dados.PlayerType;
 
 public class WaitingPlayerMove extends GameAbstractState {
@@ -19,29 +18,21 @@ public class WaitingPlayerMove extends GameAbstractState {
 		boolean columnWasFull = !game.playAt(playerPiece, column);
 		if (columnWasFull)
 			return this;
-		
-		Player player = game.getPlayerFromEnum(playerPiece);
-		player.incrementSpecialCounter();
-		
 		return stateAfterPlay(playerPiece);
 	}
 	
 	@Override
 	public GameAbstractState clearColumn(int column) {
 		boolean success = game.clearColumn(playerPiece, column);
-		if (success) {
-			Piece nextPlayer = playerPiece.getOther();
-			if (game.getPlayerFromEnum(nextPlayer).getType() == PlayerType.COMPUTER)
-				return new ComputerPlays(game, nextPlayer);
-			return new WaitingPlayerMove(game, nextPlayer);
-		}
-		return new WaitingPlayerMove(game, playerPiece); // return this;
+		if(!success)
+			return this;
+		return stateAfterPlay(playerPiece);
 	}
 	
 	@Override
 	public GameAbstractState rollback(int amount) {
 		if (!game.rollback(playerPiece, amount))
-			return new WaitingPlayerMove(game, playerPiece); // return this;
+			return this;
 		
 		Piece nextPlayer = playerPiece;
 		if (amount % 2 == 1)

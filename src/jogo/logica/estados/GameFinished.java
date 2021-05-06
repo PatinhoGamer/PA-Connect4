@@ -1,8 +1,9 @@
 package jogo.logica.estados;
 
 import jogo.logica.Connect4Logic;
-import jogo.logica.dados.GameSaver;
+import jogo.logica.GameSaver;
 import jogo.logica.dados.Piece;
+import jogo.logica.dados.Player;
 
 public class GameFinished extends GameAbstractState {
 	
@@ -11,7 +12,11 @@ public class GameFinished extends GameAbstractState {
 	public GameFinished(Connect4Logic game, Piece winner) {
 		super(game);
 		this.winner = winner;
-		GameSaver.saveReplay(game);
+		
+		Player winnerPlayer = game.getPlayerFromEnum(winner);
+		Player loserPlayer = game.getPlayerFromEnum(winner.getOther());
+		
+		GameSaver.saveReplay(game.getGameActions(), winnerPlayer.getName(), loserPlayer.getName());
 	}
 	
 	@Override

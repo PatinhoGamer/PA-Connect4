@@ -15,14 +15,14 @@ public class Connect4Logic implements Serializable {
 	public static final int WIDTH = 7;
 	public static final int AMOUNT_TO_WIN = 4;
 	public static final int MAX_ROLLBACK = 5;
-	public static final int ROUNDS_TO_PLAY_MINIGAME = 4;
+	public static final int ROUNDS_TO_PLAY_MINIGAME = 0;
 	
 	public static final char ACTION_DELIMITER = ':';
 	public static final String ACTION_ROLLBACK = "Rollback";
 	public static final String ACTION_CLEAR_COLUMN = "ClearColumn";
 	public static final String ACTION_PLAY_AT = "PlayAt";
 	public static final String ACTION_SET_PLAYERS = "SetPlayers";
-	public static final String ACTION_MINIGAME_INGORED = "MiniGameIgnored";
+	public static final String ACTION_MINIGAME_IGNORED = "MiniGameIgnored";
 	public static final String ACTION_MINIGAME_WON = "MiniGameWon";
 	public static final String ACTION_MINIGAME_LOST = "MiniGameLost";
 	public static final String ACTION_FINISHED = "Finished";
@@ -58,6 +58,7 @@ public class Connect4Logic implements Serializable {
 				round++;
 				
 				gameActions.add(ACTION_PLAY_AT + ACTION_DELIMITER + playerPiece + ' ' + (column + 1));
+				getPlayerFromEnum(playerPiece).incrementMiniGameCounter();
 				return true;
 			}
 		}
@@ -77,6 +78,7 @@ public class Connect4Logic implements Serializable {
 			round++;
 			
 			gameActions.add(ACTION_CLEAR_COLUMN + ACTION_DELIMITER + playerPiece + ' ' + (column + 1));
+			getPlayerFromEnum(playerPiece).incrementMiniGameCounter();
 			return true;
 		}
 		return false;
@@ -100,12 +102,12 @@ public class Connect4Logic implements Serializable {
 	}
 	
 	public Piece checkWinner() {
-		for (int line = 0; line < HEIGHT; line++) {
-			for (int column = 0; column < WIDTH; column++) {
+		for (int column = 0; column < WIDTH; column++) {
+			for (int line = HEIGHT - 1; line >= 0; line--) {
 				
 				Piece currentPlacePiece = gameArea[line][column];
 				if (currentPlacePiece == null)
-					continue;
+					break;
 				
 				if (checkIfPlayerWonAt(currentPlacePiece, line, column)) {
 					gameActions.add(ACTION_FINISHED + ':' + currentPlacePiece);
@@ -162,22 +164,6 @@ public class Connect4Logic implements Serializable {
 		return gameArea;
 	}
 	
-	private void showWhere(int y, int x) {
-		for (int line = 0; line < gameArea.length; line++) {
-			System.out.print("|");
-			for (int column = 0; column < gameArea[0].length; column++) {
-				if (line == y && column == x) System.out.print("X");
-				else System.out.print(" ");
-				System.out.print("|");
-			}
-			System.out.println();
-		}
-		for (int line = 0; line < gameArea.length * 2 + 3; line++) {
-			System.out.print("-");
-		}
-		System.out.println();
-	}
-	
 	public boolean isFull() {
 		for (int column = 0; column < WIDTH; column++)
 			if (gameArea[0][column] == null)
@@ -206,6 +192,22 @@ public class Connect4Logic implements Serializable {
 	}
 	
 	public void playerIgnoredMiniGame(Piece playerPiece) {
-		gameActions.add(Connect4Logic.ACTION_MINIGAME_INGORED + ':' + playerPiece);
+		gameActions.add(Connect4Logic.ACTION_MINIGAME_IGNORED + ':' + playerPiece);
+	}
+	
+	private void showWhere(int y, int x) {
+		for (int line = 0; line < gameArea.length; line++) {
+			System.out.print("|");
+			for (int column = 0; column < gameArea[0].length; column++) {
+				if (line == y && column == x) System.out.print("X");
+				else System.out.print(" ");
+				System.out.print("|");
+			}
+			System.out.println();
+		}
+		for (int line = 0; line < gameArea.length * 2 + 3; line++) {
+			System.out.print("-");
+		}
+		System.out.println();
 	}
 }

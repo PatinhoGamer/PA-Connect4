@@ -1,9 +1,9 @@
 package jogo.logica.estados;
 
 import jogo.logica.Connect4Logic;
-import jogo.logica.dados.Player;
 import jogo.logica.dados.Piece;
-import jogo.logica.minigames.TimedGame;
+import jogo.logica.dados.Player;
+import jogo.logica.minigames.TimedMiniGame;
 
 import java.io.Serializable;
 
@@ -51,7 +51,7 @@ public class StateMachine implements Serializable {
 		currentState = currentState.startGameWithPlayers(player1, player2);
 	}
 	
-	public TimedGame getMiniGame() {
+	public TimedMiniGame getMiniGame() {
 		return currentState.getMiniGame();
 	}
 	
@@ -59,7 +59,7 @@ public class StateMachine implements Serializable {
 		return currentState.getCurrentPlayer();
 	}
 	
-	public Player getPlayerObj() {
+	public Player getCurrentPlayerObj() {
 		return currentState.getPlayer(currentState.getCurrentPlayer());
 	}
 	

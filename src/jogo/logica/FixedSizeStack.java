@@ -3,7 +3,7 @@ package jogo.logica;
 import java.util.Stack;
 
 public class FixedSizeStack<T> extends Stack<T> {
-	private int maxSize;
+	private final int maxSize;
 	
 	public FixedSizeStack(int size) {
 		super();

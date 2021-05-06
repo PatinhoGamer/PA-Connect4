@@ -1,6 +1,6 @@
 package jogo.logica.minigames;
 
-public class MathMiniGame extends TimedGame {
+public class MathMiniGame extends TimedGameAbstract {
 	
 	private static final String GAME_OBJECTIVE = "In this minigame you have to guess the mathematical answer to the presented question (ignore decimals)";
 	private static final int TO_ANSWER = 5;
@@ -30,8 +30,8 @@ public class MathMiniGame extends TimedGame {
 	}
 	
 	@Override
-	public long availableTime() {
-		return 30L * 1000L;
+	public int availableTime() {
+		return 30;
 	}
 	
 	@Override
@@ -43,8 +43,11 @@ public class MathMiniGame extends TimedGame {
 	public boolean checkAnswer(String answer) {
 		if (super.checkAnswer(answer)) {
 			answeredQuestions++;
+			if (!finishedAnswering())
+				generateQuestion();
 			return true;
 		}
+		generateQuestion();
 		return false;
 	}
 	

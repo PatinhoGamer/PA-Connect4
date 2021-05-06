@@ -4,14 +4,14 @@ import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
 import jogo.logica.dados.PlayerType;
-import jogo.logica.minigames.TimedGame;
+import jogo.logica.minigames.TimedMiniGame;
 
 public class PlayingMiniGame extends GameAbstractState {
 	
-	private final TimedGame miniGame;
+	private final TimedMiniGame miniGame;
 	private final Piece playerPiece;
 	
-	public PlayingMiniGame(Connect4Logic game, Piece playerPiece, TimedGame miniGame) {
+	public PlayingMiniGame(Connect4Logic game, Piece playerPiece, TimedMiniGame miniGame) {
 		super(game);
 		this.playerPiece = playerPiece;
 		this.miniGame = miniGame;
@@ -26,16 +26,11 @@ public class PlayingMiniGame extends GameAbstractState {
 		
 		game.playerLostMiniGame(playerPiece);
 		
-		Piece other = playerPiece.getOther();
-		Player nextPlayer = getGame().getPlayerFromEnum(other);
-		if (nextPlayer.getType() == PlayerType.COMPUTER)
-			return new ComputerPlays(game, other);
-		
-		return new WaitingPlayerMove(game, other);
+		return stateAfterPlay(playerPiece);
 	}
 	
 	@Override
-	public TimedGame getMiniGame() {
+	public TimedMiniGame getMiniGame() {
 		return miniGame;
 	}
 	

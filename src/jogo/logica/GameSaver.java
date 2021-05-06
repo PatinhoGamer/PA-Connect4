@@ -1,8 +1,10 @@
-package jogo.logica.dados;
+package jogo.logica;
 
 import jogo.logica.FixedSizeStack;
 import jogo.logica.Connect4Logic;
 import jogo.logica.Replayer;
+import jogo.logica.dados.Piece;
+import jogo.logica.dados.Replay;
 import jogo.logica.estados.StateMachine;
 
 import java.io.*;
@@ -20,12 +22,8 @@ public class GameSaver {
 	private GameSaver() {
 	}
 	
-	public static void saveReplay(Connect4Logic game) {
-		List<String> gameActions = game.getGameActions();
-		String player1Name = game.getPlayerFromEnum(Piece.PLAYER1).getName();
-		String player2Name = game.getPlayerFromEnum(Piece.PLAYER2).getName();
-		
-		Replay replay = new Replay(gameActions, player1Name, player2Name, new Date());
+	public static void saveReplay(List<String> gameActions,String winner,String loser) {
+		Replay replay = new Replay(gameActions, winner, loser, new Date());
 		
 		replays.push(replay);
 	}

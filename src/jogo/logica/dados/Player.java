@@ -1,16 +1,13 @@
 package jogo.logica.dados;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 public class Player implements Serializable {
 	
 	private final String name;
 	private final PlayerType type;
 	private int specialPieces = 0;
-	private int specialPiecesCounter = 0;
+	private int miniGameCounter = 0;
 	private int rollbacks = 5;
 	
 	private int activityChooser = -1;
@@ -41,16 +38,16 @@ public class Player implements Serializable {
 		specialPieces++;
 	}
 	
-	public int getSpecialPiecesCounter() {
-		return specialPiecesCounter;
+	public int getMiniGameCounter() {
+		return miniGameCounter;
 	}
 	
-	public void incrementSpecialCounter() {
-		this.specialPiecesCounter++;
+	public void incrementMiniGameCounter() {
+		this.miniGameCounter++;
 	}
 	
 	public void resetSpecialCounter() {
-		this.specialPiecesCounter = 0;
+		this.miniGameCounter = 0;
 	}
 	
 	public int getRollbacks() {

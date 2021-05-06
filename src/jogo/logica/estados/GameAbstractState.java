@@ -4,7 +4,7 @@ import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
 import jogo.logica.dados.PlayerType;
-import jogo.logica.minigames.TimedGame;
+import jogo.logica.minigames.TimedMiniGame;
 
 import java.io.Serializable;
 
@@ -68,7 +68,7 @@ public abstract class GameAbstractState implements Serializable {
 		return null;
 	}
 	
-	public TimedGame getMiniGame() {
+	public TimedMiniGame getMiniGame() {
 		return null;
 	}
 	
@@ -88,11 +88,12 @@ public abstract class GameAbstractState implements Serializable {
 		if (finishedState != null) return finishedState;
 		
 		Piece nextPlayer = playerPiece.getOther();
+		
 		Player trulyNextPlayer = getGame().getPlayerFromEnum(nextPlayer);
 		if (trulyNextPlayer.getType() == PlayerType.COMPUTER)
 			return new ComputerPlays(game, nextPlayer);
 		
-		if (trulyNextPlayer.getSpecialPiecesCounter() == Connect4Logic.ROUNDS_TO_PLAY_MINIGAME) {
+		if (trulyNextPlayer.getMiniGameCounter() >= Connect4Logic.ROUNDS_TO_PLAY_MINIGAME) {
 			trulyNextPlayer.resetSpecialCounter();
 			return new CheckPlayerWantsMiniGame(game, nextPlayer);
 		}
