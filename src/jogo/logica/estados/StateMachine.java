@@ -9,9 +9,9 @@ import java.io.Serializable;
 
 public class StateMachine implements Serializable {
 	
-	private GameAbstractState currentState;
+	private GameState currentState;
 	
-	public StateMachine(GameAbstractState currentState) {
+	public StateMachine(GameState currentState) {
 		this.currentState = currentState;
 	}
 	

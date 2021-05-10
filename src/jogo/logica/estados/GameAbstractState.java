@@ -6,9 +6,7 @@ import jogo.logica.dados.Player;
 import jogo.logica.dados.PlayerType;
 import jogo.logica.minigames.TimedMiniGame;
 
-import java.io.Serializable;
-
-public abstract class GameAbstractState implements Serializable {
+public abstract class GameAbstractState implements GameState {
 	
 	protected Connect4Logic game;
 	
@@ -16,63 +14,75 @@ public abstract class GameAbstractState implements Serializable {
 		this.game = game;
 	}
 	
-	public GameAbstractState playAt(int column) {
+	@Override
+	public GameState playAt(int column) {
 		return this;
 	}
 	
-	public GameAbstractState clearColumn(int column) {
+	@Override
+	public GameState clearColumn(int column) {
 		return this;
 	}
 	
-	public GameAbstractState startMiniGame() {
+	@Override
+	public GameState startMiniGame() {
 		return this;
 	}
 	
-	public GameAbstractState ignoreMiniGame() {
+	@Override
+	public GameState ignoreMiniGame() {
 		return this;
 	}
 	
-	public GameAbstractState endMiniGame() {
+	@Override
+	public GameState endMiniGame() {
 		return this;
 	}
 	
-	public GameAbstractState executePlay() {
+	@Override
+	public GameState executePlay() {
 		return this;
 	}
 	
-	public GameAbstractState rollback(int amount) {
+	@Override
+	public GameState rollback(int amount) {
 		return this;
 	}
 	
-	public GameAbstractState startGameWithPlayers(Player player1, Player player2) {
+	@Override
+	public GameState startGameWithPlayers(Player player1, Player player2) {
 		return this;
 	}
 	
-	public GameAbstractState restartGame() {
+	@Override
+	public GameState restartGame() {
 		return this;
 	}
 	
+	@Override
 	public Connect4Logic getGame() {
 		return game;
 	}
 	
+	@Override
 	public Piece getWinner() {
 		return null;
 	}
 	
+	@Override
 	public Player getPlayer(Piece playerPiece) {
 		return game.getPlayerFromEnum(playerPiece);
 	}
 	
+	@Override
 	public Piece getCurrentPlayer() {
 		return null;
 	}
 	
+	@Override
 	public TimedMiniGame getMiniGame() {
 		return null;
 	}
-	
-	public abstract Connect4States getState();
 	
 	protected GameFinished checkFinishedState() {
 		Piece winner = game.checkWinner();
@@ -83,7 +93,7 @@ public abstract class GameAbstractState implements Serializable {
 		return null;
 	}
 	
-	protected GameAbstractState stateAfterPlay(Piece playerPiece) {
+	protected GameState stateAfterPlay(Piece playerPiece) {
 		GameFinished finishedState = checkFinishedState();
 		if (finishedState != null) return finishedState;
 		

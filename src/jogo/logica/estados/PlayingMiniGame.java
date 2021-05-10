@@ -2,8 +2,6 @@ package jogo.logica.estados;
 
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
-import jogo.logica.dados.Player;
-import jogo.logica.dados.PlayerType;
 import jogo.logica.minigames.TimedMiniGame;
 
 public class PlayingMiniGame extends GameAbstractState {
@@ -18,7 +16,7 @@ public class PlayingMiniGame extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState endMiniGame() {
+	public GameState endMiniGame() {
 		if (miniGame.playerManagedToDoIt()) {
 			game.playerWonMiniGame(playerPiece);
 			return new WaitingPlayerMove(game, playerPiece);

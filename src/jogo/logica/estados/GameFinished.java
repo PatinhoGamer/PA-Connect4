@@ -25,7 +25,7 @@ public class GameFinished extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState restartGame() {
+	public GameState restartGame() {
 		return new GameToStart(new Connect4Logic());
 	}
 	

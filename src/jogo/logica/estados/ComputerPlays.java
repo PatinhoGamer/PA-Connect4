@@ -13,7 +13,7 @@ public class ComputerPlays extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState executePlay() {
+	public GameState executePlay() {
 		while (true) {
 			int columnToPlayAt = (int) Math.floor(Math.random() * Connect4Logic.WIDTH) + 1;
 			boolean columnWasntFull = game.playAt(computerPlayer, columnToPlayAt);

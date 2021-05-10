@@ -15,7 +15,7 @@ public class Connect4Logic implements Serializable {
 	public static final int WIDTH = 7;
 	public static final int AMOUNT_TO_WIN = 4;
 	public static final int MAX_ROLLBACK = 5;
-	public static final int ROUNDS_TO_PLAY_MINIGAME = 0;
+	public static final int ROUNDS_TO_PLAY_MINIGAME = 4;
 	
 	public static final char ACTION_DELIMITER = ':';
 	public static final String ACTION_ROLLBACK = "Rollback";

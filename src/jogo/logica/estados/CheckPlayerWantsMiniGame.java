@@ -16,7 +16,7 @@ public class CheckPlayerWantsMiniGame extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState startMiniGame() {
+	public GameState startMiniGame() {
 		int nextActivity = game.getPlayerFromEnum(player).getNextActivity();
 		TimedMiniGame miniGame;
 		if (nextActivity == 0) miniGame = new MathMiniGame();
@@ -25,7 +25,7 @@ public class CheckPlayerWantsMiniGame extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState ignoreMiniGame() {
+	public GameState ignoreMiniGame() {
 		game.playerIgnoredMiniGame(player);
 		return new WaitingPlayerMove(game, player);
 	}

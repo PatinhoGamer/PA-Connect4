@@ -12,7 +12,7 @@ public class GameToStart extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState startGameWithPlayers(Player player1, Player player2) {
+	public GameState startGameWithPlayers(Player player1, Player player2) {
 		if (!game.setPlayers(player1, player2))
 			return this;
 		

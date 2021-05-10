@@ -14,7 +14,7 @@ public class WaitingPlayerMove extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState playAt(int column) {
+	public GameState playAt(int column) {
 		boolean columnWasFull = !game.playAt(playerPiece, column);
 		if (columnWasFull)
 			return this;
@@ -22,7 +22,7 @@ public class WaitingPlayerMove extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState clearColumn(int column) {
+	public GameState clearColumn(int column) {
 		boolean success = game.clearColumn(playerPiece, column);
 		if(!success)
 			return this;
@@ -30,7 +30,7 @@ public class WaitingPlayerMove extends GameAbstractState {
 	}
 	
 	@Override
-	public GameAbstractState rollback(int amount) {
+	public GameState rollback(int amount) {
 		if (!game.rollback(playerPiece, amount))
 			return this;
 		
