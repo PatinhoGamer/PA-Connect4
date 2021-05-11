@@ -16,7 +16,7 @@ public class GameSaver {
 	
 	private static final String fileExtension = ".C4save";
 	
-	private static final FixedSizeStack<Replay> replays = new FixedSizeStack<>(5);
+	private static FixedSizeStack<Replay> replays = new FixedSizeStack<>(5);
 	
 	
 	private GameSaver() {
@@ -50,5 +50,16 @@ public class GameSaver {
 		}
 	}
 	
+	public static void sendReplaysToDisk(String filePath) throws IOException {
+		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath + fileExtension))) {
+			objectOutputStream.writeUnshared(replays);
+		}
+	}
+	
+	public static void loadReplaysFromDisk(String filePath) throws IOException, ClassNotFoundException {
+		try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath + fileExtension))) {
+			replays = (FixedSizeStack<Replay>) objectInputStream.readUnshared();
+		}
+	}
 }
 

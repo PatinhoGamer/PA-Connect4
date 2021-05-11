@@ -4,12 +4,15 @@ import jogo.logica.dados.Player;
 import jogo.logica.dados.Piece;
 
 import java.awt.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
 public class Connect4Logic implements Serializable {
+	@Serial
+	private static final long serialVersionUID = 0L;
 	
 	public static final int HEIGHT = 6;
 	public static final int WIDTH = 7;

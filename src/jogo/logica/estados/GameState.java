@@ -8,6 +8,7 @@ import jogo.logica.minigames.TimedMiniGame;
 import java.io.Serializable;
 
 public interface GameState extends Serializable {
+	
 	GameState playAt(int column);
 	
 	GameState clearColumn(int column);

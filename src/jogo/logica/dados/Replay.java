@@ -1,10 +1,15 @@
 package jogo.logica.dados;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class Replay {
+public class Replay implements Serializable {
+	@Serial
+	private static final long serialVersionUID = 0L;
+	
 	private final List<String> gameActions;
 	private final String winner;
 	private final String loser;
@@ -14,7 +19,7 @@ public class Replay {
 		this.gameActions = gameActions;
 		this.winner = winner;
 		this.loser = loser;
-		date = new SimpleDateFormat("HH:mm:ss").format(moment);
+		date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(moment);
 	}
 	
 	public List<String> getGameActions() {

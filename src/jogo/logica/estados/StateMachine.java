@@ -5,9 +5,12 @@ import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
 import jogo.logica.minigames.TimedMiniGame;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class StateMachine implements Serializable {
+	@Serial
+	private static final long serialVersionUID = 0L;
 	
 	private GameState currentState;
 	

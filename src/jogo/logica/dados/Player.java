@@ -1,8 +1,11 @@
 package jogo.logica.dados;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class Player implements Serializable {
+	@Serial
+	private static final long serialVersionUID = 0L;
 	
 	private final String name;
 	private final PlayerType type;
