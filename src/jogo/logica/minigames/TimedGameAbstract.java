@@ -50,6 +50,11 @@ public abstract class TimedGameAbstract implements TimedMiniGame {
 	}
 	
 	@Override
+	public boolean isFinished() {
+		return ranOutOfTime() || finishedAnswering();
+	}
+	
+	@Override
 	public boolean ranOutOfTime() {
 		int currentTime = (int) (System.currentTimeMillis() - startTime) / 1000;
 		return currentTime > availableTime();

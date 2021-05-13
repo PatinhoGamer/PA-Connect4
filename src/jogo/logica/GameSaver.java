@@ -1,14 +1,9 @@
 package jogo.logica;
 
-import jogo.logica.FixedSizeStack;
-import jogo.logica.Connect4Logic;
-import jogo.logica.Replayer;
-import jogo.logica.dados.Piece;
 import jogo.logica.dados.Replay;
 import jogo.logica.estados.StateMachine;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 

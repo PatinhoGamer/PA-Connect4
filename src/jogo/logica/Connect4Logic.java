@@ -3,7 +3,7 @@ package jogo.logica;
 import jogo.logica.dados.Player;
 import jogo.logica.dados.Piece;
 
-import java.awt.*;
+import java.awt.Point;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -132,7 +132,7 @@ public class Connect4Logic implements Serializable {
 			int offX = column;
 			int offY = line;
 			
-			for (int i = 1; i <= AMOUNT_TO_WIN; i++) {
+			for (int i = 1; i <= AMOUNT_TO_WIN; i++) { // could be just a while(true), but this is better for the brain
 				offX += offset.x;
 				offY += offset.y;
 				

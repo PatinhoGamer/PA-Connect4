@@ -15,6 +15,8 @@ public interface TimedMiniGame {
 	
 	boolean finishedAnswering();
 	
+	boolean isFinished();
+	
 	boolean playerManagedToDoIt();
 	
 	boolean ranOutOfTime();
