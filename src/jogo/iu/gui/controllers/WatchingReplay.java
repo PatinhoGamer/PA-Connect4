@@ -23,9 +23,9 @@ public class WatchingReplay implements Initializable {
 	public BorderPane gameArea;
 	private Connect4UI app;
 	private Pane[][] paneArea;
-	private Replayer replayer;
 	private boolean finishedWatching = false;
-	private Thread clock;
+	private Replayer replayer;
+	private Runnable scheduler;
 	
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -36,21 +36,16 @@ public class WatchingReplay implements Initializable {
 		
 		initializeGrid();
 		
-		clock = new Thread(() -> {
-			while (true) {
-				if (finishedWatching)
-					return;
-				try {
-					Thread.sleep(750);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					return;
-				}
+		scheduler = () -> {
+			try {
+				Thread.sleep(750);
 				Platform.runLater(this::moveForward);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		});
-		clock.setDaemon(true);
-		clock.start();
+		};
+		
+		moveForward();
 	}
 	
 	private void initializeGrid() {
@@ -60,14 +55,7 @@ public class WatchingReplay implements Initializable {
 			VBox curColumn = new VBox(GRID_PADDING);
 			columns[column] = curColumn;
 			
-			for (int line = 0; line < Connect4Logic.HEIGHT; line++) {
-				Pane spot = new Pane();
-				spot.setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
-				Connect4UI.changeBackground(spot, NOPLAYER_COLOR, ROUND_CORNER);
-				
-				curColumn.getChildren().add(spot);
-				paneArea[line][column] = spot;
-			}
+			Connect4UI.fillGridLine(column, curColumn,paneArea);
 		}
 		
 		Pane area = new HBox(GRID_PADDING);
@@ -76,17 +64,20 @@ public class WatchingReplay implements Initializable {
 	}
 	
 	private void moveForward() {
-		if (!replayer.moveToNextStep()) {
+		if (!replayer.moveToNextStep() || finishedWatching) {
 			finishedWatching = true;
-			app.openMessageDialog(Alert.AlertType.INFORMATION, "Replay", "Finished watching replay");
 			return;
 		}
 		if (replayer.getLastMessage() == null)
 			updateBoard();
-		else
+		else {
 			app.openMessageDialog(Alert.AlertType.INFORMATION, "Replay", replayer.getLastMessage());
-	}// TODO Stop moving forward when messagedialog appears
-	// or show message a differrent way
+		}
+		
+		new Thread(scheduler).start();
+	}
+	//TODO make the animation thing
+	//TODO make watching replay prettier
 	
 	
 	private void updateBoard() {

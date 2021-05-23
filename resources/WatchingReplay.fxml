@@ -2,16 +2,19 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="jogo.iu.gui.controllers.WatchingReplay"
             prefHeight="400.0" prefWidth="600.0">
 
     <center>
-        <BorderPane fx:id="gameArea"/>
+        <FlowPane alignment="CENTER">
+            <BorderPane fx:id="gameArea"/>
+        </FlowPane>
     </center>
 
-    <bottom>
+    <top>
         <Button text="Back to Menu" onAction="#backToMenu"/>
-    </bottom>
+    </top>
 </BorderPane>

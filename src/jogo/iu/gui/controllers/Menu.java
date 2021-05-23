@@ -7,8 +7,12 @@ import java.io.File;
 import java.io.IOException;
 
 public class Menu {
-	public void exit(ActionEvent actionEvent) throws Exception {
-		Connect4UI.getInstance().stop();
+	public void startGame(ActionEvent actionEvent) {
+		Connect4UI.getInstance().startGame();
+	}
+	
+	public void watchReplay(ActionEvent actionEvent) {
+		Connect4UI.getInstance().changeScene(Connect4UI.FXML_CHOOSING_REPLAY);
 	}
 	
 	public void loadGameFromFile(ActionEvent actionEvent) throws IOException, ClassNotFoundException {
@@ -18,11 +22,7 @@ public class Menu {
 			instance.loadGameFromFile(file.getPath());
 	}
 	
-	public void watchReplay(ActionEvent actionEvent) {
-		Connect4UI.getInstance().changeScene(Connect4UI.FXML_CHOOSING_REPLAY);
-	}
-	
-	public void startGame(ActionEvent actionEvent) {
-		Connect4UI.getInstance().startGame();
+	public void exit(ActionEvent actionEvent) throws Exception {
+		Connect4UI.getInstance().stop();
 	}
 }

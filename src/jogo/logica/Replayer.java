@@ -24,8 +24,7 @@ public class Replayer {
 	}
 	
 	public boolean moveToNextStep() {
-		
-		if (currentActionIndex >= replay.getGameActions().size())
+		if (reachedTheEnd())
 			return false;
 		
 		String gameLine = gameActions.get(currentActionIndex);
@@ -86,11 +85,15 @@ public class Replayer {
 				game.playerLostMiniGame(piece);
 				lastMessage = piece + " lost minigame";
 			}
-			case Connect4Logic.ACTION_FINISHED -> lastMessage =  stringToPiece(secondPart) + " won the game";
+			case Connect4Logic.ACTION_FINISHED -> lastMessage = stringToPiece(secondPart) + " won the game";
 		}
 		
 		currentActionIndex++;
 		return true;
+	}
+	
+	public boolean reachedTheEnd() {
+		return currentActionIndex >= replay.getGameActions().size();
 	}
 	
 	public String getLastMessage() {

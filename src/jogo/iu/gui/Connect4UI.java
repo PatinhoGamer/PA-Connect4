@@ -9,6 +9,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jogo.iu.gui.controllers.ChoosingReplay;
 import jogo.logica.Connect4Logic;
@@ -61,6 +62,17 @@ public class Connect4UI extends Application {
 		instance = this;
 	}
 	
+	public static void fillGridLine(int column, VBox curColumn, Pane[][] paneArea) {
+		for (int line = 0; line < Connect4Logic.HEIGHT; line++) {
+			Pane spot = new Pane();
+			spot.setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
+			Connect4UI.changeBackground(spot, NOPLAYER_COLOR, ROUND_CORNER);
+			
+			curColumn.getChildren().add(spot);
+			paneArea[line][column] = spot;
+		}
+	}
+	
 	@Override
 	public void start(Stage stage) throws Exception {
 		this.stage = stage;
@@ -81,7 +93,6 @@ public class Connect4UI extends Application {
 	@Override
 	public void stop() throws Exception {
 		super.stop();
-		Platform.exit();
 	}
 	
 	public void goBackToMenu() {
@@ -112,17 +123,15 @@ public class Connect4UI extends Application {
 		changeToRightState();
 	}
 	
-	public void changeToRightState() {
+	private void changeToRightState() {
 		switch (stateMachine.getState()) {
 			case GameToStart -> changeScene(FXML_GAMETOSTART);
 			case WaitingPlayerMove, ComputerPlays -> changeScene(FXML_BOARD);
-			case CheckPlayerWantsMiniGame -> {
+			case CheckPlayerWantsMiniGame,GameFinished -> {
 				// no need to do anything. this can never happen
+				System.out.println("Why did this happen? . switch to right state");
 			}
 			case PlayingMiniGame -> changeScene(FXML_PLAYING_MINIGAME);
-			case GameFinished -> {
-				// no need to do anything. this can never happen
-			}
 			default -> throw new IllegalStateException("Unexpected value: " + stateMachine.getState());
 		}
 	}
@@ -154,6 +163,8 @@ public class Connect4UI extends Application {
 				e.printStackTrace();
 			}
 		});
+		
+		miniGameStage.initModality(Modality.APPLICATION_MODAL);
 		
 		miniGameStage.showAndWait();
 	}

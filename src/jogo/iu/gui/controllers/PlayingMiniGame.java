@@ -21,6 +21,7 @@ public class PlayingMiniGame implements Initializable {
 	public Label questionLabel;
 	public TextField answerTextField;
 	public Button startButton;
+	public Label timerLabel;
 	
 	private TimedMiniGame miniGame;
 	private boolean isFinished = false;
@@ -35,6 +36,7 @@ public class PlayingMiniGame implements Initializable {
 		
 		gameObjectiveLabel.setText(miniGame.getGameObjective());
 		questionLabel.setText(miniGame.getQuestion());
+		timerLabel.setText(Integer.toString(miniGame.availableTime()));
 	}
 	
 	public void triedToAnswer(ActionEvent actionEvent) {
@@ -81,7 +83,14 @@ public class PlayingMiniGame implements Initializable {
 		
 		timerThread = new Thread(() -> {
 			try {
-				Thread.sleep(miniGame.availableTime() * 1000L);
+				int remainingTime = miniGame.availableTime();
+				while (remainingTime > 0) {
+					Thread.sleep(1000);
+					int finalRemainingTime = --remainingTime;
+					Platform.runLater(() -> {
+						timerLabel.setText(Integer.toString(finalRemainingTime));
+					});
+				}
 				if (!isFinished)
 					Platform.runLater(this::finishedMiniGame);
 			} catch (InterruptedException ignored) {

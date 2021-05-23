@@ -49,6 +49,7 @@ public class InGame implements Initializable {
 	
 	private boolean clearColumnPlayType = false;
 	private RollbackTextPropertyListener rollbackTextFieldListener;
+	private Runnable scheduler;
 	
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -60,6 +61,15 @@ public class InGame implements Initializable {
 		
 		rollbackTextFieldListener = new RollbackTextPropertyListener();
 		rollbackAmountTextField.textProperty().addListener(rollbackTextFieldListener);
+		
+		scheduler = () -> {
+			try {
+				Thread.sleep(500);
+				Platform.runLater(this::updateAfterPlay);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		};
 		
 		initializeGrid();
 		
@@ -97,15 +107,7 @@ public class InGame implements Initializable {
 			});
 			
 			columns[column] = curColumn;
-			
-			for (int line = 0; line < Connect4Logic.HEIGHT; line++) {
-				Pane spot = new Pane();
-				spot.setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
-				Connect4UI.changeBackground(spot, NOPLAYER_COLOR, ROUND_CORNER);
-				
-				curColumn.getChildren().add(spot);
-				paneArea[line][column] = spot;
-			}
+			Connect4UI.fillGridLine(column, curColumn, paneArea);
 		}
 		
 		Pane area = new HBox(GRID_PADDING);
@@ -139,8 +141,17 @@ public class InGame implements Initializable {
 			case WaitingPlayerMove -> {
 			}
 			case ComputerPlays -> {
-				machine.executePlay();
-				Platform.runLater(this::updateAfterPlay); // para não enchher o stack e deixar a interface atualizar
+				new Thread(() -> {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					Platform.runLater(() -> {
+						machine.executePlay();
+						updateAfterPlay();
+					});
+				}).start();
 			}
 			case CheckPlayerWantsMiniGame -> {
 				Player player = machine.getCurrentPlayerObj();

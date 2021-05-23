@@ -28,6 +28,10 @@
     </HBox>
 
     <HBox>
+        <Label text="Available Time : "/><Label fx:id="timerLabel"/>
+    </HBox>
+
+    <HBox>
         <Button text="Start" onAction="#startMiniGame" fx:id="startButton"/>
     </HBox>
 </FlowPane>
