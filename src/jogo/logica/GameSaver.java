@@ -9,7 +9,7 @@ import java.util.List;
 
 public class GameSaver {
 	
-	private static final String fileExtension = ".C4save";
+	public static final String fileExtension = ".C4save";
 	
 	private static FixedSizeStack<Replay> replays = new FixedSizeStack<>(5);
 	

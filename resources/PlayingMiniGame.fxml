@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<FlowPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="jogo.iu.gui.controllers.PlayingMiniGame"
+          prefHeight="400.0" prefWidth="600.0"
+          alignment="CENTER"
+          columnHalignment="CENTER"
+          orientation="VERTICAL"
+          vgap="20">
+
+    <HBox>
+        <Label fx:id="gameObjectiveLabel"/>
+    </HBox>
+
+    <HBox>
+        <Label text="Question : " prefWidth="80"/>
+        <Label fx:id="questionLabel"/>
+    </HBox>
+    <HBox>
+        <Label text="Answer : " prefWidth="80"/>
+        <TextField fx:id="answerTextField" onAction="#triedToAnswer" prefWidth="300"/>
+    </HBox>
+    <HBox>
+        <Label fx:id="feedBackLabel"/>
+    </HBox>
+
+    <HBox>
+        <Button text="Start" onAction="#startMiniGame" fx:id="startButton"/>
+    </HBox>
+</FlowPane>

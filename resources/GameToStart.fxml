@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<FlowPane alignment="CENTER" columnHalignment="CENTER" orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0"
+          vgap="20" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="jogo.iu.gui.controllers.GameToStart">
+
+    <HBox spacing="8">
+        <Label text="Player 1"/>
+        <TextField fx:id="player1Field"/>
+        <ChoiceBox fx:id="player1Choice" prefWidth="90.0"/>
+    </HBox>
+
+    <HBox spacing="8">
+        <Label text="Player 2"/>
+        <TextField fx:id="player2Field"/>
+        <ChoiceBox fx:id="player2Choice" prefWidth="90.0"/>
+    </HBox>
+
+    <BorderPane>
+        <left>
+            <Button mnemonicParsing="false" onAction="#goBack" text="Go Back"/>
+        </left>
+        <right>
+            <Button mnemonicParsing="false" onAction="#setPlayers" text="Start"/>
+        </right>
+    </BorderPane>
+
+    <HBox>
+        <Label fx:id="feedbackLabel"/>
+    </HBox>
+</FlowPane>

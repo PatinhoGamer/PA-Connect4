@@ -89,7 +89,7 @@ public class Connect4Logic implements Serializable {
 	
 	public boolean rollback(Piece playerPiece, int amount) {
 		Player player = getPlayerFromEnum(playerPiece);
-		if (amount <= 0 || player.getRollbacks() < amount || lastPlays.size() == 0)
+		if (amount <= 0 || player.getRollbacks() < amount || lastPlays.size() < amount)
 			return false;
 		
 		for (int i = 0; i < amount; i++) {

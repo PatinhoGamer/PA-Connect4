@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+
+<FlowPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="jogo.iu.gui.controllers.ChoosingReplay"
+          prefHeight="400.0" prefWidth="600.0"
+          alignment="CENTER"
+          columnHalignment="CENTER"
+          orientation="VERTICAL"
+          vgap="20">
+
+    <ListView fx:id="replaysList" maxHeight="200" prefWidth="500"/>
+
+    <BorderPane>
+        <left>
+            <Button mnemonicParsing="false" onAction="#goBack" text="Go Back"/>
+        </left>
+        <right>
+            <Button mnemonicParsing="false" onAction="#start" text="Start"/>
+        </right>
+    </BorderPane>
+</FlowPane>

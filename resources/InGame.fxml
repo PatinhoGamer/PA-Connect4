@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="root" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="jogo.iu.gui.controllers.InGame">
+    <top>
+        <FlowPane alignment="CENTER">
+            <HBox spacing="20">
+                <Button onAction="#goBack" text="Go Back"/>
+                <Button onAction="#saveCurrentGame" text="Save Current"/>
+                <Button onAction="#loadSavedGame" text="Load Saved"/>
+            </HBox>
+        </FlowPane>
+    </top>
+    <center>
+        <FlowPane alignment="CENTER">
+            <BorderPane fx:id="gameArea"/>
+        </FlowPane>
+    </center>
+    <bottom>
+        <FlowPane alignment="CENTER">
+            <HBox spacing="20">
+                <VBox>
+                    <Label text="Current Player :"/>
+                    <Label fx:id="playerNameLabel"/>
+                </VBox>
+
+                <ToggleButton fx:id="normalPlayToggleButton" onAction="#selectedNormalPlay" selected="true"
+                              text="Normal Play"/>
+
+                <VBox>
+                    <ToggleButton fx:id="clearColumnToggleButton" onAction="#selectedClearColumn" text="Clear Column"/>
+                    <HBox>
+                        <Label text="Available : "/>
+                        <Label fx:id="specialPiecesLabel"/>
+                    </HBox>
+                </VBox>
+
+                <VBox>
+                    <Button onAction="#rollback" text="Rollback" prefWidth="90"/>
+                   <HBox>
+                       <Label text="Max Rollbacks : "/>
+                       <Label fx:id="playerRollbackAmount"/>
+                   </HBox>
+                    <TextField fx:id="rollbackAmountTextField" prefWidth="0.0"/>
+                </VBox>
+            </HBox>
+        </FlowPane>
+    </bottom>
+
+</BorderPane>

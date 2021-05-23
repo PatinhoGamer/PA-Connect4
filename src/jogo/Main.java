@@ -1,5 +1,6 @@
 package jogo;
 
+import jogo.iu.gui.Connect4UI;
 import jogo.iu.texto.Connect4TextUI;
 import jogo.logica.GameSaver;
 
@@ -10,6 +11,13 @@ public class Main {
 	public static final String replaySaveFile = "replays";
 	
 	public static void main(String[] args) {
+		boolean textVersion = false;
+		if (args.length > 0) {
+			if (args[0].equals("-text")) {
+				textVersion = true;
+			}
+		}
+		
 		try {
 			GameSaver.loadReplaysFromDisk(replaySaveFile);
 		} catch (IOException e) {
@@ -18,8 +26,11 @@ public class Main {
 			System.out.println("Class cast exception. Should never happen");
 		}
 		
-		Connect4TextUI ui = new Connect4TextUI();
-		ui.start();
+		if (!textVersion) {
+			Connect4UI.main(args);
+		} else {
+			new Connect4TextUI().start();
+		}
 		
 		try {
 			GameSaver.sendReplaysToDisk(replaySaveFile);

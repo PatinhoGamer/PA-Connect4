@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.FlowPane?>
+<FlowPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="jogo.iu.gui.controllers.Menu"
+          prefHeight="400.0" prefWidth="600.0"
+
+          alignment="CENTER"
+          columnHalignment="CENTER"
+          orientation="VERTICAL"
+          vgap="20">
+
+    <Button text="Start Game" onAction="#startGame"/>
+    <Button text="Watch Replay" onAction="#watchReplay"/>
+    <Button text="Load game from file" onAction="#loadGameFromFile"/>
+    <Button text="Exit" onAction="#exit"/>
+
+</FlowPane>
