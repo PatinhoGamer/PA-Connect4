@@ -15,9 +15,7 @@
         </FlowPane>
     </top>
     <center>
-        <FlowPane alignment="CENTER">
-            <BorderPane fx:id="gameArea"/>
-        </FlowPane>
+        <!-- Board gets created on Class Board -->
     </center>
     <bottom>
         <FlowPane alignment="CENTER">

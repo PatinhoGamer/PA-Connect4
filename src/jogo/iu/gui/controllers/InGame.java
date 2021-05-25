@@ -15,6 +15,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import jogo.iu.gui.Board;
 import jogo.iu.gui.Connect4UI;
 import jogo.logica.Connect4Logic;
 import jogo.logica.dados.Piece;
@@ -40,38 +41,25 @@ public class InGame implements Initializable {
 	public ToggleButton clearColumnToggleButton;
 	public ToggleButton normalPlayToggleButton;
 	public Label playerRollbackAmount;
-	@FXML
-	private BorderPane gameArea;
 	
+	private Board board;
 	
-	private Pane[][] paneArea;
 	private Connect4UI app;
 	
 	private boolean clearColumnPlayType = false;
 	private RollbackTextPropertyListener rollbackTextFieldListener;
-	private Runnable scheduler;
 	
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		app = Connect4UI.getInstance();
-		
-		paneArea = new Pane[Connect4Logic.HEIGHT][Connect4Logic.WIDTH];
 		
 		playerNameLabel.setPadding(new Insets(10));
 		
 		rollbackTextFieldListener = new RollbackTextPropertyListener();
 		rollbackAmountTextField.textProperty().addListener(rollbackTextFieldListener);
 		
-		scheduler = () -> {
-			try {
-				Thread.sleep(500);
-				Platform.runLater(this::updateAfterPlay);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		};
-		
-		initializeGrid();
+		board = new Board(column -> gridPressedColumn(column));
+		root.setCenter(board);
 		
 		updateAfterPlay();
 	}
@@ -82,37 +70,17 @@ public class InGame implements Initializable {
 		
 		playerNameLabel.setText(player.getName());
 		if (machine.getCurrentPlayer() == Piece.PLAYER1)
-			Connect4UI.changeBackground(playerNameLabel, PLAYER1_COLOR, ROUND_CORNER);
-		else Connect4UI.changeBackground(playerNameLabel, PLAYER2_COLOR, ROUND_CORNER);
+			Connect4UI.changeBackground(playerNameLabel, Board.PLAYER1_COLOR, Board.ROUND_CORNER);
+		else Connect4UI.changeBackground(playerNameLabel, Board.PLAYER2_COLOR, Board.ROUND_CORNER);
 		
 		String playerRollbacks = Integer.toString(player.getRollbacks());
 		playerRollbackAmount.setText(playerRollbacks);
 		
 		int maxRollbacks = Math.min(player.getRollbacks(), getMachine().getGame().getAvailableRollbacks());
-		System.out.println("max rollbacks " + maxRollbacks);
 		rollbackAmountTextField.setText(Integer.toString(maxRollbacks));
 		rollbackTextFieldListener.setMaxValue(maxRollbacks);
 		
 		specialPiecesLabel.setText(Integer.toString(player.getSpecialPieces()));
-	}
-	
-	private void initializeGrid() {
-		VBox[] columns = new VBox[Connect4Logic.WIDTH];
-		for (int column = 0; column < Connect4Logic.WIDTH; column++) {
-			
-			VBox curColumn = new VBox(GRID_PADDING);
-			int finalColumn = column;
-			curColumn.setOnMouseClicked(mouseEvent -> {
-				gridPressedColumn(finalColumn + 1);
-			});
-			
-			columns[column] = curColumn;
-			Connect4UI.fillGridLine(column, curColumn, paneArea);
-		}
-		
-		Pane area = new HBox(GRID_PADDING);
-		gameArea.setCenter(area);
-		area.getChildren().addAll(columns);
 	}
 	
 	void gridPressedColumn(int column) {
@@ -134,7 +102,7 @@ public class InGame implements Initializable {
 	
 	void updateAfterPlay() {
 		updateFields();
-		updateBoard();
+		board.updateBoard(getMachine().getGameArea());
 		
 		StateMachine machine = getMachine();
 		switch (machine.getState()) {
@@ -188,13 +156,6 @@ public class InGame implements Initializable {
 		}
 	}
 	
-	void updateBoard() {
-		Platform.runLater(() -> {
-			Piece[][] area = getMachine().getGameArea();
-			Connect4UI.updateBoard(area, paneArea);
-		});
-	}
-	
 	private StateMachine getMachine() {
 		return app.getStateMachine();
 	}
@@ -206,6 +167,7 @@ public class InGame implements Initializable {
 	
 	public void saveCurrentGame(ActionEvent actionEvent) {
 		File file = app.saveFileChooser();
+		if (file == null) return;
 		try {
 			app.saveCurrentStateMachine(file.getAbsolutePath());
 		} catch (IOException e) {
@@ -216,6 +178,7 @@ public class InGame implements Initializable {
 	
 	public void loadSavedGame(ActionEvent actionEvent) {
 		File file = app.openFileChooser();
+		if (file == null) return;
 		try {
 			app.loadGameFromFile(file.getAbsolutePath());
 		} catch (IOException | ClassNotFoundException e) {

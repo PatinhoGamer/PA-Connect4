@@ -24,15 +24,6 @@ import java.util.Optional;
 
 public class Connect4UI extends Application {
 	
-	public static final int SQUARE_SIZE = 40;
-	public static final int GRID_PADDING = 5;
-	
-	public static final CornerRadii ROUND_CORNER = new CornerRadii(SQUARE_SIZE / 2d);
-	
-	public static final Color PLAYER1_COLOR = Color.RED;
-	public static final Color PLAYER2_COLOR = Color.YELLOW;
-	public static final Color NOPLAYER_COLOR = Color.GRAY;
-	
 	public static final String FXML_GAMETOSTART = "GameToStart";
 	public static final String FXML_MENU = "Menu";
 	public static final String FXML_PLAYING_MINIGAME = "PlayingMiniGame";
@@ -55,17 +46,6 @@ public class Connect4UI extends Application {
 	
 	public Connect4UI() {
 		instance = this;
-	}
-	
-	public static void fillGridLine(int column, VBox curColumn, Pane[][] paneArea) {
-		for (int line = 0; line < Connect4Logic.HEIGHT; line++) {
-			Pane spot = new Pane();
-			spot.setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
-			Connect4UI.changeBackground(spot, NOPLAYER_COLOR, ROUND_CORNER);
-			
-			curColumn.getChildren().add(spot);
-			paneArea[line][column] = spot;
-		}
 	}
 	
 	@Override
@@ -131,18 +111,6 @@ public class Connect4UI extends Application {
 		}
 	}
 	
-	public static void updateBoard(Piece[][] area, Pane[][] paneArea) {
-		for (int line = 0; line < area.length; line++) {
-			for (int column = 0; column < area[0].length; column++) {
-				if (area[line][column] == null)
-					Connect4UI.changeBackground(paneArea[line][column], NOPLAYER_COLOR, ROUND_CORNER);
-				else if (area[line][column] == Piece.PLAYER1)
-					Connect4UI.changeBackground(paneArea[line][column], PLAYER1_COLOR, ROUND_CORNER);
-				else
-					Connect4UI.changeBackground(paneArea[line][column], PLAYER2_COLOR, ROUND_CORNER);
-			}
-		}
-	}
 	
 	public void runMiniGame() throws IOException {
 		Stage miniGameStage = new Stage();

@@ -15,9 +15,7 @@ public class Main {
 		
 		for (int i = 0; i < args.length; i++) {
 			switch (args[i]) {
-				case "-text" -> {
-					textVersion = true;
-				}
+				case "-text" -> textVersion = true;
 			}
 		}
 		

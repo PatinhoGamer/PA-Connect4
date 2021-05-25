@@ -8,9 +8,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import jogo.iu.gui.Board;
 import jogo.iu.gui.Connect4UI;
 import jogo.logica.Connect4Logic;
 import jogo.logica.Replayer;
+import jogo.logica.dados.Piece;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -19,22 +21,17 @@ import static jogo.iu.gui.Connect4UI.*;
 
 public class WatchingReplay implements Initializable {
 	
-	
-	public BorderPane gameArea;
+	public BorderPane root;
 	private Connect4UI app;
-	private Pane[][] paneArea;
 	private boolean finishedWatching = false;
 	private Replayer replayer;
 	private Runnable scheduler;
+	private Board board;
 	
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		app = Connect4UI.getInstance();
 		replayer = new Replayer(app.getReplayToWatch());
-		
-		paneArea = new Pane[Connect4Logic.HEIGHT][Connect4Logic.WIDTH];
-		
-		initializeGrid();
 		
 		scheduler = () -> {
 			try {
@@ -45,22 +42,10 @@ public class WatchingReplay implements Initializable {
 			}
 		};
 		
-		moveForward();
-	}
-	
-	private void initializeGrid() {
-		VBox[] columns = new VBox[Connect4Logic.WIDTH];
-		for (int column = 0; column < Connect4Logic.WIDTH; column++) {
-			
-			VBox curColumn = new VBox(GRID_PADDING);
-			columns[column] = curColumn;
-			
-			Connect4UI.fillGridLine(column, curColumn,paneArea);
-		}
+		board = new Board(null);
+		root.setCenter(board);
 		
-		Pane area = new HBox(GRID_PADDING);
-		gameArea.setCenter(area);
-		area.getChildren().addAll(columns);
+		moveForward();
 	}
 	
 	private void moveForward() {
@@ -68,9 +53,9 @@ public class WatchingReplay implements Initializable {
 			finishedWatching = true;
 			return;
 		}
-		if (replayer.getLastMessage() == null)
-			updateBoard();
-		else {
+		if (replayer.getLastMessage() == null) {
+			board.updateBoard(replayer.getGameArea());
+		} else {
 			app.openMessageDialog(Alert.AlertType.INFORMATION, "Replay", replayer.getLastMessage());
 		}
 		
@@ -79,12 +64,6 @@ public class WatchingReplay implements Initializable {
 	//TODO make the animation thing
 	//TODO make watching replay prettier
 	
-	
-	private void updateBoard() {
-		Platform.runLater(() -> {
-			Connect4UI.updateBoard(replayer.getGameArea(), paneArea);
-		});
-	}
 	
 	public void backToMenu(ActionEvent actionEvent) {
 		finishedWatching = true;
