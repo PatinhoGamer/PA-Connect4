@@ -23,6 +23,6 @@ public class Menu {
 	}
 	
 	public void exit(ActionEvent actionEvent) throws Exception {
-		Connect4UI.getInstance().stop();
+		Connect4UI.getInstance().exit();
 	}
 }

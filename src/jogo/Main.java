@@ -12,13 +12,17 @@ public class Main {
 	
 	public static void main(String[] args) {
 		boolean textVersion = false;
-		if (args.length > 0) {
-			if (args[0].equals("-text")) {
-				textVersion = true;
+		
+		for (int i = 0; i < args.length; i++) {
+			switch (args[i]) {
+				case "-text" -> {
+					textVersion = true;
+				}
 			}
 		}
 		
 		try {
+			System.out.println("Loading replays from Disk");
 			GameSaver.loadReplaysFromDisk(replaySaveFile);
 		} catch (IOException e) {
 			System.out.println("Error loading replays from file, maybe it doesnt exist. It will be created on exit");
@@ -33,6 +37,7 @@ public class Main {
 		}
 		
 		try {
+			System.out.println("Saving replays to Disk");
 			GameSaver.sendReplaysToDisk(replaySaveFile);
 		} catch (IOException e) {
 			e.printStackTrace();

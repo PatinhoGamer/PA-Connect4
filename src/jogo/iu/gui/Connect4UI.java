@@ -11,10 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import jogo.iu.gui.controllers.ChoosingReplay;
 import jogo.logica.Connect4Logic;
 import jogo.logica.GameSaver;
-import jogo.logica.Replayer;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
 import jogo.logica.dados.Replay;
@@ -22,10 +20,7 @@ import jogo.logica.estados.GameToStart;
 import jogo.logica.estados.StateMachine;
 
 import java.io.*;
-import java.net.URL;
-import java.util.Enumeration;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 public class Connect4UI extends Application {
 	
@@ -206,11 +201,6 @@ public class Connect4UI extends Application {
 		return stage;
 	}
 	
-	public FXMLLoader loadParent(String fileName) throws IOException {
-		URL resource = getClass().getResource("/" + fileName + ".fxml");
-		return new FXMLLoader(resource);
-	}
-	
 	public void changeScene(String fileName) {
 		try {
 			root = loadParent(fileName).load();
@@ -242,5 +232,13 @@ public class Connect4UI extends Application {
 		var temp = replayToWatch;
 		replayToWatch = null;
 		return temp;
+	}
+	
+	public FXMLLoader loadParent(String fileName) throws IOException {
+		return ResourceLoader.loadFXML(fileName);
+	}
+	
+	public void exit() {
+		Platform.exit();
 	}
 }
