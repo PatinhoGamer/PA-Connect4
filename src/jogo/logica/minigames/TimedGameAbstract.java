@@ -12,10 +12,13 @@ public abstract class TimedGameAbstract implements TimedMiniGame {
 	
 	public abstract void generateQuestion();
 	
+	public TimedGameAbstract() {
+		generateQuestion();
+	}
+	
 	@Override
 	public void start() {
 		startTime = System.currentTimeMillis();
-		generateQuestion();
 	}
 	
 	@Override

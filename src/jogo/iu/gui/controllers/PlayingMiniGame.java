@@ -32,10 +32,9 @@ public class PlayingMiniGame implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		app = Connect4UI.getInstance();
-		miniGame = Connect4UI.getInstance().getStateMachine().getMiniGame();
+		miniGame = app.getStateMachine().getMiniGame();
 		
 		gameObjectiveLabel.setText(miniGame.getGameObjective());
-		questionLabel.setText(miniGame.getQuestion());
 		timerLabel.setText(Integer.toString(miniGame.availableTime()));
 	}
 	

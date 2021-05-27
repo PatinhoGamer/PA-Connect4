@@ -1,25 +1,22 @@
 package jogo.logica.estados;
 
-import jogo.logica.Connect4Logic;
-import jogo.logica.dados.Piece;
+import jogo.logica.GameData;
+import jogo.logica.GameDataObservable;
 
 public class ComputerPlays extends GameAbstractState {
 	
-	private final Piece computerPlayer;
-	
-	public ComputerPlays(Connect4Logic game, Piece nextPlayer) {
+	public ComputerPlays(GameDataObservable game) {
 		super(game);
-		this.computerPlayer = nextPlayer;
 	}
 	
 	@Override
 	public GameState executePlay() {
 		while (true) {
-			int columnToPlayAt = (int) Math.floor(Math.random() * Connect4Logic.WIDTH) + 1;
-			boolean columnWasntFull = game.playAt(computerPlayer, columnToPlayAt);
+			int columnToPlayAt = (int) Math.floor(Math.random() * GameData.WIDTH) + 1;
+			boolean columnWasntFull = game.playAt(columnToPlayAt);
 			
 			if (columnWasntFull)
-				return stateAfterPlay(computerPlayer);
+				return stateAfterPlay();
 		}
 	}
 	

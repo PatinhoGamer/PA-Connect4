@@ -1,6 +1,7 @@
 package jogo.iu.texto;
 
-import jogo.logica.Connect4Logic;
+import jogo.logica.GameData;
+import jogo.logica.GameDataObservable;
 import jogo.logica.GameSaver;
 import jogo.logica.Replayer;
 import jogo.logica.dados.Piece;
@@ -8,7 +9,7 @@ import jogo.logica.dados.Player;
 import jogo.logica.dados.PlayerType;
 import jogo.logica.dados.Replay;
 import jogo.logica.estados.GameToStart;
-import jogo.logica.estados.StateMachine;
+import jogo.logica.StateMachine;
 import jogo.logica.minigames.TimedMiniGame;
 
 import java.io.IOException;
@@ -21,9 +22,6 @@ public class Connect4TextUI {
 	private StateMachine stateMachine;
 	private final Scanner scanner = new Scanner(System.in);
 	private boolean exit = false;
-	
-	public Connect4TextUI() {
-	}
 	
 	public void start() {
 		while (!exit) {
@@ -243,7 +241,7 @@ public class Connect4TextUI {
 	}
 	
 	private int chooseColumn() {
-		return UIUtils.getChoice(1, Connect4Logic.WIDTH);
+		return UIUtils.getChoice(1, GameData.WIDTH);
 	}
 	
 	private void drawGameArea(Piece[][] gameArea) {
@@ -273,16 +271,16 @@ public class Connect4TextUI {
 	}
 	
 	private void initializeGame() {
-		this.stateMachine = new StateMachine(new GameToStart(new Connect4Logic()));
+		this.stateMachine = new StateMachine(new GameToStart(new GameDataObservable()));
 	}
 	
 	private void printCurrentPlayer() {
-		Player player = stateMachine.getCurrentPlayerObj();
+		var player = stateMachine.getCurrentPlayerObj();
 		System.out.println("Current Player : " + player.getName());
 		if (player.getType() == PlayerType.HUMAN) {
 			System.out.println("\t Rollbacks : " + player.getRollbacks());
 			System.out.println("\t Special Pieces : " + player.getSpecialPieces());
-			System.out.println("\t Minigame Counter : " + (Connect4Logic.ROUNDS_TO_PLAY_MINIGAME - player.getMiniGameCounter()));
+			System.out.println("\t Minigame Counter : " + (GameData.ROUNDS_TO_PLAY_MINIGAME - player.getMiniGameCounter()));
 		}
 	}
 	

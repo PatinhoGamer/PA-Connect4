@@ -2,15 +2,19 @@ package jogo.logica;
 
 import jogo.logica.dados.Player;
 import jogo.logica.dados.Piece;
+import jogo.logica.dados.PlayerType;
+import jogo.logica.dados.PlayerViewer;
 
 import java.awt.Point;
+import java.io.File;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Random;
 
-public class Connect4Logic implements Serializable {
+public class GameData implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 0L;
 	
@@ -36,6 +40,7 @@ public class Connect4Logic implements Serializable {
 	
 	private Player player1;
 	private Player player2;
+	private Piece currentPlayer;
 	
 	private final List<String> gameActions = new ArrayList<>();
 	
@@ -45,7 +50,19 @@ public class Connect4Logic implements Serializable {
 		this.player2 = player2;
 		gameActions.add(ACTION_SET_PLAYERS + ACTION_DELIMITER +
 				player1.getType() + ' ' + player1.getName() + ',' + player2.getType() + ' ' + player2.getName());
+		
+		currentPlayer = Piece.PLAYER1;
+		if(Math.random()>= 0.5)
+			currentPlayer = currentPlayer.getOther();
+		
 		return true;
+	}
+	
+	public boolean playAt(int column) {
+		boolean success = playAt(getCurrentPlayerPiece(), column);
+		if (success)
+			setNextPlayer();
+		return success;
 	}
 	
 	public boolean playAt(Piece playerPiece, int column) {
@@ -68,6 +85,13 @@ public class Connect4Logic implements Serializable {
 		return false;
 	}
 	
+	public boolean clearColumn(int column) {
+		boolean success = clearColumn(getCurrentPlayerPiece(), column);
+		if (success)
+			setNextPlayer();
+		return success;
+	}
+	
 	public boolean clearColumn(Piece playerPiece, int column) {
 		column = column - 1;
 		Player player = getPlayerFromEnum(playerPiece);
@@ -87,6 +111,13 @@ public class Connect4Logic implements Serializable {
 		return false;
 	}
 	
+	public boolean rollback(int amount) {
+		boolean success = rollback(getCurrentPlayerPiece(), amount);
+		if (success)
+			setNextPlayer();
+		return success;
+	}
+	
 	public boolean rollback(Piece playerPiece, int amount) {
 		Player player = getPlayerFromEnum(playerPiece);
 		if (amount <= 0 || player.getRollbacks() < amount || lastPlays.size() < amount)
@@ -104,6 +135,76 @@ public class Connect4Logic implements Serializable {
 		return true;
 	}
 	
+	// Minigame Related ------------------------------------------------------------------------------------------------
+	public void playerWonMiniGame() {
+		playerWonMiniGame(getCurrentPlayerPiece());
+	}
+	
+	public void playerWonMiniGame(Piece piece) {
+		Player player = getPlayerFromEnum(piece);
+		player.resetSpecialCounter();
+		player.addSpecialPiece();
+		gameActions.add(GameData.ACTION_MINIGAME_WON + ':' + piece);
+	}
+	
+	public void playerLostMiniGame() {
+		playerLostMiniGame(getCurrentPlayerPiece());
+	}
+	
+	public void playerLostMiniGame(Piece piece) {
+		Player player = getPlayerFromEnum(piece);
+		player.resetSpecialCounter();
+		gameActions.add(GameData.ACTION_MINIGAME_LOST + ':' + piece);
+	}
+	
+	public void playerIgnoredMiniGame() {
+		playerIgnoredMiniGame(getCurrentPlayerPiece());
+	}
+	
+	public void playerIgnoredMiniGame(Piece piece) {
+		gameActions.add(GameData.ACTION_MINIGAME_IGNORED + ':' + piece);
+	}
+	// Minigame Related ------------------------------------------------------------------------------------------------
+	
+	// Getters
+	public List<String> getGameActions() {
+		return gameActions;
+	}
+	
+	public Piece[][] getGameArea() {
+		return gameArea;
+	}
+	
+	public int getRound() {
+		return round;
+	}
+	
+	public int getAvailableRollbacks() {
+		return lastPlays.size();
+	}
+	
+	public Player getPlayerFromEnum(Piece playerPiece) {
+		return playerPiece == Piece.PLAYER1 ? player1 : player2;
+	}
+	
+	public Piece getCurrentPlayerPiece() {
+		return currentPlayer;
+	}
+	
+	public Player getCurrentPlayer() {
+		return getPlayerFromEnum(getCurrentPlayerPiece());
+	}
+	
+	public boolean isPlayerBot() {
+		return getCurrentPlayer().getType() == PlayerType.COMPUTER;
+	}
+	
+	public boolean isMinigameAvailable() {
+		return getCurrentPlayer().getMiniGameCounter() >= GameData.ROUNDS_TO_PLAY_MINIGAME;
+	}
+	// Getters ---------------------------------------------------------------------------------------------------------
+	
+	// Board Verification ----------------------------------------------------------------------------------------------
 	public Piece checkWinner() {
 		for (int column = 0; column < WIDTH; column++) {
 			for (int line = HEIGHT - 1; line >= 0; line--) {
@@ -126,13 +227,12 @@ public class Connect4Logic implements Serializable {
 				new Point(-1, -1), new Point(0, -1), new Point(1, -1),
 				new Point(-1, 0),/*       Center      */  new Point(1, 0),
 				new Point(-1, 1), new Point(0, 1), new Point(1, 1)};
-		
 		for (Point offset : directionsAround) {
 			int amount = 1;
 			int offX = column;
 			int offY = line;
 			
-			for (int i = 1; i <= AMOUNT_TO_WIN; i++) { // could be just a while(true), but this is better for the brain
+			while (amount <= AMOUNT_TO_WIN) {
 				offX += offset.x;
 				offY += offset.y;
 				
@@ -148,10 +248,15 @@ public class Connect4Logic implements Serializable {
 		return false;
 	}
 	
-	public Player getPlayerFromEnum(Piece playerPiece) {
-		return playerPiece == Piece.PLAYER1 ? player1 : player2;
+	public boolean isFull() {
+		for (int column = 0; column < WIDTH; column++)
+			if (gameArea[0][column] == null)
+				return false;
+		return true;
 	}
+	// Board Verification ----------------------------------------------------------------------------------------------
 	
+	// Helpers ---------------------------------------------------------------------------------------------------------
 	private Piece[][] createGameAreaCopy() {
 		Piece[][] copy = new Piece[gameArea.length][gameArea[0].length];
 		for (int i = 0; i < copy.length; i++)
@@ -159,58 +264,8 @@ public class Connect4Logic implements Serializable {
 		return copy;
 	}
 	
-	public List<String> getGameActions() {
-		return gameActions;
+	private void setNextPlayer() {
+		currentPlayer = currentPlayer.getOther();
 	}
-	
-	public Piece[][] getGameArea() {
-		return gameArea;
-	}
-	
-	public boolean isFull() {
-		for (int column = 0; column < WIDTH; column++)
-			if (gameArea[0][column] == null)
-				return false;
-		return true;
-	}
-	
-	public int getRound() {
-		return round;
-	}
-	
-	public int getAvailableRollbacks() {
-		return lastPlays.size();
-	}
-	
-	public void playerWonMiniGame(Piece playerPiece) {
-		Player player = getPlayerFromEnum(playerPiece);
-		player.resetSpecialCounter();
-		player.addSpecialPiece();
-		
-		gameActions.add(Connect4Logic.ACTION_MINIGAME_WON + ':' + playerPiece);
-	}
-	
-	public void playerLostMiniGame(Piece playerPiece) {
-		gameActions.add(Connect4Logic.ACTION_MINIGAME_LOST + ':' + playerPiece);
-	}
-	
-	public void playerIgnoredMiniGame(Piece playerPiece) {
-		gameActions.add(Connect4Logic.ACTION_MINIGAME_IGNORED + ':' + playerPiece);
-	}
-	
-	private void showWhere(int y, int x) {
-		for (int line = 0; line < gameArea.length; line++) {
-			System.out.print("|");
-			for (int column = 0; column < gameArea[0].length; column++) {
-				if (line == y && column == x) System.out.print("X");
-				else System.out.print(" ");
-				System.out.print("|");
-			}
-			System.out.println();
-		}
-		for (int line = 0; line < gameArea.length * 2 + 3; line++) {
-			System.out.print("-");
-		}
-		System.out.println();
-	}
+	// Helpers ---------------------------------------------------------------------------------------------------------
 }

@@ -1,16 +1,14 @@
 package jogo.logica.estados;
 
-import jogo.logica.Connect4Logic;
-import jogo.logica.dados.Piece;
-import jogo.logica.dados.Player;
-import jogo.logica.dados.PlayerType;
+import jogo.logica.GameDataObservable;
+import jogo.logica.dados.*;
 import jogo.logica.minigames.TimedMiniGame;
 
 public abstract class GameAbstractState implements GameState {
 	
-	protected Connect4Logic game;
+	protected GameDataObservable game;
 	
-	public GameAbstractState(Connect4Logic game) {
+	public GameAbstractState(GameDataObservable game) {
 		this.game = game;
 	}
 	
@@ -60,8 +58,17 @@ public abstract class GameAbstractState implements GameState {
 	}
 	
 	@Override
-	public Connect4Logic getGame() {
+	public GameDataViewer getGameViewer() {
+		return new GameDataViewer(game);
+	}
+	
+	private GameDataObservable getGame() {
 		return game;
+	}
+	
+	@Override
+	public Piece[][] getGameArea() {
+		return game.getGameArea();
 	}
 	
 	@Override
@@ -70,13 +77,18 @@ public abstract class GameAbstractState implements GameState {
 	}
 	
 	@Override
-	public Player getPlayer(Piece playerPiece) {
-		return game.getPlayerFromEnum(playerPiece);
+	public PlayerViewer getPlayer(Piece playerPiece) {
+		return new PlayerViewer(game.getPlayerFromEnum(playerPiece));
 	}
 	
 	@Override
-	public Piece getCurrentPlayer() {
-		return null;
+	public PlayerViewer getCurrentPlayer() {
+		return new PlayerViewer(game.getPlayerFromEnum(getCurrentPlayerPiece()));
+	}
+	
+	@Override
+	public Piece getCurrentPlayerPiece() {
+		return game.getCurrentPlayerPiece();
 	}
 	
 	@Override
@@ -93,20 +105,16 @@ public abstract class GameAbstractState implements GameState {
 		return null;
 	}
 	
-	protected GameState stateAfterPlay(Piece playerPiece) {
+	protected GameState stateAfterPlay() {
 		GameFinished finishedState = checkFinishedState();
 		if (finishedState != null) return finishedState;
 		
-		Piece nextPlayer = playerPiece.getOther();
+		if (game.isPlayerBot())
+			return new ComputerPlays(game);
 		
-		Player trulyNextPlayer = getGame().getPlayerFromEnum(nextPlayer);
-		if (trulyNextPlayer.getType() == PlayerType.COMPUTER)
-			return new ComputerPlays(game, nextPlayer);
-		
-		if (trulyNextPlayer.getMiniGameCounter() >= Connect4Logic.ROUNDS_TO_PLAY_MINIGAME) {
-			trulyNextPlayer.resetSpecialCounter();
-			return new CheckPlayerWantsMiniGame(game, nextPlayer);
+		if (game.isMinigameAvailable()) {
+			return new CheckPlayerWantsMiniGame(game);
 		}
-		return new WaitingPlayerMove(game, nextPlayer);
+		return new WaitingPlayerMove(game);
 	}
 }

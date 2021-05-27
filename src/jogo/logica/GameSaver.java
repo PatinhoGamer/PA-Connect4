@@ -1,7 +1,6 @@
 package jogo.logica;
 
 import jogo.logica.dados.Replay;
-import jogo.logica.estados.StateMachine;
 
 import java.io.*;
 import java.util.Date;
@@ -9,7 +8,7 @@ import java.util.List;
 
 public class GameSaver {
 	
-	public static final String fileExtension = ".C4save";
+	public static final String fileExtension = ".C4replays";
 	
 	private static FixedSizeStack<Replay> replays = new FixedSizeStack<>(5);
 	

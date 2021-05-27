@@ -1,8 +1,10 @@
 package jogo.logica.estados;
 
-import jogo.logica.Connect4Logic;
+import jogo.logica.GameDataObservable;
+import jogo.logica.dados.GameDataViewer;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
+import jogo.logica.dados.PlayerViewer;
 import jogo.logica.minigames.TimedMiniGame;
 
 import java.io.Serializable;
@@ -27,13 +29,17 @@ public interface GameState extends Serializable {
 	
 	GameState restartGame();
 	
-	Connect4Logic getGame();
+	GameDataViewer getGameViewer();
+	
+	Piece[][] getGameArea();
 	
 	Piece getWinner();
 	
-	Player getPlayer(Piece playerPiece);
+	PlayerViewer getPlayer(Piece playerPiece);
 	
-	Piece getCurrentPlayer();
+    PlayerViewer getCurrentPlayer();
+	
+	Piece getCurrentPlayerPiece();
 	
 	TimedMiniGame getMiniGame();
 	

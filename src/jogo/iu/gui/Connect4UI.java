@@ -11,13 +11,12 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import jogo.logica.Connect4Logic;
+import jogo.logica.GameDataObservable;
 import jogo.logica.GameSaver;
-import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
 import jogo.logica.dados.Replay;
 import jogo.logica.estados.GameToStart;
-import jogo.logica.estados.StateMachine;
+import jogo.logica.StateMachine;
 
 import java.io.*;
 import java.util.Optional;
@@ -62,12 +61,8 @@ public class Connect4UI extends Application {
 			}
 		});
 		stage.setTitle("Connect 4");
+		stage.setResizable(false);
 		stage.show();
-	}
-	
-	@Override
-	public void stop() throws Exception {
-		super.stop();
 	}
 	
 	public void goBackToMenu() {
@@ -76,7 +71,7 @@ public class Connect4UI extends Application {
 	}
 	
 	public void startGame() {
-		stateMachine = new StateMachine(new GameToStart(new Connect4Logic()));
+		stateMachine = new StateMachine(new GameToStart(new GameDataObservable()));
 		changeToRightState();
 	}
 	
@@ -113,7 +108,7 @@ public class Connect4UI extends Application {
 	
 	
 	public void runMiniGame() throws IOException {
-		Stage miniGameStage = new Stage();
+		var miniGameStage = new Stage();
 		miniGameStage.setTitle("Minigame");
 		
 		Pane root = loadParent(FXML_PLAYING_MINIGAME).load();
@@ -133,14 +128,14 @@ public class Connect4UI extends Application {
 	}
 	
 	public void openMessageDialog(Alert.AlertType type, String title, String message) {
-		Alert alert = new Alert(type);
+		var alert = new Alert(type);
 		alert.setTitle(title);
 		alert.setHeaderText(message);
 		alert.showAndWait();
 	}
 	
 	public boolean openMessageWithCancel(String title, String message) {
-		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+		var alert = new Alert(Alert.AlertType.CONFIRMATION);
 		alert.setTitle(title);
 		alert.setContentText(message);
 		
@@ -148,20 +143,23 @@ public class Connect4UI extends Application {
 		if (result.isEmpty()) return false;
 		return !result.get().getButtonData().isCancelButton();
 	}
+	private FileChooser getFileChooser(){
+		var fileChooser = new FileChooser();
+		fileChooser.setInitialDirectory(new File("."));
+		fileChooser.getExtensionFilters().add(
+				new FileChooser.ExtensionFilter("Connect4 SaveFile", '*' + GameSaver.fileExtension));
+		return fileChooser;
+	}
 	
 	public File openFileChooser() {
-		FileChooser fileChooser = new FileChooser();
+		var fileChooser = getFileChooser();
 		fileChooser.setTitle("Select the file");
-		fileChooser.getExtensionFilters().add(
-				new FileChooser.ExtensionFilter("Connect 4 Save File", '*' + GameSaver.fileExtension));
 		return fileChooser.showOpenDialog(getStage());
 	}
 	
 	public File saveFileChooser() {
-		FileChooser fileChooser = new FileChooser();
+		var fileChooser = getFileChooser();
 		fileChooser.setTitle("Choose where to save the file");
-		fileChooser.getExtensionFilters().add(
-				new FileChooser.ExtensionFilter("Connect 4 Save File", '*' + GameSaver.fileExtension));
 		return fileChooser.showSaveDialog(getStage());
 	}
 	

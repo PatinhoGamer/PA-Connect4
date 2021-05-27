@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import jogo.logica.Connect4Logic;
+import jogo.logica.GameData;
 import jogo.logica.dados.Piece;
 
 public class Board extends FlowPane {
@@ -30,15 +30,15 @@ public class Board extends FlowPane {
 	}
 	
 	private void initializeGrid(OnCollumClicked handler) {
-		paneArea = new Pane[Connect4Logic.HEIGHT][Connect4Logic.WIDTH];
+		paneArea = new Pane[GameData.HEIGHT][GameData.WIDTH];
 		
-		VBox[] columns = new VBox[Connect4Logic.WIDTH];
-		for (int column = 0; column < Connect4Logic.WIDTH; column++) {
+		VBox[] columns = new VBox[GameData.WIDTH];
+		for (int column = 0; column < GameData.WIDTH; column++) {
 			
 			VBox curColumn = new VBox(Board.GRID_PADDING);
 			if (handler != null) {
-				int finalColumn = column;
-				curColumn.setOnMouseClicked(mouseEvent -> handler.onCollumClicked(finalColumn + 1));
+				int finalColumn = column + 1;
+				curColumn.setOnMouseClicked(mouseEvent -> handler.onCollumClicked(finalColumn));
 			}
 			columns[column] = curColumn;
 			fillGridLine(column, curColumn, paneArea);
@@ -49,7 +49,7 @@ public class Board extends FlowPane {
 	}
 	
 	private void fillGridLine(int column, VBox curColumn, Pane[][] paneArea) {
-		for (int line = 0; line < Connect4Logic.HEIGHT; line++) {
+		for (int line = 0; line < GameData.HEIGHT; line++) {
 			Pane spot = new Pane();
 			spot.setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
 			Connect4UI.changeBackground(spot, EMPTY_COLOR, ROUND_CORNER);

@@ -12,23 +12,18 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import jogo.iu.gui.Board;
 import jogo.iu.gui.Connect4UI;
-import jogo.logica.Connect4Logic;
+import jogo.logica.GameDataObservable;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
 import jogo.logica.estados.Connect4States;
-import jogo.logica.estados.StateMachine;
+import jogo.logica.StateMachine;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import static jogo.iu.gui.Connect4UI.*;
 
 public class InGame implements Initializable {
 	
@@ -61,12 +56,30 @@ public class InGame implements Initializable {
 		board = new Board(column -> gridPressedColumn(column));
 		root.setCenter(board);
 		
+		board = new Board(column -> gridPressedColumn(column));
+		root.setCenter(board);
+		
+		registerListeners();
+		
 		updateAfterPlay();
+	}
+	
+	private void registerListeners() {
+		var stateMachine = getMachine();
+		var observableGame = stateMachine.getGame();
+		observableGame.addChangeListener(GameDataObservable.Changes.BoardChanged, evt -> {
+			if (evt.getNewValue() instanceof Piece[][])
+				board.updateBoard((Piece[][]) evt.getNewValue());
+		});
+		
+		observableGame.addChangeListener(GameDataObservable.Changes.PlayerClearedColumn, evt -> {
+			specialPiecesLabel.setText(Integer.toString(stateMachine.getCurrentPlayerObj().getSpecialPieces()));
+		});
 	}
 	
 	private void updateFields() {
 		StateMachine machine = getMachine();
-		Player player = machine.getCurrentPlayerObj();
+		var player = machine.getCurrentPlayerObj();
 		
 		playerNameLabel.setText(player.getName());
 		if (machine.getCurrentPlayer() == Piece.PLAYER1)
@@ -95,7 +108,7 @@ public class InGame implements Initializable {
 				stateMachine.playAt(column);
 			
 			updateAfterPlay();
-		} else {
+		} else if(stateMachine.getState() == Connect4States.ComputerPlays) {
 			System.out.println("something is wrong with the gridPressedColumn. this isnt the right type of window for this");
 		}
 	}
@@ -111,7 +124,7 @@ public class InGame implements Initializable {
 			case ComputerPlays -> {
 				new Thread(() -> {
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(500);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -122,7 +135,7 @@ public class InGame implements Initializable {
 				}).start();
 			}
 			case CheckPlayerWantsMiniGame -> {
-				Player player = machine.getCurrentPlayerObj();
+				var player = machine.getCurrentPlayerObj();
 				boolean wantsMiniGame = app.openMessageWithCancel("Minigame Opportunity", "'" + player.getName() + "' do you want to play the minigame?");
 				if (!wantsMiniGame) {
 					machine.ignoreMiniGame();
@@ -148,7 +161,7 @@ public class InGame implements Initializable {
 				if (winner == null) {
 					app.openMessageDialog(Alert.AlertType.INFORMATION, "Game is Finished", "It appears that no one won this round");
 				} else {
-					Player player = machine.getPlayer(winner);
+					var player = machine.getPlayer(winner);
 					app.openMessageDialog(Alert.AlertType.INFORMATION, "Game is Finished", "It appears that '" + player.getName() + "' has won this round");
 				}
 				app.goBackToMenu();

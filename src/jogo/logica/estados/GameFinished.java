@@ -1,6 +1,6 @@
 package jogo.logica.estados;
 
-import jogo.logica.Connect4Logic;
+import jogo.logica.GameDataObservable;
 import jogo.logica.GameSaver;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
@@ -9,7 +9,7 @@ public class GameFinished extends GameAbstractState {
 	
 	private Piece winner;
 	
-	public GameFinished(Connect4Logic game, Piece winner) {
+	public GameFinished(GameDataObservable game, Piece winner) {
 		super(game);
 		this.winner = winner;
 		
@@ -26,7 +26,7 @@ public class GameFinished extends GameAbstractState {
 	
 	@Override
 	public GameState restartGame() {
-		return new GameToStart(new Connect4Logic());
+		return new GameToStart(new GameDataObservable());
 	}
 	
 	@Override

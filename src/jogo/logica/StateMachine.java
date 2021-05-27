@@ -1,16 +1,23 @@
-package jogo.logica.estados;
+package jogo.logica;
 
-import jogo.logica.Connect4Logic;
+import jogo.logica.dados.GameDataViewer;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
+import jogo.logica.dados.PlayerViewer;
+import jogo.logica.estados.Connect4States;
+import jogo.logica.estados.GameState;
 import jogo.logica.minigames.TimedMiniGame;
 
+import java.beans.PropertyChangeSupport;
 import java.io.Serial;
 import java.io.Serializable;
 
 public class StateMachine implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 0L;
+	
+	public static final String CHANGE_STATE = "CHANGE_STATE";
+	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 	
 	private GameState currentState;
 	
@@ -19,39 +26,45 @@ public class StateMachine implements Serializable {
 	}
 	
 	public void playAt(int column) {
-		currentState = currentState.playAt(column);
+		setState(currentState.playAt(column));
 	}
 	
 	public void clearColumn(int column) {
-		currentState = currentState.clearColumn(column);
+		setState(currentState.clearColumn(column));
 	}
 	
 	public void executePlay() {
-		currentState = currentState.executePlay();
+		setState(currentState.executePlay());
 	}
 	
 	public void rollback(int amount) {
-		currentState = currentState.rollback(amount);
+		setState(currentState.rollback(amount));
 	}
 	
 	public void startMiniGame() {
-		currentState = currentState.startMiniGame();
+		setState(currentState.startMiniGame());
 	}
 	
 	public void ignoreMiniGame() {
-		currentState = currentState.ignoreMiniGame();
+		setState(currentState.ignoreMiniGame());
 	}
 	
 	public void endMiniGame() {
-		currentState = currentState.endMiniGame();
+		setState(currentState.endMiniGame());
 	}
 	
 	public void restartGame() {
-		currentState = currentState.restartGame();
+		setState(currentState.restartGame());
 	}
 	
 	public void startGameWithPlayers(Player player1, Player player2) {
 		currentState = currentState.startGameWithPlayers(player1, player2);
+	}
+	
+	private void setState(GameState newState) {
+		if (currentState != newState)
+			changeSupport.firePropertyChange(CHANGE_STATE, null, newState);
+		currentState = newState;
 	}
 	
 	public TimedMiniGame getMiniGame() {
@@ -59,14 +72,14 @@ public class StateMachine implements Serializable {
 	}
 	
 	public Piece getCurrentPlayer() {
-		return currentState.getCurrentPlayer();
+		return currentState.getCurrentPlayerPiece();
 	}
 	
-	public Player getCurrentPlayerObj() {
-		return currentState.getPlayer(currentState.getCurrentPlayer());
+	public PlayerViewer getCurrentPlayerObj() {
+		return currentState.getPlayer(currentState.getCurrentPlayerPiece());
 	}
 	
-	public Player getPlayer(Piece playerPiece) {
+	public PlayerViewer getPlayer(Piece playerPiece) {
 		return currentState.getPlayer(playerPiece);
 	}
 	
@@ -75,11 +88,11 @@ public class StateMachine implements Serializable {
 	}
 	
 	public Piece[][] getGameArea() {
-		return currentState.getGame().getGameArea();
+		return currentState.getGameArea();
 	}
 	
-	public Connect4Logic getGame() {
-		return currentState.getGame();
+	public GameDataViewer getGame() {
+		return currentState.getGameViewer();
 	}
 	
 	public Connect4States getState() {

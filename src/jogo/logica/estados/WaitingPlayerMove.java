@@ -1,51 +1,41 @@
 package jogo.logica.estados;
 
-import jogo.logica.Connect4Logic;
+import jogo.logica.GameDataObservable;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.PlayerType;
 
 public class WaitingPlayerMove extends GameAbstractState {
 	
-	private final Piece playerPiece;
-	
-	public WaitingPlayerMove(Connect4Logic game, Piece player) {
+	public WaitingPlayerMove(GameDataObservable game) {
 		super(game);
-		this.playerPiece = player;
 	}
 	
 	@Override
 	public GameState playAt(int column) {
-		boolean columnWasFull = !game.playAt(playerPiece, column);
+		boolean columnWasFull = !game.playAt(column);
 		if (columnWasFull)
 			return this;
-		return stateAfterPlay(playerPiece);
+		return stateAfterPlay();
 	}
 	
 	@Override
 	public GameState clearColumn(int column) {
-		boolean success = game.clearColumn(playerPiece, column);
+		boolean success = game.clearColumn(column);
 		if(!success)
 			return this;
-		return stateAfterPlay(playerPiece);
+		return stateAfterPlay();
 	}
 	
 	@Override
 	public GameState rollback(int amount) {
-		if (!game.rollback(playerPiece, amount))
+		if (!game.rollback( amount))
 			return this;
 		
-		Piece nextPlayer = playerPiece;
-		if (amount % 2 == 1)
-			nextPlayer = nextPlayer.getOther();
+		Piece nextPlayer = getCurrentPlayerPiece();
 		
 		if (game.getPlayerFromEnum(nextPlayer).getType() == PlayerType.COMPUTER)
-			return new ComputerPlays(game, nextPlayer);
-		return new WaitingPlayerMove(game, nextPlayer);
-	}
-	
-	@Override
-	public Piece getCurrentPlayer() {
-		return playerPiece;
+			return new ComputerPlays(game);
+		return new WaitingPlayerMove(game);
 	}
 	
 	@Override
