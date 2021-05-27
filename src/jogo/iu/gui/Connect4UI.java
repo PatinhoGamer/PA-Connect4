@@ -93,6 +93,7 @@ public class Connect4UI extends Application {
 		changeToRightState();
 	}
 	
+	
 	private void changeToRightState() {
 		switch (stateMachine.getState()) {
 			case GameToStart -> changeScene(FXML_GAMETOSTART);

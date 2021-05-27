@@ -8,6 +8,7 @@ import jogo.logica.estados.Connect4States;
 import jogo.logica.estados.GameState;
 import jogo.logica.minigames.TimedMiniGame;
 
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serial;
 import java.io.Serializable;
@@ -17,9 +18,13 @@ public class StateMachine implements Serializable {
 	private static final long serialVersionUID = 0L;
 	
 	public static final String CHANGE_STATE = "CHANGE_STATE";
-	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+	private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 	
 	private GameState currentState;
+	
+	public void addChangeListener(String propertyName, PropertyChangeListener listener) {
+		changeSupport.addPropertyChangeListener(propertyName, listener);
+	}
 	
 	public StateMachine(GameState currentState) {
 		this.currentState = currentState;
