@@ -7,7 +7,7 @@ import javafx.scene.paint.Color;
 import jogo.logica.GameData;
 import jogo.logica.dados.Piece;
 
-public class Board extends FlowPane {
+public class GameBoardBoard extends FlowPane {
 	
 	public static final int SQUARE_SIZE = 40;
 	public static final int GRID_PADDING = 5;
@@ -21,12 +21,16 @@ public class Board extends FlowPane {
 	private Pane[][] paneArea;
 	private Pane root;
 	
-	public Board(OnCollumClicked handler) {
+	public GameBoardBoard(OnCollumClicked handler) {
 		setAlignment(Pos.CENTER);
 		
 		initializeGrid(handler);
 		
 		getChildren().add(root);
+	}
+	
+	public GameBoardBoard() {
+		this(null);
 	}
 	
 	private void initializeGrid(OnCollumClicked handler) {
@@ -35,7 +39,7 @@ public class Board extends FlowPane {
 		VBox[] columns = new VBox[GameData.WIDTH];
 		for (int column = 0; column < GameData.WIDTH; column++) {
 			
-			VBox curColumn = new VBox(Board.GRID_PADDING);
+			VBox curColumn = new VBox(GameBoardBoard.GRID_PADDING);
 			if (handler != null) {
 				int finalColumn = column + 1;
 				curColumn.setOnMouseClicked(mouseEvent -> handler.onCollumClicked(finalColumn));
@@ -44,7 +48,7 @@ public class Board extends FlowPane {
 			fillGridLine(column, curColumn, paneArea);
 		}
 		
-		root = new HBox(Board.GRID_PADDING);
+		root = new HBox(GameBoardBoard.GRID_PADDING);
 		root.getChildren().addAll(columns);
 	}
 	

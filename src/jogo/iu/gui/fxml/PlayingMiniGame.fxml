@@ -4,7 +4,6 @@
 <?import javafx.scene.layout.*?>
 <FlowPane xmlns="http://javafx.com/javafx"
           xmlns:fx="http://javafx.com/fxml"
-          fx:controller="jogo.iu.gui.controllers.PlayingMiniGame"
           prefHeight="400.0" prefWidth="600.0"
           alignment="CENTER"
           columnHalignment="CENTER"

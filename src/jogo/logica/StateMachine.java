@@ -6,6 +6,7 @@ import jogo.logica.dados.Player;
 import jogo.logica.dados.PlayerViewer;
 import jogo.logica.estados.Connect4States;
 import jogo.logica.estados.GameState;
+import jogo.logica.estados.GameToStart;
 import jogo.logica.minigames.TimedMiniGame;
 
 import java.beans.PropertyChangeListener;
@@ -17,17 +18,14 @@ public class StateMachine implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 0L;
 	
-	public static final String CHANGE_STATE = "CHANGE_STATE";
-	private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
-	
 	private GameState currentState;
-	
-	public void addChangeListener(String propertyName, PropertyChangeListener listener) {
-		changeSupport.addPropertyChangeListener(propertyName, listener);
-	}
 	
 	public StateMachine(GameState currentState) {
 		this.currentState = currentState;
+	}
+	
+	public StateMachine(){
+		this.currentState = new GameToStart();
 	}
 	
 	public void playAt(int column) {
@@ -58,17 +56,11 @@ public class StateMachine implements Serializable {
 		setState(currentState.endMiniGame());
 	}
 	
-	public void restartGame() {
-		setState(currentState.restartGame());
-	}
-	
 	public void startGameWithPlayers(Player player1, Player player2) {
 		currentState = currentState.startGameWithPlayers(player1, player2);
 	}
 	
 	private void setState(GameState newState) {
-		if (currentState != newState)
-			changeSupport.firePropertyChange(CHANGE_STATE, null, newState);
 		currentState = newState;
 	}
 	
@@ -103,4 +95,6 @@ public class StateMachine implements Serializable {
 	public Connect4States getState() {
 		return currentState.getState();
 	}
+	
+	public GameState getUnderlyingGameState(){return currentState;}
 }

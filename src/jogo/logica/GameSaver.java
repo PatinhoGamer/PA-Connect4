@@ -8,7 +8,8 @@ import java.util.List;
 
 public class GameSaver {
 	
-	public static final String fileExtension = ".C4replays";
+	public static final String fileExtensionReplays = ".C4replays";
+	public static final String fileExtensionSave = ".C4save";
 	
 	private static FixedSizeStack<Replay> replays = new FixedSizeStack<>(5);
 	
@@ -16,7 +17,7 @@ public class GameSaver {
 	private GameSaver() {
 	}
 	
-	public static void saveReplay(List<String> gameActions,String winner,String loser) {
+	public static void saveReplay(List<String> gameActions, String winner, String loser) {
 		Replay replay = new Replay(gameActions, winner, loser, new Date());
 		
 		replays.push(replay);
@@ -33,25 +34,25 @@ public class GameSaver {
 	}
 	
 	public static void saveGameToFile(StateMachine wholeThing, String filePath) throws IOException {
-		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath + fileExtension))) {
+		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath + fileExtensionSave))) {
 			objectOutputStream.writeUnshared(wholeThing);
 		}
 	}
 	
 	public static StateMachine loadGameFromFile(String filePath) throws IOException, ClassNotFoundException {
-		try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath + fileExtension))) {
+		try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath + fileExtensionSave))) {
 			return (StateMachine) objectInputStream.readUnshared();
 		}
 	}
 	
 	public static void sendReplaysToDisk(String filePath) throws IOException {
-		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath + fileExtension))) {
+		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath + fileExtensionReplays))) {
 			objectOutputStream.writeUnshared(replays);
 		}
 	}
 	
 	public static void loadReplaysFromDisk(String filePath) throws IOException, ClassNotFoundException {
-		try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath + fileExtension))) {
+		try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath + fileExtensionReplays))) {
 			replays = (FixedSizeStack<Replay>) objectInputStream.readUnshared();
 		}
 	}

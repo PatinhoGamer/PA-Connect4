@@ -1,7 +1,6 @@
 package jogo.logica.dados;
 
 import jogo.logica.GameDataObservable;
-import jogo.logica.dados.Piece;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;

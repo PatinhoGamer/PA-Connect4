@@ -1,14 +1,16 @@
 package jogo.logica.estados;
 
 import jogo.logica.GameDataObservable;
-import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
-import jogo.logica.dados.PlayerType;
 
 public class GameToStart extends GameAbstractState {
 	
 	public GameToStart(GameDataObservable gameLogic) {
 		super(gameLogic);
+	}
+	
+	public GameToStart() {
+		this(new GameDataObservable());
 	}
 	
 	@Override

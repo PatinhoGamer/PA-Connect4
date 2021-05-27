@@ -1,33 +1,29 @@
-package jogo.iu.gui.controllers;
+package jogo.iu.gui.controllers.states;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
-import jogo.iu.gui.Board;
+import jogo.iu.gui.GameBoardBoard;
 import jogo.iu.gui.Connect4UI;
+import jogo.iu.gui.GameWindowStateManager;
+import jogo.iu.gui.ResourceLoader;
 import jogo.logica.GameDataObservable;
 import jogo.logica.dados.Piece;
-import jogo.logica.dados.Player;
 import jogo.logica.estados.Connect4States;
-import jogo.logica.StateMachine;
+import jogo.logica.observables.StateMachineObservable;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
-public class InGame implements Initializable {
-	
-	
+public class InGame extends AbstractWindowState {
 	@FXML
 	public BorderPane root;
 	public Label specialPiecesLabel;
@@ -37,31 +33,54 @@ public class InGame implements Initializable {
 	public ToggleButton normalPlayToggleButton;
 	public Label playerRollbackAmount;
 	
-	private Board board;
-	
-	private Connect4UI app;
+	private GameBoardBoard gameBoardBoard;
 	
 	private boolean clearColumnPlayType = false;
 	private RollbackTextPropertyListener rollbackTextFieldListener;
 	
-	@Override
-	public void initialize(URL url, ResourceBundle resourceBundle) {
+	private final Connect4UI app;
+	
+	public InGame(GameWindowStateManager windowStateManager) {
+		super(windowStateManager, ResourceLoader.FXML_BOARD);
 		app = Connect4UI.getInstance();
+	}
+	
+	private StateMachineObservable getMachine() {
+		return getWindowStateManager().getStateMachine();
+	}
+	
+	@Override
+	public void show() {
+		System.out.println("InGame");
+		super.show();
+		updateFields();
+		var stateMachine = getMachine();
 		
+		if (stateMachine.getState() == Connect4States.ComputerPlays) {
+			Platform.runLater(() -> {
+				try {
+					Thread.sleep(250);
+					stateMachine.executePlay();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			});
+		} else {
+			gameBoardBoard.updateBoard(stateMachine.getGameArea());
+		}
+	}
+	
+	@Override
+	public void firstSetupWindow() {
 		playerNameLabel.setPadding(new Insets(10));
 		
 		rollbackTextFieldListener = new RollbackTextPropertyListener();
 		rollbackAmountTextField.textProperty().addListener(rollbackTextFieldListener);
 		
-		board = new Board(column -> gridPressedColumn(column));
-		root.setCenter(board);
-		
-		board = new Board(column -> gridPressedColumn(column));
-		root.setCenter(board);
+		gameBoardBoard = new GameBoardBoard(column -> gridPressedColumn(column));
+		root.setCenter(gameBoardBoard);
 		
 		registerListeners();
-		
-		updateAfterPlay();
 	}
 	
 	private void registerListeners() {
@@ -69,7 +88,7 @@ public class InGame implements Initializable {
 		var observableGame = stateMachine.getGame();
 		observableGame.addChangeListener(GameDataObservable.Changes.BoardChanged, evt -> {
 			if (evt.getNewValue() instanceof Piece[][])
-				board.updateBoard((Piece[][]) evt.getNewValue());
+				gameBoardBoard.updateBoard((Piece[][]) evt.getNewValue());
 		});
 		
 		observableGame.addChangeListener(GameDataObservable.Changes.PlayerClearedColumn, evt -> {
@@ -78,13 +97,13 @@ public class InGame implements Initializable {
 	}
 	
 	private void updateFields() {
-		StateMachine machine = getMachine();
+		var machine = getMachine();
 		var player = machine.getCurrentPlayerObj();
 		
 		playerNameLabel.setText(player.getName());
 		if (machine.getCurrentPlayer() == Piece.PLAYER1)
-			Connect4UI.changeBackground(playerNameLabel, Board.PLAYER1_COLOR, Board.ROUND_CORNER);
-		else Connect4UI.changeBackground(playerNameLabel, Board.PLAYER2_COLOR, Board.ROUND_CORNER);
+			Connect4UI.changeBackground(playerNameLabel, GameBoardBoard.PLAYER1_COLOR, GameBoardBoard.ROUND_CORNER);
+		else Connect4UI.changeBackground(playerNameLabel, GameBoardBoard.PLAYER2_COLOR, GameBoardBoard.ROUND_CORNER);
 		
 		String playerRollbacks = Integer.toString(player.getRollbacks());
 		playerRollbackAmount.setText(playerRollbacks);
@@ -97,7 +116,7 @@ public class InGame implements Initializable {
 	}
 	
 	void gridPressedColumn(int column) {
-		StateMachine stateMachine = getMachine();
+		var stateMachine = getMachine();
 		
 		if (stateMachine.getState() == Connect4States.WaitingPlayerMove) {
 			
@@ -107,93 +126,37 @@ public class InGame implements Initializable {
 			} else
 				stateMachine.playAt(column);
 			
-			updateAfterPlay();
-		} else if(stateMachine.getState() == Connect4States.ComputerPlays) {
+		} else if (stateMachine.getState() == Connect4States.ComputerPlays) {
 			System.out.println("something is wrong with the gridPressedColumn. this isnt the right type of window for this");
 		}
 	}
 	
-	void updateAfterPlay() {
-		updateFields();
-		board.updateBoard(getMachine().getGameArea());
-		
-		StateMachine machine = getMachine();
-		switch (machine.getState()) {
-			case WaitingPlayerMove -> {
-			}
-			case ComputerPlays -> {
-				new Thread(() -> {
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					Platform.runLater(() -> {
-						machine.executePlay();
-						updateAfterPlay();
-					});
-				}).start();
-			}
-			case CheckPlayerWantsMiniGame -> {
-				var player = machine.getCurrentPlayerObj();
-				boolean wantsMiniGame = app.openMessageWithCancel("Minigame Opportunity", "'" + player.getName() + "' do you want to play the minigame?");
-				if (!wantsMiniGame) {
-					machine.ignoreMiniGame();
-					Platform.runLater(this::updateAfterPlay);
-					return;
-				}
-				
-				machine.startMiniGame();
-				try {
-					app.runMiniGame();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				Platform.runLater(this::updateAfterPlay);
-			}
-			case GameFinished -> {
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				var winner = machine.getWinner();
-				if (winner == null) {
-					app.openMessageDialog(Alert.AlertType.INFORMATION, "Game is Finished", "It appears that no one won this round");
-				} else {
-					var player = machine.getPlayer(winner);
-					app.openMessageDialog(Alert.AlertType.INFORMATION, "Game is Finished", "It appears that '" + player.getName() + "' has won this round");
-				}
-				app.goBackToMenu();
-			}
-		}
-	}
-	
-	private StateMachine getMachine() {
-		return app.getStateMachine();
-	}
-	
+	@FXML
 	public void goBack(ActionEvent actionEvent) {
 		System.out.println("Back to main menu");
 		app.goBackToMenu();
 	}
 	
+	@FXML
 	public void saveCurrentGame(ActionEvent actionEvent) {
 		File file = app.saveFileChooser();
 		if (file == null) return;
 		try {
-			app.saveCurrentStateMachine(file.getAbsolutePath());
+			app.saveCurrentStateMachine(file.getAbsolutePath(), getMachine().getObservedMachine());
 		} catch (IOException e) {
 			e.printStackTrace();
 			app.openMessageDialog(Alert.AlertType.ERROR, "Error Saving Game", "An unexpected error happened when saving the game");
 		}
 	}
 	
+	@FXML
 	public void loadSavedGame(ActionEvent actionEvent) {
 		File file = app.openFileChooser();
 		if (file == null) return;
 		try {
-			app.loadGameFromFile(file.getAbsolutePath());
+			var manager = getWindowStateManager();
+			manager.setStateMachine(app.loadGameFromFile(file.getAbsolutePath()));
+			gameBoardBoard.updateBoard(manager.getStateMachine().getGameArea());
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 			app.openMessageDialog(Alert.AlertType.ERROR, "Error Loading Game", "An unexpected error happened when loading the saved game");
@@ -201,7 +164,7 @@ public class InGame implements Initializable {
 	}
 	
 	public void rollback(ActionEvent actionEvent) {
-		StateMachine machine = getMachine();
+		var machine = getMachine();
 		String text = rollbackAmountTextField.getText();
 		if (text.isBlank())
 			return;
@@ -211,9 +174,9 @@ public class InGame implements Initializable {
 			app.openMessageDialog(Alert.AlertType.INFORMATION, "Too many rollbacks", "The game has not evolved enough to go back that much");
 		
 		machine.rollback(amount);
-		updateAfterPlay();
 	}
 	
+	@FXML
 	public void selectedClearColumn(ActionEvent actionEvent) {
 		if (getMachine().getCurrentPlayerObj().getSpecialPieces() <= 0) {
 			clearColumnToggleButton.setSelected(false);
@@ -225,6 +188,7 @@ public class InGame implements Initializable {
 		clearColumnPlayType = true;
 	}
 	
+	@FXML
 	public void selectedNormalPlay(ActionEvent actionEvent) {
 		clearColumnToggleButton.setSelected(false);
 		normalPlayToggleButton.setSelected(true);
@@ -265,4 +229,5 @@ public class InGame implements Initializable {
 			}
 		}
 	}
+	
 }

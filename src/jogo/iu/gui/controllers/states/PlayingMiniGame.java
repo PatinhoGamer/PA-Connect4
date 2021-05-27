@@ -1,20 +1,19 @@
-package jogo.iu.gui.controllers;
+package jogo.iu.gui.controllers.states;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import jogo.iu.gui.Connect4UI;
+import jogo.iu.gui.GameWindowStateManager;
+import jogo.iu.gui.ResourceLoader;
 import jogo.logica.minigames.TimedMiniGame;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-public class PlayingMiniGame implements Initializable {
+public class PlayingMiniGame extends AbstractWindowState implements Initializable {
 	
 	public Label feedBackLabel;
 	public Label gameObjectiveLabel;
@@ -27,17 +26,25 @@ public class PlayingMiniGame implements Initializable {
 	private boolean isFinished = false;
 	private boolean hasStarted = false;
 	private Thread timerThread;
-	private Connect4UI app;
+	
+	private final Connect4UI app;
+	
+	public PlayingMiniGame(GameWindowStateManager windowStateManager) {
+		super(windowStateManager, ResourceLoader.FXML_PLAYING_MINIGAME);
+		app = Connect4UI.getInstance();
+	}
 	
 	@Override
-	public void initialize(URL url, ResourceBundle resourceBundle) {
-		app = Connect4UI.getInstance();
-		miniGame = app.getStateMachine().getMiniGame();
+	public void show() {
+		System.out.println("PlayingMiniGame");
+		super.show();
 		
+		miniGame = getWindowStateManager().getStateMachine().getMiniGame();
 		gameObjectiveLabel.setText(miniGame.getGameObjective());
 		timerLabel.setText(Integer.toString(miniGame.availableTime()));
 	}
 	
+	@FXML
 	public void triedToAnswer(ActionEvent actionEvent) {
 		if (!hasStarted)
 			return;
@@ -66,13 +73,10 @@ public class PlayingMiniGame implements Initializable {
 		else
 			app.openMessageDialog(Alert.AlertType.INFORMATION, "Minigame Result", "You lost, the minigame and your turn");
 		
-		app.getStateMachine().endMiniGame();
-		
-		Stage stage = (Stage) questionLabel.getScene().getWindow();
-		stage.close();
+		getWindowStateManager().getStateMachine().endMiniGame();
 	}
 	
-	
+	@FXML
 	public void startMiniGame(ActionEvent actionEvent) {
 		startButton.setDisable(true);
 		miniGame.start();

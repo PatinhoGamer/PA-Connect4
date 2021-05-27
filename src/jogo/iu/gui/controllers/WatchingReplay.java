@@ -5,7 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
-import jogo.iu.gui.Board;
+import jogo.iu.gui.GameBoardBoard;
 import jogo.iu.gui.Connect4UI;
 import jogo.logica.Replayer;
 
@@ -19,7 +19,7 @@ public class WatchingReplay implements Initializable {
 	private boolean finishedWatching = false;
 	private Replayer replayer;
 	private Runnable scheduler;
-	private Board board;
+	private GameBoardBoard board;
 	
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -35,7 +35,7 @@ public class WatchingReplay implements Initializable {
 			}
 		};
 		
-		board = new Board(null);
+		board = new GameBoardBoard(null);
 		root.setCenter(board);
 		
 		moveForward();

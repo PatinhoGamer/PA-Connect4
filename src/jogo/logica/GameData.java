@@ -162,6 +162,8 @@ public class GameData implements Serializable {
 	}
 	
 	public void playerIgnoredMiniGame(Piece piece) {
+		Player player = getPlayerFromEnum(piece);
+		player.resetSpecialCounter();
 		gameActions.add(GameData.ACTION_MINIGAME_IGNORED + ':' + piece);
 	}
 	// Minigame Related ------------------------------------------------------------------------------------------------

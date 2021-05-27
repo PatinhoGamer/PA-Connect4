@@ -2,8 +2,12 @@ package jogo.iu.gui.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.FlowPane;
 import jogo.iu.gui.Connect4UI;
+import jogo.logica.GameDataObservable;
 import jogo.logica.GameSaver;
 import jogo.logica.dados.Replay;
 
@@ -11,7 +15,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ChoosingReplay implements Initializable {
+public class ChoosingReplay implements Initializable{
 	
 	public ListView<String> replaysList;
 	private Connect4UI app;
@@ -37,4 +41,5 @@ public class ChoosingReplay implements Initializable {
 			replaysList.getItems().add(element);
 		}
 	}
+	
 }

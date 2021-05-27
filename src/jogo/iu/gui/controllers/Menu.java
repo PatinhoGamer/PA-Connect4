@@ -5,14 +5,13 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import jogo.iu.gui.Connect4UI;
+import jogo.iu.gui.ResourceLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,14 +36,14 @@ public class Menu implements Initializable {
 	}
 	
 	public void watchReplay(ActionEvent actionEvent) {
-		Connect4UI.getInstance().changeScene(Connect4UI.FXML_CHOOSING_REPLAY);
+		Connect4UI.getInstance().changeScene(ResourceLoader.FXML_CHOOSING_REPLAY);
 	}
 	
 	public void loadGameFromFile(ActionEvent actionEvent) throws IOException, ClassNotFoundException {
 		Connect4UI instance = Connect4UI.getInstance();
 		File file = instance.openFileChooser();
 		if (file != null)
-			instance.loadGameFromFile(file.getPath());
+			instance.continueGameFromFile(file.getPath());
 	}
 	
 	public void exit(ActionEvent actionEvent) throws Exception {
