@@ -11,14 +11,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
-import jogo.iu.gui.GameBoardBoard;
+import jogo.iu.gui.GameBoardNode;
 import jogo.iu.gui.Connect4UI;
 import jogo.iu.gui.GameWindowStateManager;
 import jogo.iu.gui.ResourceLoader;
-import jogo.logica.GameDataObservable;
+import jogo.logica.dados.observables.GameDataObservable;
 import jogo.logica.dados.Piece;
 import jogo.logica.estados.Connect4States;
-import jogo.logica.observables.StateMachineObservable;
+import jogo.logica.dados.observables.StateMachineObservable;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class InGame extends AbstractWindowState {
 	public ToggleButton normalPlayToggleButton;
 	public Label playerRollbackAmount;
 	
-	private GameBoardBoard gameBoardBoard;
+	private GameBoardNode gameBoardBoard;
 	
 	private boolean clearColumnPlayType = false;
 	private RollbackTextPropertyListener rollbackTextFieldListener;
@@ -77,7 +77,7 @@ public class InGame extends AbstractWindowState {
 		rollbackTextFieldListener = new RollbackTextPropertyListener();
 		rollbackAmountTextField.textProperty().addListener(rollbackTextFieldListener);
 		
-		gameBoardBoard = new GameBoardBoard(column -> gridPressedColumn(column));
+		gameBoardBoard = new GameBoardNode(this::gridPressedColumn, getMachine().getGame());
 		root.setCenter(gameBoardBoard);
 		
 		registerListeners();
@@ -94,6 +94,20 @@ public class InGame extends AbstractWindowState {
 		observableGame.addChangeListener(GameDataObservable.Changes.PlayerClearedColumn, evt -> {
 			specialPiecesLabel.setText(Integer.toString(stateMachine.getCurrentPlayerObj().getSpecialPieces()));
 		});
+		
+		observableGame.addChangeListener(GameDataObservable.Changes.PlayerRollback, evt -> {
+			var player = getMachine().getCurrentPlayerObj();
+			String playerRollbacks = Integer.toString(player.getRollbacks());
+			playerRollbackAmount.setText(playerRollbacks);
+			
+			int maxRollbacks = Math.min(player.getRollbacks(), getMachine().getGame().getAvailableRollbacks());
+			rollbackAmountTextField.setText(Integer.toString(maxRollbacks));
+			rollbackTextFieldListener.setMaxValue(maxRollbacks);
+		});
+		
+		observableGame.addChangeListener(GameDataObservable.Changes.PlayerClearedColumn, evt -> {
+			specialPiecesLabel.setText(Integer.toString(stateMachine.getCurrentPlayerObj().getSpecialPieces()));
+		});
 	}
 	
 	private void updateFields() {
@@ -102,15 +116,8 @@ public class InGame extends AbstractWindowState {
 		
 		playerNameLabel.setText(player.getName());
 		if (machine.getCurrentPlayer() == Piece.PLAYER1)
-			Connect4UI.changeBackground(playerNameLabel, GameBoardBoard.PLAYER1_COLOR, GameBoardBoard.ROUND_CORNER);
-		else Connect4UI.changeBackground(playerNameLabel, GameBoardBoard.PLAYER2_COLOR, GameBoardBoard.ROUND_CORNER);
-		
-		String playerRollbacks = Integer.toString(player.getRollbacks());
-		playerRollbackAmount.setText(playerRollbacks);
-		
-		int maxRollbacks = Math.min(player.getRollbacks(), getMachine().getGame().getAvailableRollbacks());
-		rollbackAmountTextField.setText(Integer.toString(maxRollbacks));
-		rollbackTextFieldListener.setMaxValue(maxRollbacks);
+			Connect4UI.changeBackground(playerNameLabel, GameBoardNode.PLAYER1_COLOR, GameBoardNode.ROUND_CORNER);
+		else Connect4UI.changeBackground(playerNameLabel, GameBoardNode.PLAYER2_COLOR, GameBoardNode.ROUND_CORNER);
 		
 		specialPiecesLabel.setText(Integer.toString(player.getSpecialPieces()));
 	}
@@ -127,7 +134,8 @@ public class InGame extends AbstractWindowState {
 				stateMachine.playAt(column);
 			
 		} else if (stateMachine.getState() == Connect4States.ComputerPlays) {
-			System.out.println("something is wrong with the gridPressedColumn. this isnt the right type of window for this");
+		} else {
+			System.out.println("Error. Reached column pressed and is not either player move or computer move");
 		}
 	}
 	
@@ -142,7 +150,7 @@ public class InGame extends AbstractWindowState {
 		File file = app.saveFileChooser();
 		if (file == null) return;
 		try {
-			app.saveCurrentStateMachine(file.getAbsolutePath(), getMachine().getObservedMachine());
+			app.saveCurrentStateMachine(file.getAbsolutePath(), getMachine().getUnderlyingGameState());
 		} catch (IOException e) {
 			e.printStackTrace();
 			app.openMessageDialog(Alert.AlertType.ERROR, "Error Saving Game", "An unexpected error happened when saving the game");
@@ -155,8 +163,8 @@ public class InGame extends AbstractWindowState {
 		if (file == null) return;
 		try {
 			var manager = getWindowStateManager();
-			manager.setStateMachine(app.loadGameFromFile(file.getAbsolutePath()));
-			gameBoardBoard.updateBoard(manager.getStateMachine().getGameArea());
+			manager.getStateMachine().setGameState(app.loadGameFromFile(file.getAbsolutePath()));
+			//gameBoardBoard.updateBoard(manager.getStateMachine().getGameArea()); // No need, the state changes and interface gets updated
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 			app.openMessageDialog(Alert.AlertType.ERROR, "Error Loading Game", "An unexpected error happened when loading the saved game");

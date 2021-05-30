@@ -1,8 +1,9 @@
 package jogo.logica.estados;
 
-import jogo.logica.GameDataObservable;
+import jogo.logica.dados.dataViewers.GameDataViewer;
+import jogo.logica.dados.dataViewers.PlayerViewer;
+import jogo.logica.dados.observables.GameDataObservable;
 import jogo.logica.dados.*;
-import jogo.logica.minigames.TimedMiniGame;
 
 public abstract class GameAbstractState implements GameState {
 	
@@ -23,17 +24,12 @@ public abstract class GameAbstractState implements GameState {
 	}
 	
 	@Override
-	public GameState startMiniGame() {
+	public GameState acceptMiniGame() {
 		return this;
 	}
 	
 	@Override
 	public GameState ignoreMiniGame() {
-		return this;
-	}
-	
-	@Override
-	public GameState endMiniGame() {
 		return this;
 	}
 	
@@ -52,18 +48,55 @@ public abstract class GameAbstractState implements GameState {
 		return this;
 	}
 	
+	// MiniGame Related --------------------
 	@Override
-	public GameState restartGame() {
+	public GameState answerMiniGame(String answer) {
 		return this;
 	}
 	
 	@Override
-	public GameDataViewer getGameViewer() {
-		return new GameDataViewer(game);
+	public void startMiniGameTimer() {
 	}
 	
-	private GameDataObservable getGame() {
-		return game;
+	@Override
+	public String getMiniGameQuestion() {
+		return null;
+	}
+	
+	@Override
+	public String getMiniGameObjective() {
+		return null;
+	}
+	
+	@Override
+	public int getMiniGameAvailableTime() {
+		return -1;
+	}
+	
+	@Override
+	public boolean didPlayerWinMiniGame() {
+		return game.didPlayerWinMiniGame();
+	}
+	
+	@Override
+	public boolean isMiniGameFinished() {
+		return game.isMiniGameFinished();
+	}
+	
+	@Override
+	public boolean hasMiniGameStarted() {
+		return game.hasMiniGameStarted();
+	}
+	
+	@Override
+	public boolean playerGotMiniGameQuestionAnswerRight() {
+		return game.playerGotMiniGameQuestionAnswerRight();
+	}
+	// -------------------------------------
+	
+	@Override
+	public GameDataViewer getGameViewer() {
+		return new GameDataViewer(game);
 	}
 	
 	@Override
@@ -91,11 +124,6 @@ public abstract class GameAbstractState implements GameState {
 		return game.getCurrentPlayerPiece();
 	}
 	
-	@Override
-	public TimedMiniGame getMiniGame() {
-		return null;
-	}
-	
 	protected GameFinished checkFinishedState() {
 		Piece winner = game.checkWinner();
 		if (winner != null)
@@ -109,10 +137,10 @@ public abstract class GameAbstractState implements GameState {
 		GameFinished finishedState = checkFinishedState();
 		if (finishedState != null) return finishedState;
 		
-		if (game.isPlayerBot())
+		if (game.isCurrentPlayerBot())
 			return new ComputerPlays(game);
 		
-		if (game.isMinigameAvailable()) {
+		if (game.isMiniGameAvailable()) {
 			return new CheckPlayerWantsMiniGame(game);
 		}
 		return new WaitingPlayerMove(game);

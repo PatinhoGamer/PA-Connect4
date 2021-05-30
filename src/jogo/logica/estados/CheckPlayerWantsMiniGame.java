@@ -1,9 +1,8 @@
 package jogo.logica.estados;
 
-import jogo.logica.GameDataObservable;
-import jogo.logica.dados.Piece;
+import jogo.logica.dados.observables.GameDataObservable;
 import jogo.logica.minigames.MathMiniGame;
-import jogo.logica.minigames.TimedMiniGame;
+import jogo.logica.minigames.ITimedMiniGame;
 import jogo.logica.minigames.WordsMiniGame;
 
 public class CheckPlayerWantsMiniGame extends GameAbstractState {
@@ -13,12 +12,9 @@ public class CheckPlayerWantsMiniGame extends GameAbstractState {
 	}
 	
 	@Override
-	public GameState startMiniGame() {
-		int nextActivity = game.getPlayerFromEnum(getCurrentPlayerPiece()).getNextActivity();
-		TimedMiniGame miniGame;
-		if (nextActivity == 0) miniGame = new MathMiniGame();
-		else miniGame = new WordsMiniGame();
-		return new PlayingMiniGame(game, miniGame);
+	public GameState acceptMiniGame() {
+		game.generateMiniGameForCurrentPlayer();
+		return new PlayingMiniGame(game);
 	}
 	
 	@Override

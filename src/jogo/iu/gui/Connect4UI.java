@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import jogo.logica.GameSaver;
 import jogo.logica.dados.Replay;
 import jogo.logica.StateMachine;
+import jogo.logica.estados.GameState;
 
 import java.io.*;
 import java.util.Optional;
@@ -67,23 +68,20 @@ public class Connect4UI extends Application {
 	
 	public void continueGameFromFile(String path) {
 		try {
-			StateMachine stateMachine = loadGameFromFile(path);
-			gameWindowStateManager = new GameWindowStateManager(stage, stateMachine);
+			var state = loadGameFromFile(path);
+			gameWindowStateManager = new GameWindowStateManager(stage, state);
 		} catch (Exception e) {
 			e.printStackTrace();
+			openMessageDialog(Alert.AlertType.ERROR,"Load Error", "Error opening saved game");
 		}
 	}
 	
-	public StateMachine loadGameFromFile(String filePath) throws IOException, ClassNotFoundException {
-		try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath))) {
-			return (StateMachine) objectInputStream.readUnshared();
-		}
+	public GameState loadGameFromFile(String absolutePath) throws IOException, ClassNotFoundException {
+		return GameSaver.loadGameFromFile(absolutePath);
 	}
 	
-	public void saveCurrentStateMachine(String filePath, StateMachine stateMachine) throws IOException {
-		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath))) {
-			objectOutputStream.writeUnshared(stateMachine);
-		}
+	public void saveCurrentStateMachine(String absolutePath, GameState gameState) throws IOException {
+		GameSaver.saveCurrentStateToFile(gameState,absolutePath);
 	}
 	
 	public void openMessageDialog(Alert.AlertType type, String title, String message) {

@@ -1,6 +1,6 @@
 package jogo.logica.estados;
 
-import jogo.logica.GameDataObservable;
+import jogo.logica.dados.observables.GameDataObservable;
 import jogo.logica.dados.Player;
 
 public class GameToStart extends GameAbstractState {
@@ -18,7 +18,7 @@ public class GameToStart extends GameAbstractState {
 		if (!game.setPlayers(player1, player2))
 			return this;
 		
-		if (game.isPlayerBot())
+		if (game.isCurrentPlayerBot())
 			return new ComputerPlays(game);
 		return new WaitingPlayerMove(game);
 	}

@@ -1,16 +1,13 @@
 package jogo.logica;
 
-import jogo.logica.dados.GameDataViewer;
+import jogo.logica.dados.dataViewers.GameDataViewer;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
-import jogo.logica.dados.PlayerViewer;
+import jogo.logica.dados.dataViewers.PlayerViewer;
 import jogo.logica.estados.Connect4States;
 import jogo.logica.estados.GameState;
 import jogo.logica.estados.GameToStart;
-import jogo.logica.minigames.TimedMiniGame;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -18,13 +15,13 @@ public class StateMachine implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 0L;
 	
-	private GameState currentState;
+	protected GameState currentState;
 	
 	public StateMachine(GameState currentState) {
 		this.currentState = currentState;
 	}
 	
-	public StateMachine(){
+	public StateMachine() {
 		this.currentState = new GameToStart();
 	}
 	
@@ -44,28 +41,48 @@ public class StateMachine implements Serializable {
 		setState(currentState.rollback(amount));
 	}
 	
-	public void startMiniGame() {
-		setState(currentState.startMiniGame());
+	public void acceptMiniGame() {
+		setState(currentState.acceptMiniGame());
 	}
 	
 	public void ignoreMiniGame() {
 		setState(currentState.ignoreMiniGame());
 	}
 	
-	public void endMiniGame() {
-		setState(currentState.endMiniGame());
-	}
-	
 	public void startGameWithPlayers(Player player1, Player player2) {
-		currentState = currentState.startGameWithPlayers(player1, player2);
+		setState(currentState.startGameWithPlayers(player1, player2));
 	}
 	
-	private void setState(GameState newState) {
-		currentState = newState;
+	public void answerMiniGame(String answer) {
+		setState(currentState.answerMiniGame(answer));
 	}
 	
-	public TimedMiniGame getMiniGame() {
-		return currentState.getMiniGame();
+	public void startMiniGameTimer() {
+		currentState.startMiniGameTimer();
+	}
+	
+	public String getMiniGameQuestion() {
+		return currentState.getMiniGameQuestion();
+	}
+	
+	public String getMiniGameObjective() {
+		return currentState.getMiniGameObjective();
+	}
+	
+	public int getMiniGameAvailableTime() {
+		return currentState.getMiniGameAvailableTime();
+	}
+	
+	public boolean didPlayerWinMiniGame() {
+		return currentState.didPlayerWinMiniGame();
+	}
+	
+	public boolean isMiniGameFinished() {
+		return currentState.isMiniGameFinished();
+	}
+	
+	public boolean hasMiniGameStarted() {
+		return currentState.hasMiniGameStarted();
 	}
 	
 	public Piece getCurrentPlayer() {
@@ -96,5 +113,15 @@ public class StateMachine implements Serializable {
 		return currentState.getState();
 	}
 	
-	public GameState getUnderlyingGameState(){return currentState;}
+	protected void setState(GameState newState) {
+		currentState = newState;
+	}
+	
+	public GameState getUnderlyingGameState() {
+		return currentState;
+	}
+	
+	public boolean playerGotMiniGameQuestionAnswerRight() {
+		return currentState.playerGotMiniGameQuestionAnswerRight();
+	}
 }

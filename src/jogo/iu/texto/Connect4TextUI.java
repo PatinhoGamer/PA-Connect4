@@ -1,7 +1,7 @@
 package jogo.iu.texto;
 
 import jogo.logica.GameData;
-import jogo.logica.GameDataObservable;
+import jogo.logica.dados.observables.GameDataObservable;
 import jogo.logica.GameSaver;
 import jogo.logica.Replayer;
 import jogo.logica.dados.Piece;
@@ -10,7 +10,6 @@ import jogo.logica.dados.PlayerType;
 import jogo.logica.dados.Replay;
 import jogo.logica.estados.GameToStart;
 import jogo.logica.StateMachine;
-import jogo.logica.minigames.TimedMiniGame;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ public class Connect4TextUI {
 			
 			else {
 				System.out.println();
-				drawGameArea(stateMachine.getGameArea());
 				System.out.println("Game State : " + stateMachine.getState());
 				
 				switch (stateMachine.getState()) {
@@ -97,7 +95,7 @@ public class Connect4TextUI {
 		System.out.println("Do you want to play the minigame? ");
 		switch (UIUtils.chooseOption("Go Back To Main Menu", "Yes", "No")) {
 			case 0 -> stateMachine = null;
-			case 1 -> stateMachine.startMiniGame();
+			case 1 -> stateMachine.acceptMiniGame();
 			case 2 -> stateMachine.ignoreMiniGame();
 		}
 	}
@@ -110,31 +108,26 @@ public class Connect4TextUI {
 	private void playingMiniGame() {
 		printCurrentPlayer();
 		
-		TimedMiniGame miniGame = stateMachine.getMiniGame();
-		System.out.println("Objective : " + miniGame.getGameObjective());
+		if (!stateMachine.hasMiniGameStarted()) {
+			System.out.println("Objective : " + stateMachine.getMiniGameObjective());
+			System.out.println("Available time : " + stateMachine.getMiniGameAvailableTime());
+			stateMachine.startMiniGameTimer();
+		}
 		
-		miniGame.start();
-		System.out.println("Available time : " + miniGame.availableTime());
-		do {
-			System.out.println("Question : " + miniGame.getQuestion());
-			String answer = scanner.nextLine();
+		System.out.println("Question : " + stateMachine.getMiniGameQuestion());
+		String answer = scanner.nextLine();
+		stateMachine.answerMiniGame(answer);
+		
+		if (stateMachine.playerGotMiniGameQuestionAnswerRight())
+			System.out.println("That is the right answer");
+		else
+			System.out.println("Wrong answer");
 			
-			if (miniGame.checkAnswer(answer))
-				System.out.println("That is the right answer");
-			else
-				System.out.println("Wrong answer");
-			
-		} while (!miniGame.finishedAnswering() && !miniGame.ranOutOfTime());
 		
-		miniGame.stop();
-		
-		
-		if (miniGame.playerManagedToDoIt())
+		if (stateMachine.didPlayerWinMiniGame())
 			System.out.println("You finished it on time");
 		else
 			System.out.println("Took too long, better luck next time");
-		
-		stateMachine.endMiniGame();
 	}
 	
 	private void gameToStart() {
@@ -163,6 +156,8 @@ public class Connect4TextUI {
 	}
 	
 	private void gameFinished() {
+		drawGameArea(stateMachine.getGameArea());
+		
 		Piece winner = stateMachine.getWinner();
 		if (winner == null)
 			System.out.println("Draw! No one wins this time");
@@ -176,6 +171,7 @@ public class Connect4TextUI {
 	}
 	
 	private void waitingPlayerMove() {
+		drawGameArea(stateMachine.getGameArea());
 		printCurrentPlayer();
 		
 		switch (UIUtils.chooseOption("Go Back To Main Menu", "Insert Piece", "Clear Column", "Rollback", "Save Current Game", "Load Saved Game")) {
@@ -224,7 +220,7 @@ public class Connect4TextUI {
 		System.out.println("Filename : ");
 		String filePath = scanner.nextLine();
 		try {
-			GameSaver.saveGameToFile(stateMachine, filePath);
+			GameSaver.saveCurrentStateToFile(stateMachine.getUnderlyingGameState(), filePath + GameSaver.fileExtensionSave);
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
@@ -234,7 +230,7 @@ public class Connect4TextUI {
 		System.out.println("Filename : ");
 		String filePath = scanner.nextLine();
 		try {
-			stateMachine = GameSaver.loadGameFromFile(filePath);
+			stateMachine = new StateMachine(GameSaver.loadGameFromFile(filePath + GameSaver.fileExtensionSave));
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println(e.getMessage());
 		}
@@ -271,7 +267,7 @@ public class Connect4TextUI {
 	}
 	
 	private void initializeGame() {
-		this.stateMachine = new StateMachine(new GameToStart(new GameDataObservable()));
+		this.stateMachine = new StateMachine(new GameToStart());
 	}
 	
 	private void printCurrentPlayer() {

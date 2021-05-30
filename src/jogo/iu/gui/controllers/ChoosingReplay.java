@@ -2,12 +2,8 @@ package jogo.iu.gui.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.FlowPane;
 import jogo.iu.gui.Connect4UI;
-import jogo.logica.GameDataObservable;
 import jogo.logica.GameSaver;
 import jogo.logica.dados.Replay;
 

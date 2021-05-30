@@ -3,16 +3,16 @@ package jogo.logica;
 import jogo.logica.dados.Player;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.PlayerType;
-import jogo.logica.dados.PlayerViewer;
+import jogo.logica.minigames.ITimedMiniGame;
+import jogo.logica.minigames.MathMiniGame;
+import jogo.logica.minigames.WordsMiniGame;
 
 import java.awt.Point;
-import java.io.File;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
-import java.util.Random;
 
 public class GameData implements Serializable {
 	@Serial
@@ -42,8 +42,13 @@ public class GameData implements Serializable {
 	private Player player2;
 	private Piece currentPlayer;
 	
+	private ITimedMiniGame miniGame;
+	private boolean wonMiniGame = false;
+	private boolean gotMiniGameAnswerRight = false;
+	
 	private final List<String> gameActions = new ArrayList<>();
 	
+	// State Methods ---------------------------------------------------------------------------------------------------
 	public boolean setPlayers(Player player1, Player player2) {
 		if (player1.getName().equals(player2.getName())) return false;
 		this.player1 = player1;
@@ -52,7 +57,7 @@ public class GameData implements Serializable {
 				player1.getType() + ' ' + player1.getName() + ',' + player2.getType() + ' ' + player2.getName());
 		
 		currentPlayer = Piece.PLAYER1;
-		if(Math.random()>= 0.5)
+		if (Math.random() >= 0.5)
 			currentPlayer = currentPlayer.getOther();
 		
 		return true;
@@ -134,13 +139,19 @@ public class GameData implements Serializable {
 		gameActions.add(ACTION_ROLLBACK + ACTION_DELIMITER + playerPiece + ' ' + amount);
 		return true;
 	}
+	// -----------------------------------------------------------------------------------------------------------------
 	
 	// Minigame Related ------------------------------------------------------------------------------------------------
+	public boolean isMiniGameAvailable() {
+		return getCurrentPlayer().getMiniGameCounter() >= GameData.ROUNDS_TO_PLAY_MINIGAME;
+	}
+	
 	public void playerWonMiniGame() {
 		playerWonMiniGame(getCurrentPlayerPiece());
 	}
 	
 	public void playerWonMiniGame(Piece piece) {
+		wonMiniGame = true;
 		Player player = getPlayerFromEnum(piece);
 		player.resetSpecialCounter();
 		player.addSpecialPiece();
@@ -152,6 +163,7 @@ public class GameData implements Serializable {
 	}
 	
 	public void playerLostMiniGame(Piece piece) {
+		wonMiniGame = false;
 		Player player = getPlayerFromEnum(piece);
 		player.resetSpecialCounter();
 		gameActions.add(GameData.ACTION_MINIGAME_LOST + ':' + piece);
@@ -166,7 +178,55 @@ public class GameData implements Serializable {
 		player.resetSpecialCounter();
 		gameActions.add(GameData.ACTION_MINIGAME_IGNORED + ':' + piece);
 	}
-	// Minigame Related ------------------------------------------------------------------------------------------------
+	
+	public void generateMiniGameForCurrentPlayer() {
+		int nextActivity = getCurrentPlayer().getNextActivity();
+		if (nextActivity == 0) miniGame = new MathMiniGame();
+		else miniGame = new WordsMiniGame();
+	}
+	
+	public boolean checkMiniGameAnswer(String answer) {
+		if (miniGame.checkAnswer(answer)) {
+			gotMiniGameAnswerRight = true;
+			return true;
+		}
+		gotMiniGameAnswerRight = false;
+		return false;
+	}
+	
+	public boolean didPlayerWinMiniGame() {
+		return wonMiniGame;
+	}
+	
+	public boolean isMiniGameFinished() {
+		if (miniGame == null) return false;
+		
+		if (miniGame.isFinished()) {
+			miniGame.stop();
+			if (miniGame.playerWon()) {
+				playerWonMiniGame();
+			} else {
+				playerLostMiniGame();
+				setNextPlayer();
+			}
+			miniGame = null;
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean hasMiniGameStarted() {
+		return miniGame != null;
+	}
+	
+	public ITimedMiniGame getMiniGame() {
+		return miniGame;
+	}
+	
+	public boolean playerGotMiniGameQuestionAnswerRight() {
+		return gotMiniGameAnswerRight;
+	}
+	// -----------------------------------------------------------------------------------------------------------------
 	
 	// Getters
 	public List<String> getGameActions() {
@@ -197,12 +257,8 @@ public class GameData implements Serializable {
 		return getPlayerFromEnum(getCurrentPlayerPiece());
 	}
 	
-	public boolean isPlayerBot() {
+	public boolean isCurrentPlayerBot() {
 		return getCurrentPlayer().getType() == PlayerType.COMPUTER;
-	}
-	
-	public boolean isMinigameAvailable() {
-		return getCurrentPlayer().getMiniGameCounter() >= GameData.ROUNDS_TO_PLAY_MINIGAME;
 	}
 	// Getters ---------------------------------------------------------------------------------------------------------
 	
@@ -217,6 +273,7 @@ public class GameData implements Serializable {
 				
 				if (checkIfPlayerWonAt(currentPlacePiece, line, column)) {
 					gameActions.add(ACTION_FINISHED + ':' + currentPlacePiece);
+					currentPlayer = currentPlacePiece;
 					return currentPlacePiece;
 				}
 			}

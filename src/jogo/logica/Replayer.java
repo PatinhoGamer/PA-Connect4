@@ -1,9 +1,8 @@
 package jogo.logica;
 
-import jogo.logica.dados.Piece;
-import jogo.logica.dados.Player;
-import jogo.logica.dados.PlayerType;
-import jogo.logica.dados.Replay;
+import jogo.logica.dados.*;
+import jogo.logica.dados.dataViewers.GameDataViewer;
+import jogo.logica.dados.observables.GameDataObservable;
 
 import java.util.List;
 
@@ -13,14 +12,16 @@ public class Replayer {
 	private final List<String> gameActions;
 	private int currentActionIndex = 0;
 	
-	private final GameData game;
+	private final GameDataObservable game;
+	private final GameDataViewer gameDataViewer;
 	
 	private String lastMessage = null;
 	
 	public Replayer(Replay replay) {
 		this.replay = replay;
 		gameActions = replay.getGameActions();
-		game = new GameData();
+		game = new GameDataObservable();
+		gameDataViewer = new GameDataViewer(game);
 	}
 	
 	public boolean moveToNextStep() {
@@ -90,6 +91,10 @@ public class Replayer {
 		
 		currentActionIndex++;
 		return true;
+	}
+	
+	public GameDataViewer getGameViewer() {
+		return gameDataViewer;
 	}
 	
 	public boolean reachedTheEnd() {

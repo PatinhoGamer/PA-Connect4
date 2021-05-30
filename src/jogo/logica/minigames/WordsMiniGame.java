@@ -62,7 +62,7 @@ public class WordsMiniGame extends TimedGameAbstract {
 	}
 	
 	@Override
-	public int availableTime() {
+	public int getAvailableTime() {
 		return (int) Math.ceil(answer.length() / 2.0);
 	}
 	

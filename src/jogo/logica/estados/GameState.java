@@ -1,11 +1,10 @@
 package jogo.logica.estados;
 
-import jogo.logica.GameDataObservable;
-import jogo.logica.dados.GameDataViewer;
+import jogo.logica.dados.dataViewers.GameDataViewer;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
-import jogo.logica.dados.PlayerViewer;
-import jogo.logica.minigames.TimedMiniGame;
+import jogo.logica.dados.dataViewers.PlayerViewer;
+import jogo.logica.minigames.ITimedMiniGame;
 
 import java.io.Serializable;
 
@@ -15,11 +14,9 @@ public interface GameState extends Serializable {
 	
 	GameState clearColumn(int column);
 	
-	GameState startMiniGame();
+	GameState acceptMiniGame();
 	
 	GameState ignoreMiniGame();
-	
-	GameState endMiniGame();
 	
 	GameState executePlay();
 	
@@ -27,7 +24,19 @@ public interface GameState extends Serializable {
 	
 	GameState startGameWithPlayers(Player player1, Player player2);
 	
-	GameState restartGame();
+	// MiniGame Related --------------------
+	GameState answerMiniGame(String answer);
+	
+	void startMiniGameTimer();
+	
+	String getMiniGameQuestion();
+	
+	String getMiniGameObjective();
+	
+	int getMiniGameAvailableTime();
+	// -------------------------------------
+	
+	boolean didPlayerWinMiniGame();
 	
 	GameDataViewer getGameViewer();
 	
@@ -37,11 +46,15 @@ public interface GameState extends Serializable {
 	
 	PlayerViewer getPlayer(Piece playerPiece);
 	
-    PlayerViewer getCurrentPlayer();
+	PlayerViewer getCurrentPlayer();
 	
 	Piece getCurrentPlayerPiece();
 	
-	TimedMiniGame getMiniGame();
-	
 	Connect4States getState();
+	
+	boolean isMiniGameFinished();
+	
+	boolean hasMiniGameStarted();
+	
+	boolean playerGotMiniGameQuestionAnswerRight();
 }

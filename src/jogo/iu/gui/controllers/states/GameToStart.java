@@ -30,12 +30,16 @@ public class GameToStart extends AbstractWindowState {
 	}
 	
 	@Override
-	public void firstSetupWindow() {
+	protected void firstSetupWindow() {
 		ObservableList<String> choices = FXCollections.observableArrayList("Human", "Computer");
 		player1Choice.setItems(choices);
 		player2Choice.setItems(choices);
 		player1Choice.getSelectionModel().selectFirst();
 		player2Choice.getSelectionModel().selectFirst();
+		player2Choice.getSelectionModel().selectNext();
+		
+		player1Field.setText("Human");
+		player2Field.setText("Computer");
 	}
 	
 	@FXML
@@ -54,8 +58,6 @@ public class GameToStart extends AbstractWindowState {
 		
 		PlayerType player1Type = player1Choice.getSelectionModel().getSelectedIndex() == 0 ? PlayerType.HUMAN : PlayerType.COMPUTER;
 		PlayerType player2Type = player2Choice.getSelectionModel().getSelectedIndex() == 0 ? PlayerType.HUMAN : PlayerType.COMPUTER;
-		
-		System.out.println("Ta quase");
 		
 		getWindowStateManager().getStateMachine().startGameWithPlayers(new Player(player1Name, player1Type), new Player(player2Name, player2Type));
 	}

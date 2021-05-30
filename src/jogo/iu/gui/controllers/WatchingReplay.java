@@ -5,7 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
-import jogo.iu.gui.GameBoardBoard;
+import jogo.iu.gui.GameBoardNode;
 import jogo.iu.gui.Connect4UI;
 import jogo.logica.Replayer;
 
@@ -19,7 +19,7 @@ public class WatchingReplay implements Initializable {
 	private boolean finishedWatching = false;
 	private Replayer replayer;
 	private Runnable scheduler;
-	private GameBoardBoard board;
+	private GameBoardNode board;
 	
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -35,7 +35,7 @@ public class WatchingReplay implements Initializable {
 			}
 		};
 		
-		board = new GameBoardBoard(null);
+		board = new GameBoardNode(null, replayer.getGameViewer());
 		root.setCenter(board);
 		
 		moveForward();
@@ -54,10 +54,6 @@ public class WatchingReplay implements Initializable {
 		
 		new Thread(scheduler).start();
 	}
-	//TODO make the animation thing
-	//TODO maybe remove computer plays
-	//TODO more fire property change
-	//TODO mini game dentro do Logic
 	
 	public void backToMenu(ActionEvent actionEvent) {
 		finishedWatching = true;

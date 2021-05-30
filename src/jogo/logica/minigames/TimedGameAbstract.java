@@ -1,6 +1,6 @@
 package jogo.logica.minigames;
 
-public abstract class TimedGameAbstract implements TimedMiniGame {
+public abstract class TimedGameAbstract implements ITimedMiniGame {
 	
 	private long startTime;
 	private long endTime;
@@ -40,7 +40,7 @@ public abstract class TimedGameAbstract implements TimedMiniGame {
 	}
 	
 	@Override
-	public abstract int availableTime();
+	public abstract int getAvailableTime();
 	
 	@Override
 	public boolean finishedAnswering() {
@@ -48,8 +48,8 @@ public abstract class TimedGameAbstract implements TimedMiniGame {
 	}
 	
 	@Override
-	public boolean playerManagedToDoIt() {
-		return endTime / 1000L < availableTime();
+	public boolean playerWon() {
+		return endTime / 1000L < getAvailableTime();
 	}
 	
 	@Override
@@ -60,6 +60,6 @@ public abstract class TimedGameAbstract implements TimedMiniGame {
 	@Override
 	public boolean ranOutOfTime() {
 		int currentTime = (int) (System.currentTimeMillis() - startTime) / 1000;
-		return currentTime > availableTime();
+		return currentTime > getAvailableTime();
 	}
 }

@@ -1,6 +1,6 @@
 package jogo.logica.estados;
 
-import jogo.logica.GameDataObservable;
+import jogo.logica.dados.observables.GameDataObservable;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.PlayerType;
 

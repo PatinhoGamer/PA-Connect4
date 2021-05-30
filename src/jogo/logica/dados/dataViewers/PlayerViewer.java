@@ -1,4 +1,7 @@
-package jogo.logica.dados;
+package jogo.logica.dados.dataViewers;
+
+import jogo.logica.dados.Player;
+import jogo.logica.dados.PlayerType;
 
 public class PlayerViewer {
 	

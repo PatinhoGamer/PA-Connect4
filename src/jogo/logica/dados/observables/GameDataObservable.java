@@ -1,11 +1,12 @@
-package jogo.logica;
+package jogo.logica.dados.observables;
 
+import jogo.logica.GameData;
 import jogo.logica.dados.Piece;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public class GameDataObservable extends GameData {
+public class GameDataObservable extends GameData implements IGameDataObservable {
 	
 	//Observable Changes
 	public enum Changes {
@@ -14,12 +15,18 @@ public class GameDataObservable extends GameData {
 	
 	private final PropertyChangeSupport changer = new PropertyChangeSupport(this);
 	
+	@Override
 	public void addChangeListener(Changes change, PropertyChangeListener listener) {
 		changer.addPropertyChangeListener(String.valueOf(change), listener);
 	}
 	
 	private void firePropertyChange(Changes change, Object newValue) {
 		changer.firePropertyChange(String.valueOf(change), -1, newValue);
+	}
+	
+	@Override
+	public void removeChangeListener(PropertyChangeListener listener) {
+		changer.removePropertyChangeListener(listener);
 	}
 	
 	@Override

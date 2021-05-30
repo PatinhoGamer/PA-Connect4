@@ -1,6 +1,7 @@
 package jogo.logica;
 
 import jogo.logica.dados.Replay;
+import jogo.logica.estados.GameState;
 
 import java.io.*;
 import java.util.Date;
@@ -33,15 +34,15 @@ public class GameSaver {
 		return replays;
 	}
 	
-	public static void saveGameToFile(StateMachine wholeThing, String filePath) throws IOException {
-		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath + fileExtensionSave))) {
-			objectOutputStream.writeUnshared(wholeThing);
+	public static void saveCurrentStateToFile(GameState wholeState, String filePath) throws IOException {
+		try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath))) {
+			objectOutputStream.writeUnshared(wholeState);
 		}
 	}
 	
-	public static StateMachine loadGameFromFile(String filePath) throws IOException, ClassNotFoundException {
-		try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath + fileExtensionSave))) {
-			return (StateMachine) objectInputStream.readUnshared();
+	public static GameState loadGameFromFile(String filePath) throws IOException, ClassNotFoundException {
+		try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath))) {
+			return (GameState) objectInputStream.readUnshared();
 		}
 	}
 	

@@ -1,6 +1,6 @@
 package jogo.logica.minigames;
 
-public interface TimedMiniGame {
+public interface ITimedMiniGame {
 	void start();
 	
 	void stop();
@@ -11,13 +11,13 @@ public interface TimedMiniGame {
 	
 	boolean checkAnswer(String answer);
 	
-	int availableTime();
+	int getAvailableTime();
 	
 	boolean finishedAnswering();
 	
 	boolean isFinished();
 	
-	boolean playerManagedToDoIt();
+	boolean playerWon();
 	
 	boolean ranOutOfTime();
 }

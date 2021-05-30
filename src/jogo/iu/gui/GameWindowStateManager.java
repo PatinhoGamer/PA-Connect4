@@ -3,10 +3,10 @@ package jogo.iu.gui;
 import javafx.stage.Stage;
 import jogo.iu.gui.controllers.StateWindow;
 import jogo.iu.gui.controllers.states.*;
-import jogo.logica.GameDataObservable;
 import jogo.logica.StateMachine;
 import jogo.logica.estados.Connect4States;
-import jogo.logica.observables.StateMachineObservable;
+import jogo.logica.dados.observables.StateMachineObservable;
+import jogo.logica.estados.GameState;
 
 import java.util.HashMap;
 
@@ -19,12 +19,12 @@ public class GameWindowStateManager {
 	private StateWindow currentStateWindow;
 	
 	public GameWindowStateManager(Stage stage) throws Exception {
-		this(stage, new StateMachine());
+		this(stage, new jogo.logica.estados.GameToStart());
 	}
 	
-	public GameWindowStateManager(Stage stage, StateMachine stateMachineOut) throws Exception {
+	public GameWindowStateManager(Stage stage, GameState gameState) throws Exception {
 		this.stage = stage;
-		this.stateMachine = new StateMachineObservable(stateMachineOut);
+		this.stateMachine = new StateMachineObservable(gameState);
 		
 		StateWindow inGameState = new InGame(this);
 		StateWindow playingMiniGame = new PlayingMiniGame(this);
@@ -64,9 +64,5 @@ public class GameWindowStateManager {
 	
 	public StateMachineObservable getStateMachine() {
 		return stateMachine;
-	}
-	
-	public void setStateMachine(StateMachine otherStateMachine) {
-		this.stateMachine.setStateMachine(otherStateMachine);
 	}
 }

@@ -1,7 +1,7 @@
 package jogo.logica.estados;
 
 import jogo.logica.GameData;
-import jogo.logica.GameDataObservable;
+import jogo.logica.dados.observables.GameDataObservable;
 
 public class ComputerPlays extends GameAbstractState {
 	

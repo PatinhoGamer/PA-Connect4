@@ -30,16 +30,6 @@ public class MathMiniGame extends TimedGameAbstract {
 	}
 	
 	@Override
-	public int availableTime() {
-		return 30;
-	}
-	
-	@Override
-	public String getGameObjective() {
-		return GAME_OBJECTIVE;
-	}
-	
-	@Override
 	public boolean checkAnswer(String answer) {
 		if (super.checkAnswer(answer)) {
 			answeredQuestions++;
@@ -49,6 +39,16 @@ public class MathMiniGame extends TimedGameAbstract {
 		}
 		generateQuestion();
 		return false;
+	}
+	
+	@Override
+	public String getGameObjective() {
+		return GAME_OBJECTIVE;
+	}
+	
+	@Override
+	public int getAvailableTime() {
+		return 30;
 	}
 	
 	@Override

@@ -1,6 +1,6 @@
 package jogo.logica.estados;
 
-import jogo.logica.GameDataObservable;
+import jogo.logica.dados.observables.GameDataObservable;
 import jogo.logica.GameSaver;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
@@ -17,16 +17,6 @@ public class GameFinished extends GameAbstractState {
 		Player loserPlayer = game.getPlayerFromEnum(winner.getOther());
 		
 		GameSaver.saveReplay(game.getGameActions(), winnerPlayer.getName(), loserPlayer.getName());
-	}
-	
-	@Override
-	public Piece getWinner() {
-		return winner;
-	}
-	
-	@Override
-	public GameState restartGame() {
-		return new GameToStart(new GameDataObservable());
 	}
 	
 	@Override
