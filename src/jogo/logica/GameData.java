@@ -216,7 +216,7 @@ public class GameData implements Serializable {
 	}
 	
 	public boolean hasMiniGameStarted() {
-		return miniGame != null;
+		return miniGame != null && miniGame.isRunning();
 	}
 	
 	public ITimedMiniGame getMiniGame() {

@@ -20,4 +20,6 @@ public interface ITimedMiniGame {
 	boolean playerWon();
 	
 	boolean ranOutOfTime();
+	
+	boolean isRunning();
 }

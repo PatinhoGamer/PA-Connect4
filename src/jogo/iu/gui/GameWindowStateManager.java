@@ -1,5 +1,6 @@
 package jogo.iu.gui;
 
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import jogo.iu.gui.controllers.StateWindow;
 import jogo.iu.gui.controllers.states.*;
@@ -59,7 +60,7 @@ public class GameWindowStateManager {
 		stateWindow.show();
 		
 		currentStateWindow = stateWindow;
-		stage.setScene(stateWindow.getScene());
+		Platform.runLater(() -> stage.setScene(stateWindow.getScene()));
 	}
 	
 	public StateMachineObservable getStateMachine() {

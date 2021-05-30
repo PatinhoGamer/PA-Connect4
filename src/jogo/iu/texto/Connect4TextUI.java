@@ -106,7 +106,6 @@ public class Connect4TextUI {
 	}
 	
 	private void playingMiniGame() {
-		printCurrentPlayer();
 		
 		if (!stateMachine.hasMiniGameStarted()) {
 			System.out.println("Objective : " + stateMachine.getMiniGameObjective());
@@ -122,12 +121,12 @@ public class Connect4TextUI {
 			System.out.println("That is the right answer");
 		else
 			System.out.println("Wrong answer");
-			
 		
-		if (stateMachine.didPlayerWinMiniGame())
-			System.out.println("You finished it on time");
-		else
-			System.out.println("Took too long, better luck next time");
+		if (stateMachine.isMiniGameFinished())
+			if (stateMachine.didPlayerWinMiniGame())
+				System.out.println("You finished it on time");
+			else
+				System.out.println("Took too long, better luck next time");
 	}
 	
 	private void gameToStart() {

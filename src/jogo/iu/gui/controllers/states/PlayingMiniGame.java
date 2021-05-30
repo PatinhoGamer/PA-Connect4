@@ -22,8 +22,8 @@ public class PlayingMiniGame extends AbstractWindowState implements Initializabl
 	public Button startButton;
 	public Label timerLabel;
 	
-	private boolean isFinished = false;
-	private boolean hasStarted = false;
+	private boolean isFinished;
+	private boolean hasStarted;
 	private Thread timerThread;
 	
 	public PlayingMiniGame(GameWindowStateManager windowStateManager) {
@@ -36,6 +36,9 @@ public class PlayingMiniGame extends AbstractWindowState implements Initializabl
 	public void show() {
 		System.out.println("PlayingMiniGame");
 		super.show();
+		
+		isFinished = false;
+		hasStarted = false;
 		
 		var stateMachine = getWindowStateManager().getStateMachine();
 		gameObjectiveLabel.setText(stateMachine.getMiniGameObjective());
@@ -72,13 +75,15 @@ public class PlayingMiniGame extends AbstractWindowState implements Initializabl
 	
 	
 	private void finishedMiniGame() {
+		System.out.println("Finished minigame");
 		isFinished = true;
 		timerThread.interrupt();
+		timerThread = null;
 		
 		var stateMachine = getWindowStateManager().getStateMachine();
 		
 		if (stateMachine.isMiniGameFinished()) {
-			
+			System.out.println("is minigame finished");
 			var playerName = stateMachine.getCurrentPlayerObj().getName();
 			var messageStart = "It appears that player '" + playerName + "' ";
 			var alertTitle = "Minigame Result";
@@ -104,16 +109,14 @@ public class PlayingMiniGame extends AbstractWindowState implements Initializabl
 		
 		timerThread = new Thread(() -> {
 			try {
-				int remainingTime = stateMachine.getMiniGameAvailableTime();
+				int remainingTime = stateMachine.getMiniGameAvailableTime() + 1; // +1 To fix a bug
 				while (remainingTime > 0) {
 					Thread.sleep(1000);
 					int finalRemainingTime = --remainingTime;
 					Platform.runLater(() ->
 							timerLabel.setText(Integer.toString(finalRemainingTime)));
 				}
-				System.out.println("Minigame timed out");
 				if (!isFinished) {
-					System.out.println("\tand ran the answerMinigame(\"\")");
 					stateMachine.answerMiniGame("");
 					Platform.runLater(this::finishedMiniGame);
 				}

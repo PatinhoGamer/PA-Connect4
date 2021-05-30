@@ -74,7 +74,7 @@ public abstract class GameAbstractState implements GameState {
 	}
 	
 	@Override
-	public boolean didPlayerWinMiniGame() {
+	public final boolean didPlayerWinMiniGame() {
 		return game.didPlayerWinMiniGame();
 	}
 	
@@ -84,47 +84,47 @@ public abstract class GameAbstractState implements GameState {
 	}
 	
 	@Override
-	public boolean hasMiniGameStarted() {
+	public final boolean hasMiniGameStarted() {
 		return game.hasMiniGameStarted();
 	}
 	
 	@Override
-	public boolean playerGotMiniGameQuestionAnswerRight() {
+	public final boolean playerGotMiniGameQuestionAnswerRight() {
 		return game.playerGotMiniGameQuestionAnswerRight();
 	}
 	// -------------------------------------
 	
 	@Override
-	public GameDataViewer getGameViewer() {
+	public final GameDataViewer getGameViewer() {
 		return new GameDataViewer(game);
 	}
 	
 	@Override
-	public Piece[][] getGameArea() {
+	public final Piece[][] getGameArea() {
 		return game.getGameArea();
 	}
 	
 	@Override
-	public Piece getWinner() {
+	public final Piece getWinner() {
 		return null;
 	}
 	
 	@Override
-	public PlayerViewer getPlayer(Piece playerPiece) {
+	public final PlayerViewer getPlayer(Piece playerPiece) {
 		return new PlayerViewer(game.getPlayerFromEnum(playerPiece));
 	}
 	
 	@Override
-	public PlayerViewer getCurrentPlayer() {
+	public final PlayerViewer getCurrentPlayer() {
 		return new PlayerViewer(game.getPlayerFromEnum(getCurrentPlayerPiece()));
 	}
 	
 	@Override
-	public Piece getCurrentPlayerPiece() {
+	public final Piece getCurrentPlayerPiece() {
 		return game.getCurrentPlayerPiece();
 	}
 	
-	protected GameFinished checkFinishedState() {
+	protected final GameFinished checkFinishedState() {
 		Piece winner = game.checkWinner();
 		if (winner != null)
 			return new GameFinished(game, winner);
@@ -133,7 +133,7 @@ public abstract class GameAbstractState implements GameState {
 		return null;
 	}
 	
-	protected GameState stateAfterPlay() {
+	protected final GameState stateAfterPlay() {
 		GameFinished finishedState = checkFinishedState();
 		if (finishedState != null) return finishedState;
 		

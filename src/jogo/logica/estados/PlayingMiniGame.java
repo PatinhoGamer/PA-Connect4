@@ -7,8 +7,7 @@ public class PlayingMiniGame extends GameAbstractState {
 	
 	public PlayingMiniGame(GameDataObservable game) {
 		super(game);
-		//if (!game.hasMiniGameStarted())
-			game.generateMiniGameForCurrentPlayer();
+		game.generateMiniGameForCurrentPlayer();
 	}
 	
 	public GameState answerMiniGame(String answer) {
