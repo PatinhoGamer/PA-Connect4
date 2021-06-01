@@ -199,7 +199,7 @@ public class GameData implements Serializable {
 	}
 	
 	public boolean isMiniGameFinished() {
-		if (miniGame == null) return false;
+		if (miniGame == null) return true;
 		
 		if (miniGame.isFinished()) {
 			miniGame.stop();

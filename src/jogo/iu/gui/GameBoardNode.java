@@ -2,6 +2,7 @@ package jogo.iu.gui;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
@@ -33,6 +34,8 @@ public class GameBoardNode extends FlowPane {
 		setAlignment(Pos.CENTER);
 		
 		initializeGrid(handler);
+		
+		this.setPadding(new Insets(10));
 		
 		getChildren().add(root);
 		

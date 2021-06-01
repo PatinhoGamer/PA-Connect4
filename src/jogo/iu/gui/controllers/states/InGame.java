@@ -56,6 +56,8 @@ public class InGame extends AbstractWindowState {
 		updateFields();
 		var stateMachine = getMachine();
 		
+		System.out.println("Current player piece -> " + stateMachine.getCurrentPlayer());
+		
 		if (stateMachine.getState() == Connect4States.ComputerPlays) {
 			Platform.runLater(() -> {
 				try {
@@ -95,16 +97,6 @@ public class InGame extends AbstractWindowState {
 			specialPiecesLabel.setText(Integer.toString(stateMachine.getCurrentPlayerObj().getSpecialPieces()));
 		});
 		
-		observableGame.addChangeListener(GameDataObservable.Changes.PlayerRollback, evt -> {
-			var player = getMachine().getCurrentPlayerObj();
-			String playerRollbacks = Integer.toString(player.getRollbacks());
-			playerRollbackAmount.setText(playerRollbacks);
-			
-			int maxRollbacks = Math.min(player.getRollbacks(), getMachine().getGame().getAvailableRollbacks());
-			rollbackAmountTextField.setText(Integer.toString(maxRollbacks));
-			rollbackTextFieldListener.setMaxValue(maxRollbacks);
-		});
-		
 		observableGame.addChangeListener(GameDataObservable.Changes.PlayerClearedColumn, evt -> {
 			specialPiecesLabel.setText(Integer.toString(stateMachine.getCurrentPlayerObj().getSpecialPieces()));
 		});
@@ -118,6 +110,13 @@ public class InGame extends AbstractWindowState {
 		if (machine.getCurrentPlayer() == Piece.PLAYER1)
 			Connect4UI.changeBackground(playerNameLabel, GameBoardNode.PLAYER1_COLOR, GameBoardNode.ROUND_CORNER);
 		else Connect4UI.changeBackground(playerNameLabel, GameBoardNode.PLAYER2_COLOR, GameBoardNode.ROUND_CORNER);
+		
+		String playerRollbacks = Integer.toString(player.getRollbacks());
+		playerRollbackAmount.setText(playerRollbacks);
+		
+		int maxRollbacks = Math.min(player.getRollbacks(), getMachine().getGame().getAvailableRollbacks());
+		rollbackAmountTextField.setText(Integer.toString(maxRollbacks));
+		rollbackTextFieldListener.setMaxValue(maxRollbacks);
 		
 		specialPiecesLabel.setText(Integer.toString(player.getSpecialPieces()));
 	}

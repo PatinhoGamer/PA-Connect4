@@ -30,8 +30,6 @@ public class PlayingMiniGame extends AbstractWindowState implements Initializabl
 		super(windowStateManager, ResourceLoader.FXML_PLAYING_MINIGAME);
 	}
 	
-	//TODO make the animation thing
-	
 	@Override
 	public void show() {
 		System.out.println("PlayingMiniGame");
@@ -81,19 +79,18 @@ public class PlayingMiniGame extends AbstractWindowState implements Initializabl
 		timerThread = null;
 		
 		var stateMachine = getWindowStateManager().getStateMachine();
+		stateMachine.isMiniGameFinished();
 		
-		if (stateMachine.isMiniGameFinished()) {
-			System.out.println("is minigame finished");
+		var messageStart = "It appears that player '";
+		String message;
+		if (stateMachine.didPlayerWinMiniGame()) {
 			var playerName = stateMachine.getCurrentPlayerObj().getName();
-			var messageStart = "It appears that player '" + playerName + "' ";
-			var alertTitle = "Minigame Result";
-			
-			if (stateMachine.didPlayerWinMiniGame())
-				Connect4UI.getInstance().openMessageDialog(Alert.AlertType.INFORMATION, alertTitle, messageStart + "as won the minigame");
-			else
-				Connect4UI.getInstance().openMessageDialog(Alert.AlertType.INFORMATION, alertTitle, messageStart + "as lost the minigame and the turn");
-			
+			message = messageStart + playerName + "' as won the minigame";
+		} else {
+			var playerName = stateMachine.getPlayer(stateMachine.getCurrentPlayer().getOther()).getName();
+			message = messageStart + playerName + "' as lost the minigame and the turn";
 		}
+		Connect4UI.getInstance().openMessageDialog(Alert.AlertType.INFORMATION, "Minigame Result", message);
 	}
 	
 	@FXML
