@@ -6,7 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import jogo.iu.gui.GameWindowStateManager;
 import jogo.iu.gui.ResourceLoader;
-import jogo.iu.gui.controllers.StateWindow;
 
 import java.io.IOException;
 import java.net.URL;

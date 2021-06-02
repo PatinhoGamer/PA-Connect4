@@ -1,16 +1,14 @@
 package jogo.iu.gui;
 
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;
-import javafx.util.Duration;
 import javafx.scene.paint.Color;
 import jogo.logica.GameData;
-import jogo.logica.dados.observables.GameDataObservable;
-import jogo.logica.dados.dataViewers.GameDataViewer;
 import jogo.logica.dados.Piece;
+import jogo.logica.dados.dataViewers.GameDataViewer;
+import jogo.logica.dados.observables.GameDataObservable;
 
 
 public class GameBoardNode extends FlowPane {

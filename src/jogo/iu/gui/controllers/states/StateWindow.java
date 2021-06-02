@@ -1,4 +1,4 @@
-package jogo.iu.gui.controllers;
+package jogo.iu.gui.controllers.states;
 
 import javafx.scene.Scene;
 

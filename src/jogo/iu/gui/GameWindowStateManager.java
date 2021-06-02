@@ -2,11 +2,9 @@ package jogo.iu.gui;
 
 import javafx.application.Platform;
 import javafx.stage.Stage;
-import jogo.iu.gui.controllers.StateWindow;
 import jogo.iu.gui.controllers.states.*;
-import jogo.logica.StateMachine;
-import jogo.logica.estados.Connect4States;
 import jogo.logica.dados.observables.StateMachineObservable;
+import jogo.logica.estados.Connect4States;
 import jogo.logica.estados.GameState;
 
 import java.util.HashMap;
@@ -14,16 +12,16 @@ import java.util.HashMap;
 public class GameWindowStateManager {
 	
 	private final Stage stage;
-	private StateMachineObservable stateMachine;
+	private final StateMachineObservable stateMachine;
 	
-	private HashMap<Connect4States, StateWindow> stateWindows = new HashMap<>();
+	private final HashMap<Connect4States, StateWindow> stateWindows = new HashMap<>();
 	private StateWindow currentStateWindow;
 	
-	public GameWindowStateManager(Stage stage) throws Exception {
+	public GameWindowStateManager(Stage stage) {
 		this(stage, new jogo.logica.estados.GameToStart());
 	}
 	
-	public GameWindowStateManager(Stage stage, GameState gameState) throws Exception {
+	public GameWindowStateManager(Stage stage, GameState gameState) {
 		this.stage = stage;
 		this.stateMachine = new StateMachineObservable(gameState);
 		
@@ -40,27 +38,21 @@ public class GameWindowStateManager {
 		stateWindows.put(Connect4States.CheckPlayerWantsMiniGame, checkPlayerWantsMiniGame);
 		stateWindows.put(Connect4States.GameFinished, gameFinished);
 		
-		this.stateMachine.addChangeListener(StateMachineObservable.CHANGE_STATE, (propertyChangeEvent) -> {
-			try {
-				changeToRightState();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
+		stateMachine.addChangeListener(StateMachineObservable.CHANGE_STATE, (event) -> changeToRightState());
 		
 		changeToRightState();
 	}
 	
-	private void changeToRightState() throws Exception {
-		var stateWindow = stateWindows.get(stateMachine.getState());
-		if (stateWindow == null) throw new Exception("No Window for current state");
-		
+	private void changeToRightState() {
+		var newStateWindow = stateWindows.get(stateMachine.getState());
+		if (newStateWindow == null) throw new IllegalStateException("No Window for current state");
+
 		if (currentStateWindow != null)
 			currentStateWindow.hide();
-		stateWindow.show();
+		newStateWindow.show();
 		
-		currentStateWindow = stateWindow;
-		Platform.runLater(() -> stage.setScene(stateWindow.getScene()));
+		currentStateWindow = newStateWindow;
+		Platform.runLater(() -> stage.setScene(newStateWindow.getScene()));
 	}
 	
 	public StateMachineObservable getStateMachine() {
