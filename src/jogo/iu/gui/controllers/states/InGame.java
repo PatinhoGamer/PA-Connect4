@@ -178,6 +178,8 @@ public class InGame extends AbstractWindowState {
 			app.openMessageDialog(Alert.AlertType.INFORMATION, "Too many rollbacks", "The game has not evolved enough to go back that much");
 		
 		machine.rollback(amount);
+		
+		rollbackAmountTextField.setText("");
 	}
 	
 	@FXML

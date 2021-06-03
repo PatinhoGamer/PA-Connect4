@@ -121,7 +121,7 @@ public class GameData implements Serializable {
 	
 	public boolean rollback(int amount) {
 		boolean success = rollback(getCurrentPlayerPiece(), amount);
-		if (success)
+		if (amount % 2 != 0)
 			setNextPlayer();
 		return success;
 	}
