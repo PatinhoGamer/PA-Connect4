@@ -13,7 +13,7 @@
         <HBox>
             <Label text="It appears that "/>
             <Label fx:id="playerNameLabel"/>
-            <Label text=" has won this round!"/>
+            <Label text=" won this round!"/>
         </HBox>
     </top>
     <bottom>

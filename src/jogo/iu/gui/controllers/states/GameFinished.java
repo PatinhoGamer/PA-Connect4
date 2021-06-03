@@ -8,6 +8,7 @@ import jogo.iu.gui.Connect4UI;
 import jogo.iu.gui.GameBoardNode;
 import jogo.iu.gui.GameWindowStateManager;
 import jogo.iu.gui.ResourceLoader;
+import jogo.logica.dados.Piece;
 
 
 public class GameFinished extends AbstractWindowState {
@@ -36,11 +37,15 @@ public class GameFinished extends AbstractWindowState {
 		super.show();
 		
 		var stateMachine = getWindowStateManager().getStateMachine();
-		var winner = stateMachine.getPlayer(stateMachine.getWinner());
-		playerNameLabel.setText(winner.getName());
+		var winnerPiece = stateMachine.getWinner();
+		
+		String winnerName = winnerPiece == null ? "no one" : stateMachine.getPlayer(winnerPiece).getName();
+		
+		playerNameLabel.setText(winnerName);
 		
 		board.updateBoard(stateMachine.getGameArea());
 	}
+	
 	
 	@FXML
 	public void backToMenu(ActionEvent actionEvent) {

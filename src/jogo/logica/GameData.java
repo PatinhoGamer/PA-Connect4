@@ -41,6 +41,7 @@ public class GameData implements Serializable {
 	private Player player1;
 	private Player player2;
 	private Piece currentPlayer;
+	private Piece winner;
 	
 	private ITimedMiniGame miniGame;
 	private boolean wonMiniGame = false;
@@ -92,8 +93,10 @@ public class GameData implements Serializable {
 	
 	public boolean clearColumn(int column) {
 		boolean success = clearColumn(getCurrentPlayerPiece(), column);
-		if (success)
+		if (success) {
+			System.out.println("next shitass");
 			setNextPlayer();
+		}
 		return success;
 	}
 	
@@ -260,6 +263,11 @@ public class GameData implements Serializable {
 	public boolean isCurrentPlayerBot() {
 		return getCurrentPlayer().getType() == PlayerType.COMPUTER;
 	}
+	
+	public Piece getWinner() {
+		return winner;
+	}
+	
 	// Getters ---------------------------------------------------------------------------------------------------------
 	
 	// Board Verification ----------------------------------------------------------------------------------------------
@@ -274,10 +282,12 @@ public class GameData implements Serializable {
 				if (checkIfPlayerWonAt(currentPlacePiece, line, column)) {
 					gameActions.add(ACTION_FINISHED + ':' + currentPlacePiece);
 					currentPlayer = currentPlacePiece;
+					winner = currentPlacePiece;
 					return currentPlacePiece;
 				}
 			}
 		}
+		winner = null;
 		return null;
 	}
 	

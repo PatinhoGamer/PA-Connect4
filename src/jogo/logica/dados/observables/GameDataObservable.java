@@ -46,7 +46,7 @@ public class GameDataObservable extends GameData implements IGameDataObservable 
 			firePropertyChange(Changes.PlayerClearedColumn, column);
 			firePropertyChange(Changes.BoardChanged, getGameArea());
 		}
-		return false;
+		return success;
 	}
 	
 	@Override
@@ -56,7 +56,7 @@ public class GameDataObservable extends GameData implements IGameDataObservable 
 			firePropertyChange(Changes.PlayerRollback, amount);
 			firePropertyChange(Changes.BoardChanged, getGameArea());
 		}
-		return true;
+		return success;
 	}
 	
 	@Override

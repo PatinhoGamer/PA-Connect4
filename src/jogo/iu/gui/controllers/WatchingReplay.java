@@ -28,7 +28,7 @@ public class WatchingReplay implements Initializable {
 		
 		scheduler = () -> {
 			try {
-				Thread.sleep(750);
+				Thread.sleep(500);
 				Platform.runLater(this::moveForward);
 			} catch (InterruptedException e) {
 				e.printStackTrace();

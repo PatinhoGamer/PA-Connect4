@@ -1,18 +1,15 @@
 package jogo.logica.estados;
 
-import jogo.logica.dados.observables.GameDataObservable;
 import jogo.logica.GameSaver;
-import jogo.logica.dados.Piece;
 import jogo.logica.dados.Player;
+import jogo.logica.dados.observables.GameDataObservable;
 
 public class GameFinished extends GameAbstractState {
 	
-	private Piece winner;
-	
-	public GameFinished(GameDataObservable game, Piece winner) {
+	public GameFinished(GameDataObservable game) {
 		super(game);
-		this.winner = winner;
 		
+		var winner = getWinner();
 		Player winnerPlayer = game.getPlayerFromEnum(winner);
 		Player loserPlayer = game.getPlayerFromEnum(winner.getOther());
 		

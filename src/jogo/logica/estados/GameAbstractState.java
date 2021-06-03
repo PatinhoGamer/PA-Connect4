@@ -106,7 +106,7 @@ public abstract class GameAbstractState implements GameState {
 	
 	@Override
 	public final Piece getWinner() {
-		return null;
+		return game.getWinner();
 	}
 	
 	@Override
@@ -127,9 +127,9 @@ public abstract class GameAbstractState implements GameState {
 	protected final GameFinished checkFinishedState() {
 		Piece winner = game.checkWinner();
 		if (winner != null)
-			return new GameFinished(game, winner);
+			return new GameFinished(game);
 		if (game.isFull())
-			return new GameFinished(game, null);
+			return new GameFinished(game);
 		return null;
 	}
 	
