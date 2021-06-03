@@ -6,10 +6,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import jogo.iu.gui.GameBoardNode;
 import jogo.iu.gui.Connect4UI;
@@ -24,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class InGame extends AbstractWindowState {
+	
 	@FXML
 	public BorderPane root;
 	public Label specialPiecesLabel;
@@ -31,14 +29,17 @@ public class InGame extends AbstractWindowState {
 	public TextField rollbackAmountTextField;
 	public ToggleButton clearColumnToggleButton;
 	public ToggleButton normalPlayToggleButton;
+	public Button rollbackButton;
+	
 	public Label playerRollbackAmount;
 	
 	private GameBoardNode gameBoardBoard;
-	
 	private boolean clearColumnPlayType = false;
+	
 	private RollbackTextPropertyListener rollbackTextFieldListener;
 	
 	private final Connect4UI app;
+	private Thread botPlayThread;
 	
 	public InGame(GameWindowStateManager windowStateManager) {
 		super(windowStateManager, ResourceLoader.FXML_BOARD);
@@ -51,23 +52,24 @@ public class InGame extends AbstractWindowState {
 	
 	@Override
 	public void show() {
-		System.out.println("InGame");
+		System.out.println("InGame -> " + getMachine().getCurrentPlayer());
 		super.show();
 		updateFields();
 		var stateMachine = getMachine();
 		
-		System.out.println("Current player piece -> " + stateMachine.getCurrentPlayer());
-		
 		if (stateMachine.getState() == Connect4States.ComputerPlays) {
-			Platform.runLater(() -> {
+			setButtonsDisabled(true);
+			botPlayThread = new Thread(() -> {
 				try {
 					Thread.sleep(250);
-					stateMachine.executePlay();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+					Platform.runLater(stateMachine::executePlay);
+				} catch (InterruptedException ignored) {
 				}
 			});
+			botPlayThread.setDaemon(true);
+			botPlayThread.start();
 		} else {
+			setButtonsDisabled(false);
 			gameBoardBoard.updateBoard(stateMachine.getGameArea());
 		}
 	}
@@ -131,17 +133,13 @@ public class InGame extends AbstractWindowState {
 				selectedNormalPlay(null);
 			} else
 				stateMachine.playAt(column);
-			
-		} else if (stateMachine.getState() == Connect4States.ComputerPlays) {
-		} else {
-			System.out.println("Error. Reached column pressed and is not either player move or computer move");
 		}
 	}
 	
 	@FXML
 	public void goBack(ActionEvent actionEvent) {
-		System.out.println("Back to main menu");
-		app.goBackToMenu();
+		if (botPlayThread != null) botPlayThread.interrupt();
+		getWindowStateManager().leave();
 	}
 	
 	@FXML
@@ -202,14 +200,17 @@ public class InGame extends AbstractWindowState {
 		clearColumnPlayType = false;
 	}
 	
+	private void setButtonsDisabled(boolean state) {
+		clearColumnToggleButton.setDisable(state);
+		normalPlayToggleButton.setDisable(state);
+		rollbackButton.setDisable(state);
+	}
+	
 	class RollbackTextPropertyListener implements ChangeListener<String> {
 		private int maxValue = 0;
 		
 		public void setMaxValue(int maxValue) {
 			this.maxValue = maxValue;
-		}
-		
-		public RollbackTextPropertyListener() {
 		}
 		
 		@Override
@@ -236,5 +237,4 @@ public class InGame extends AbstractWindowState {
 			}
 		}
 	}
-	
 }

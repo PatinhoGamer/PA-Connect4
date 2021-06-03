@@ -37,7 +37,7 @@
                 </VBox>
 
                 <VBox>
-                    <Button onAction="#rollback" text="Rollback" prefWidth="90"/>
+                    <Button fx:id="rollbackButton" onAction="#rollback" text="Rollback" prefWidth="90"/>
                    <HBox>
                        <Label text="Max Rollbacks : "/>
                        <Label fx:id="playerRollbackAmount"/>

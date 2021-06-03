@@ -64,6 +64,6 @@ public class GameToStart extends AbstractWindowState {
 	
 	@FXML
 	public void goBack(ActionEvent actionEvent) {
-		Connect4UI.getInstance().goBackToMenu();
+		getWindowStateManager().leave();
 	}
 }

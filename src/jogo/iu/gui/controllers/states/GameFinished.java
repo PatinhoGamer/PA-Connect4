@@ -44,6 +44,6 @@ public class GameFinished extends AbstractWindowState {
 	
 	@FXML
 	public void backToMenu(ActionEvent actionEvent) {
-		Connect4UI.getInstance().goBackToMenu();
+		getWindowStateManager().leave();
 	}
 }

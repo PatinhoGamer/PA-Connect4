@@ -58,4 +58,9 @@ public class GameWindowStateManager {
 	public StateMachineObservable getStateMachine() {
 		return stateMachine;
 	}
+	
+	public void leave() {
+		currentStateWindow.hide();
+		Connect4UI.getInstance().goBackToMenu();
+	}
 }

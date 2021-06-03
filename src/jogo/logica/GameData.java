@@ -18,9 +18,9 @@ public class GameData implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 0L;
 	
-	public static final int HEIGHT = 6;
-	public static final int WIDTH = 7;
-	public static final int AMOUNT_TO_WIN = 4;
+	public static final int HEIGHT = 6; // 6
+	public static final int WIDTH = 7; // 7
+	public static final int AMOUNT_TO_WIN = 4; // 4
 	public static final int MAX_ROLLBACK = 5;
 	public static final int ROUNDS_TO_PLAY_MINIGAME = 4;
 	
