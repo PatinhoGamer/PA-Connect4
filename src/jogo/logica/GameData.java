@@ -93,10 +93,8 @@ public class GameData implements Serializable {
 	
 	public boolean clearColumn(int column) {
 		boolean success = clearColumn(getCurrentPlayerPiece(), column);
-		if (success) {
-			System.out.println("next shitass");
+		if (success)
 			setNextPlayer();
-		}
 		return success;
 	}
 	
