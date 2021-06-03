@@ -24,6 +24,7 @@ public class GameBoardNode extends FlowPane {
 	
 	private Pane[][] paneArea;
 	private Pane[] topDiscs;
+	private Pane showedTopDisc;
 	
 	private Pane root;
 	private final GameDataViewer gameDataObservable;
@@ -76,13 +77,20 @@ public class GameBoardNode extends FlowPane {
 				
 				curColumn.hoverProperty().addListener((observableValue, oldValue, newValue) -> {
 					if (newValue) {
-						changeDiscColor(gameDataObservable.getCurrentPlayerPiece(), topDiscs[finalColumn]);
-						topDiscs[finalColumn].setVisible(true);
+						showedTopDisc = topDiscs[finalColumn];
+						changeDiscColor(gameDataObservable.getCurrentPlayerPiece(), showedTopDisc);
+						showedTopDisc.setVisible(true);
 					} else {
-						topDiscs[finalColumn].setVisible(false);
+						showedTopDisc.setVisible(false);
+						showedTopDisc = null;
 					}
 				});
-				curColumn.setOnMouseClicked(mouseEvent -> handler.onCollumClicked(finalColumn + 1));
+				curColumn.setOnMouseClicked(mouseEvent -> {
+					handler.onCollumClicked(finalColumn + 1);
+					if (showedTopDisc != null) {
+						changeDiscColor(gameDataObservable.getCurrentPlayerPiece(), showedTopDisc);
+					}
+				});
 			}
 			columns[columnIndex] = curColumn;
 			

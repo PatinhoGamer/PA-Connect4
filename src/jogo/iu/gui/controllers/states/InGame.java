@@ -30,7 +30,6 @@ public class InGame extends AbstractWindowState {
 	public ToggleButton clearColumnToggleButton;
 	public ToggleButton normalPlayToggleButton;
 	public Button rollbackButton;
-	
 	public Label playerRollbackAmount;
 	
 	private GameBoardNode gameBoardBoard;
