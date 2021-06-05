@@ -21,11 +21,11 @@ public class Main {
 		
 		try {
 			System.out.println("Loading replays from Disk");
-			GameSaver.loadReplaysFromDisk(replaySaveFile);
+			GameSaver.getInstance().loadReplaysFromDisk(replaySaveFile);
 		} catch (IOException e) {
-			System.out.println("Error loading replays from file, maybe it doesnt exist. It will be created on exit");
+			System.out.println("Error loading replays from file, maybe it doesn't exist. It will be created on exit");
 		} catch (ClassNotFoundException e) {
-			System.out.println("Class cast exception. Should never happen");
+			System.out.println("Class cast exception. Should never happen, maybe there was a change in one of the classes");
 		}
 		
 		if (!textVersion) {
@@ -36,7 +36,7 @@ public class Main {
 		
 		try {
 			System.out.println("Saving replays to Disk");
-			GameSaver.sendReplaysToDisk(replaySaveFile);
+			GameSaver.getInstance().sendReplaysToDisk(replaySaveFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Error saving replays to file. Should never happen");

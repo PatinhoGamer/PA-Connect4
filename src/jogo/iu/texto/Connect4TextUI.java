@@ -53,7 +53,7 @@ public class Connect4TextUI {
 			case 2 -> {
 				System.out.println("Choose Replay to Watch:");
 				
-				List<Replay> replays = GameSaver.getReplays();
+				List<Replay> replays = GameSaver.getInstance().getReplays();
 				List<String> replayString = new ArrayList<>(replays.size());
 				for (Replay replay : replays)
 					replayString.add(replay.getDate() + " -> W: " + replay.getWinner() + " vs L: " + replay.getLoser());
@@ -62,7 +62,7 @@ public class Connect4TextUI {
 				
 				if (index == -1) break;
 				
-				Replayer replayerForGame = GameSaver.getReplayerForGame(index);
+				Replayer replayerForGame = GameSaver.getInstance().getReplayerForGame(index);
 				if (replayerForGame == null) throw new IllegalStateException("replayerForGame == null");
 				playReplay(replayerForGame);
 			}
@@ -219,7 +219,8 @@ public class Connect4TextUI {
 		System.out.println("Filename : ");
 		String filePath = scanner.nextLine();
 		try {
-			GameSaver.saveCurrentStateToFile(stateMachine.getUnderlyingGameState(), filePath + GameSaver.fileExtensionSave);
+			GameSaver.getInstance().saveCurrentStateToFile(stateMachine.getUnderlyingGameState(),
+					filePath + GameSaver.fileExtensionSave);
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
@@ -229,7 +230,7 @@ public class Connect4TextUI {
 		System.out.println("Filename : ");
 		String filePath = scanner.nextLine();
 		try {
-			stateMachine = new StateMachine(GameSaver.loadGameFromFile(filePath + GameSaver.fileExtensionSave));
+			stateMachine = new StateMachine(GameSaver.getInstance().loadGameFromFile(filePath + GameSaver.fileExtensionSave));
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println(e.getMessage());
 		}

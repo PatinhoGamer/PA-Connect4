@@ -1,4 +1,4 @@
-package jogo.logica;
+package jogo.logica.dados;
 
 import java.util.Stack;
 

@@ -13,7 +13,7 @@ public class GameFinished extends GameAbstractState {
 		Player winnerPlayer = game.getPlayerFromEnum(winner);
 		Player loserPlayer = game.getPlayerFromEnum(winner.getOther());
 		
-		GameSaver.saveReplay(game.getGameActions(), winnerPlayer.getName(), loserPlayer.getName());
+		GameSaver.getInstance().saveReplay(game.getGameActions(), winnerPlayer.getName(), loserPlayer.getName());
 	}
 	
 	@Override

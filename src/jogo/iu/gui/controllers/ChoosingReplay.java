@@ -22,7 +22,7 @@ public class ChoosingReplay implements Initializable{
 	
 	public void start(ActionEvent actionEvent) {
 		int selectedIndex = replaysList.getSelectionModel().getSelectedIndex();
-		Replay replay = GameSaver.getReplays().get(selectedIndex);
+		Replay replay = GameSaver.getInstance().getReplays().get(selectedIndex);
 		
 		app.watchReplay(replay);
 	}
@@ -30,7 +30,7 @@ public class ChoosingReplay implements Initializable{
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		app = Connect4UI.getInstance();
-		List<Replay> replays = GameSaver.getReplays();
+		List<Replay> replays = GameSaver.getInstance().getReplays();
 		
 		for (Replay replay : replays) {
 			String element = replay.getDate() + " -> Winner: " + replay.getWinner() + " vs Loser: " + replay.getLoser();

@@ -1,5 +1,6 @@
 package jogo.logica;
 
+import jogo.logica.dados.FixedSizeStack;
 import jogo.logica.dados.Player;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.PlayerType;

@@ -77,11 +77,11 @@ public class Connect4UI extends Application {
 	}
 	
 	public GameState loadGameFromFile(String absolutePath) throws IOException, ClassNotFoundException {
-		return GameSaver.loadGameFromFile(absolutePath);
+		return GameSaver.getInstance().loadGameFromFile(absolutePath);
 	}
 	
 	public void saveCurrentStateMachine(String absolutePath, GameState gameState) throws IOException {
-		GameSaver.saveCurrentStateToFile(gameState,absolutePath);
+		GameSaver.getInstance().saveCurrentStateToFile(gameState,absolutePath);
 	}
 	
 	public void openMessageDialog(Alert.AlertType type, String title, String message) {
