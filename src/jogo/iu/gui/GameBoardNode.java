@@ -8,7 +8,6 @@ import javafx.scene.paint.Color;
 import jogo.logica.GameData;
 import jogo.logica.dados.Piece;
 import jogo.logica.dados.dataViewers.GameDataViewer;
-import jogo.logica.dados.observables.GameDataObservable;
 
 
 public class GameBoardNode extends FlowPane {
@@ -40,16 +39,16 @@ public class GameBoardNode extends FlowPane {
 		
 		this.gameDataObservable = gameDataObservable;
 		
-		if (gameDataObservable != null) {
+		/*if (gameDataObservable != null) {
 			gameDataObservable.addChangeListener(GameDataObservable.Changes.PlayerClearedColumn, evt -> {
 				int column = (int) evt.getNewValue();
-				//clearedColumn(column - 1); // gave up on making the animation. too much work for such a little thing
+				clearedColumn(column - 1); // gave up on making the animation. too much work for such a little thing
 			});
 			gameDataObservable.addChangeListener(GameDataObservable.Changes.PlayerPlayedAt, evt -> {
 				int column = (int) evt.getNewValue();
-				//playedAt(column - 1); // the listeners work but don't do anything
+				playedAt(column - 1); // the listeners work but don't do anything
 			});
-		}
+		}*/
 	}
 	
 	public GameBoardNode(GameDataViewer gameDataObservable) {

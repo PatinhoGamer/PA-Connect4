@@ -29,6 +29,10 @@ public class StateMachineObservable extends StateMachine {
 		changeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 	
+	public void removeChangeListener(PropertyChangeListener stateChangeListener) {
+		changeSupport.removePropertyChangeListener(stateChangeListener);
+	}
+	
 	@Override
 	protected void setState(GameState newState) {
 		boolean changed = currentState != newState;

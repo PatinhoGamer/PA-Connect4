@@ -17,6 +17,7 @@ import jogo.logica.dados.Piece;
 import jogo.logica.estados.Connect4States;
 import jogo.logica.dados.observables.StateMachineObservable;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -36,6 +37,8 @@ public class InGame extends AbstractWindowState {
 	private boolean clearColumnPlayType = false;
 	
 	private RollbackTextPropertyListener rollbackTextFieldListener;
+	private PropertyChangeListener boardChangedListener;
+	private PropertyChangeListener clearedColumnListener;
 	
 	private final Connect4UI app;
 	private Thread botPlayThread;
@@ -43,6 +46,12 @@ public class InGame extends AbstractWindowState {
 	public InGame(GameWindowStateManager windowStateManager) {
 		super(windowStateManager, ResourceLoader.FXML_BOARD);
 		app = Connect4UI.getInstance();
+		
+		boardChangedListener = evt -> {
+			if (evt.getNewValue() instanceof Piece[][])
+				gameBoardBoard.updateBoard((Piece[][]) evt.getNewValue());
+		};
+		clearedColumnListener = evt -> specialPiecesLabel.setText(Integer.toString(getMachine().getCurrentPlayerObj().getSpecialPieces()));
 	}
 	
 	private StateMachineObservable getMachine() {
@@ -54,6 +63,7 @@ public class InGame extends AbstractWindowState {
 		System.out.println("InGame -> " + getMachine().getCurrentPlayer());
 		super.show();
 		updateFields();
+		registerListeners();
 		var stateMachine = getMachine();
 		
 		if (stateMachine.getState() == Connect4States.ComputerPlays) {
@@ -74,6 +84,13 @@ public class InGame extends AbstractWindowState {
 	}
 	
 	@Override
+	public void hide() {
+		System.out.println("InGame hide -> unregister game listeners");
+		super.hide();
+		unregisterListeners();
+	}
+	
+	@Override
 	public void firstSetupWindow() {
 		playerNameLabel.setPadding(new Insets(10));
 		
@@ -82,25 +99,18 @@ public class InGame extends AbstractWindowState {
 		
 		gameBoardBoard = new GameBoardNode(this::gridPressedColumn, getMachine().getGame());
 		root.setCenter(gameBoardBoard);
-		
-		registerListeners();
 	}
 	
 	private void registerListeners() {
-		var stateMachine = getMachine();
-		var observableGame = stateMachine.getGame();
-		observableGame.addChangeListener(GameDataObservable.Changes.BoardChanged, evt -> {
-			if (evt.getNewValue() instanceof Piece[][])
-				gameBoardBoard.updateBoard((Piece[][]) evt.getNewValue());
-		});
-		
-		observableGame.addChangeListener(GameDataObservable.Changes.PlayerClearedColumn, evt -> {
-			specialPiecesLabel.setText(Integer.toString(stateMachine.getCurrentPlayerObj().getSpecialPieces()));
-		});
-		
-		observableGame.addChangeListener(GameDataObservable.Changes.PlayerClearedColumn, evt -> {
-			specialPiecesLabel.setText(Integer.toString(stateMachine.getCurrentPlayerObj().getSpecialPieces()));
-		});
+		var observableGame = getMachine().getGame();
+		observableGame.addChangeListener(GameDataObservable.Changes.BoardChanged, boardChangedListener);
+		observableGame.addChangeListener(GameDataObservable.Changes.PlayerClearedColumn, clearedColumnListener);
+	}
+	
+	private void unregisterListeners() {
+		var observableGame = getMachine().getGame();
+		observableGame.removeChangeListener(boardChangedListener);
+		observableGame.removeChangeListener(clearedColumnListener);
 	}
 	
 	private void updateFields() {
@@ -167,6 +177,7 @@ public class InGame extends AbstractWindowState {
 		}
 	}
 	
+	@FXML
 	public void rollback(ActionEvent actionEvent) {
 		var machine = getMachine();
 		String text = rollbackAmountTextField.getText();

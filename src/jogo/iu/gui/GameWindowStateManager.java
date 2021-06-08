@@ -7,6 +7,7 @@ import jogo.logica.dados.observables.StateMachineObservable;
 import jogo.logica.estados.Connect4States;
 import jogo.logica.estados.GameState;
 
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
 public class GameWindowStateManager {
@@ -15,6 +16,7 @@ public class GameWindowStateManager {
 	private final StateMachineObservable stateMachine;
 	
 	private final HashMap<Connect4States, StateWindow> stateWindows = new HashMap<>();
+	private final PropertyChangeListener stateChangeListener;
 	private StateWindow currentStateWindow;
 	
 	public GameWindowStateManager(Stage stage) {
@@ -38,7 +40,8 @@ public class GameWindowStateManager {
 		stateWindows.put(Connect4States.CheckPlayerWantsMiniGame, checkPlayerWantsMiniGame);
 		stateWindows.put(Connect4States.GameFinished, gameFinished);
 		
-		stateMachine.addChangeListener(StateMachineObservable.CHANGE_STATE, (event) -> changeToRightState());
+		stateChangeListener = event -> GameWindowStateManager.this.changeToRightState();
+		stateMachine.addChangeListener(StateMachineObservable.CHANGE_STATE, stateChangeListener);
 		
 		changeToRightState();
 	}
@@ -46,7 +49,7 @@ public class GameWindowStateManager {
 	private void changeToRightState() {
 		var newStateWindow = stateWindows.get(stateMachine.getState());
 		if (newStateWindow == null) throw new IllegalStateException("No Window for current state");
-
+		
 		if (currentStateWindow != null)
 			currentStateWindow.hide();
 		newStateWindow.show();
@@ -61,6 +64,8 @@ public class GameWindowStateManager {
 	
 	public void leave() {
 		currentStateWindow.hide();
+		stateMachine.removeChangeListener(stateChangeListener);
+		System.out.println("GameWindowStateManager -> Unregister state change");
 		Connect4UI.getInstance().goBackToMenu();
 	}
 }
