@@ -11,7 +11,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ChoosingReplay implements Initializable{
+public class ChoosingReplay implements Initializable {
 	
 	public ListView<String> replaysList;
 	private Connect4UI app;
@@ -22,8 +22,9 @@ public class ChoosingReplay implements Initializable{
 	
 	public void start(ActionEvent actionEvent) {
 		int selectedIndex = replaysList.getSelectionModel().getSelectedIndex();
-		Replay replay = GameSaver.getInstance().getReplays().get(selectedIndex);
+		if (selectedIndex == -1) return;
 		
+		Replay replay = GameSaver.getInstance().getReplays().get(selectedIndex);
 		app.watchReplay(replay);
 	}
 	

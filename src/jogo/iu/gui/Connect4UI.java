@@ -70,9 +70,11 @@ public class Connect4UI extends Application {
 		try {
 			var state = loadGameFromFile(path);
 			gameWindowStateManager = new GameWindowStateManager(stage, state);
-		} catch (Exception e) {
+		} catch (ClassNotFoundException e) {
+			openMessageDialog(Alert.AlertType.ERROR, "Load Error", "Older Version Save");
+		} catch (IOException e) {
 			e.printStackTrace();
-			openMessageDialog(Alert.AlertType.ERROR,"Load Error", "Error opening saved game");
+			openMessageDialog(Alert.AlertType.ERROR, "Load Error", "Error opening saved game");
 		}
 	}
 	
@@ -81,7 +83,7 @@ public class Connect4UI extends Application {
 	}
 	
 	public void saveCurrentStateMachine(String absolutePath, GameState gameState) throws IOException {
-		GameSaver.getInstance().saveCurrentStateToFile(gameState,absolutePath);
+		GameSaver.getInstance().saveCurrentStateToFile(gameState, absolutePath);
 	}
 	
 	public void openMessageDialog(Alert.AlertType type, String title, String message) {
